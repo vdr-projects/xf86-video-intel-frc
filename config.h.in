@@ -32,6 +32,15 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
+/* Major version */
+#undef INTEL_VERSION_MAJOR
+
+/* Minor version */
+#undef INTEL_VERSION_MINOR
+
+/* Patch version */
+#undef INTEL_VERSION_PATCH
+
 /* Name of package */
 #undef PACKAGE
 
