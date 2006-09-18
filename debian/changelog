@@ -1,8 +1,15 @@
-xserver-xorg-video-i810 (2:1.6.5-3) UNRELEASED; urgency=low
+xserver-xorg-video-i810 (2:1.6.5-3) unstable; urgency=low
 
+  [ Steve Langasek ]
   * Upload to unstable
 
- -- Steve Langasek <vorlon@debian.org>  Mon, 18 Sep 2006 03:57:32 -0700
+  [ Drew Parsons ]
+  * Standards version 3.7.2.
+  * Use debhelper 5.
+  * Use dh_installman to install man pages.
+  * Exclude .la from dh_install.
+
+ -- Drew Parsons <dparsons@debian.org>  Tue, 19 Sep 2006 01:13:14 +1000
 
 xserver-xorg-video-i810 (2:1.6.5-2) experimental; urgency=low
 

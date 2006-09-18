@@ -3,8 +3,8 @@ Section: x11
 Priority: optional
 Maintainer: Debian X Strike Force <debian-x@lists.debian.org>
 Uploaders: David Nusinow <dnusinow@debian.org>, Branden Robinson <branden@debian.org>, Fabio M. Di Nitto <fabbione@fabbione.net>
-Build-Depends: debhelper (>= 4.0.0), pkg-config, xserver-xorg-dev (>= 2:1.1.1-1), x11proto-gl-dev, x11proto-video-dev, libdrm-dev, libgl1-mesa-dev | libgl-dev, libxvmc-dev (>= 1:1.0.1-1), x11proto-core-dev, x11proto-fonts-dev, x11proto-randr-dev, x11proto-render-dev, x11proto-xinerama-dev, libdrm-dev (>> 2.0), x11proto-xf86dri-dev
-Standards-Version: 3.6.1
+Build-Depends: debhelper (>= 5), pkg-config, xserver-xorg-dev (>= 2:1.1.1-1), x11proto-gl-dev, x11proto-video-dev, libdrm-dev, libgl1-mesa-dev | libgl-dev, libxvmc-dev (>= 1:1.0.1-1), x11proto-core-dev, x11proto-fonts-dev, x11proto-randr-dev, x11proto-render-dev, x11proto-xinerama-dev, libdrm-dev (>> 2.0), x11proto-xf86dri-dev
+Standards-Version: 3.7.2
 
 Package: xserver-xorg-video-i810
 Architecture: alpha amd64 arm hppa hurd-i386 i386 ia64 kfreebsd-i386 m68k mips mipsel netbsd-i386 powerpc
