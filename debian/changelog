@@ -9,7 +9,7 @@ xserver-xorg-video-i810 (2:1.6.5-3) unstable; urgency=low
   * Use dh_installman to install man pages.
   * Exclude .la from dh_install.
 
- -- Drew Parsons <dparsons@debian.org>  Tue, 19 Sep 2006 01:13:14 +1000
+ -- David Nusinow <dnusinow@debian.org>  Mon, 18 Sep 2006 19:57:38 -0400
 
 xserver-xorg-video-i810 (2:1.6.5-2) experimental; urgency=low
 
