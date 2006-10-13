@@ -22,7 +22,7 @@
 
 AC_PREREQ(2.57)
 AC_INIT([xf86-video-i810],
-        1.6.5,
+        1.7.2,
         [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg],
         xf86-video-i810)
 
@@ -48,6 +48,9 @@ AM_MAINTAINER_MODE
 AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
 AC_PROG_CC
+
+AC_CHECK_PROG(gen4asm, [intel-gen4asm], yes, no)
+AM_CONDITIONAL(HAVE_GEN4ASM, test x$gen4asm = xyes)
 
 AH_TOP([#include "xorg-server.h"])
 

@@ -835,29 +835,6 @@ I830DRIDoMappings(ScreenPtr pScreen)
       I830SetParam(pScrn, I830_SETPARAM_USE_MI_BATCHBUFFER_START, 1 );
    }
 
-   /* Okay now initialize the dma engine */
-   {
-      pI830DRI->irq = drmGetInterruptFromBusID(pI830->drmSubFD,
-					       ((pciConfigPtr) pI830->
-						PciInfo->thisCard)->busnum,
-					       ((pciConfigPtr) pI830->
-						PciInfo->thisCard)->devnum,
-					       ((pciConfigPtr) pI830->
-						PciInfo->thisCard)->funcnum);
-
-      if (drmCtlInstHandler(pI830->drmSubFD, pI830DRI->irq)) {
-	 xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
-		    "[drm] failure adding irq handler\n");
-	 pI830DRI->irq = 0;
-	 DRICloseScreen(pScreen);
-	 return FALSE;
-      }
-      else
-	 xf86DrvMsg(pScrn->scrnIndex, X_INFO,
-		    "[drm] dma control initialized, using IRQ %d\n",
-		    pI830DRI->irq);
-   }
-
    pI830DRI = (I830DRIPtr) pI830->pDRIInfo->devPrivate;
    pI830DRI->deviceID = pI830->PciInfo->chipType;
    pI830DRI->width = pScrn->virtualX;
@@ -982,7 +959,34 @@ I830DRIFinishScreenInit(ScreenPtr pScreen)
       pI830->allowPageFlip = 0;
 
 
-   return DRIFinishScreenInit(pScreen);
+   if (!DRIFinishScreenInit(pScreen))
+      return FALSE;
+
+   /* Okay now initialize the dma engine */
+   {
+      I830DRIPtr pI830DRI = (I830DRIPtr) pI830->pDRIInfo->devPrivate;
+
+      pI830DRI->irq = drmGetInterruptFromBusID(pI830->drmSubFD,
+					       ((pciConfigPtr) pI830->
+						PciInfo->thisCard)->busnum,
+					       ((pciConfigPtr) pI830->
+						PciInfo->thisCard)->devnum,
+					       ((pciConfigPtr) pI830->
+						PciInfo->thisCard)->funcnum);
+
+      if (drmCtlInstHandler(pI830->drmSubFD, pI830DRI->irq)) {
+	 xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
+		    "[drm] failure adding irq handler\n");
+	 pI830DRI->irq = 0;
+	 DRICloseScreen(pScreen);
+	 return FALSE;
+      }
+      else
+	 xf86DrvMsg(pScrn->scrnIndex, X_INFO,
+		    "[drm] dma control initialized, using IRQ %d\n",
+		    pI830DRI->irq);
+	 return TRUE;
+   }
 }
 
 void
@@ -1485,9 +1489,12 @@ I830DRISetVBlankInterrupt (ScrnInfoPtr pScrn, Bool on)
 
     if (pI830->directRenderingEnabled && pI830->drmMinor >= 5) {
 	if (on) {
-	    if (pI830->planeEnabled[1])
-		pipe.pipe = DRM_I830_VBLANK_PIPE_B;
-	    else
+	    if (pI830->planeEnabled[1]) {
+		if (pI830->drmMinor >= 6)
+		    pipe.pipe = DRM_I830_VBLANK_PIPE_A | DRM_I830_VBLANK_PIPE_B;
+		else
+		    pipe.pipe = DRM_I830_VBLANK_PIPE_B;
+	    } else
 		pipe.pipe = DRM_I830_VBLANK_PIPE_A;
 	} else {
 	    pipe.pipe = 0;

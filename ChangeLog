@@ -1,138 +1,2218 @@
-2006-05-01  Matthieu Herrb <matthieu.herrb@laas.fr>
+commit 1d4cfaa391ac41099de11b8f3b21e5eb56543909
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Fri Oct 13 13:55:10 2006 +0100
 
-	* src/common.h:
-	Fix build on non-dri systems.
+    Bump to 1.7.2
 
-2006-04-07  Adam Jackson  <ajax@freedesktop.org>
+commit cd9e51cd3ab0b36d2f97dfc6d8850dafe169c221
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Fri Oct 13 13:54:31 2006 +0100
 
-	* configure.ac:
-	* src/i810.h:
-	Bump to 1.6.0.
+    Ugh. Turn off debugging.
 
-2006-04-07  Aaron Plattner  <aplattner@nvidia.com>
+commit 334aa062c333f2c59bc40e1b9239d3ea71c88a8f
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Fri Oct 13 12:59:30 2006 +0100
 
-	* src/i810_video.c: (I810PutImage):
-	* src/i830_video.c: (I830PutImage):
-	Add a DrawablePtr argument to the XV functions to pave the way for
-	redirected video.
+    Bump to 1.7.1
 
-2006-04-05  Dave Airlie  <airlied@linux.ie>
+commit 8045a7a0af1b276cd7f46ce99d034fd5d503e67c
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Fri Oct 13 12:53:53 2006 +0100
 
-	* src/i810_hwmc.c: (I810XvMCCreateContext),
-	(I810XvMCCreateSurface), (I810XvMCCreateSubpicture):
-	* src/i810_memory.c: (I810SetTiledMemory):
-	* src/i830_memory.c: (SetFence):
-	Fix some argument inversions in xf86DrvMsg function calls
+    Fix bug #8553 & #8542 - suspend/resume regression from 1.5 driver
 
-2006-04-04  Kristian Høgsberg  <krh@redhat.com>
+commit 6596333b077a692c669f8cb4ae32e145f8da6731
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Fri Oct 13 12:48:16 2006 +0100
 
-	* src/i810_dri.c:
-	* src/i810_driver.c:
-	* src/i830_dri.c:
-	* src/i830_driver.c: Add more missing #include's, in particular
-	assert.h.
+    Fix some warnings
 
-2006-03-22  Kristian Høgsberg  <krh@redhat.com>
+commit c7a23908a0ef45b14b438f656a5f15582bfcbc1c
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Fri Oct 6 13:35:39 2006 +0100
 
-	* src/*.c: Drop libc wrapper; don't include xf86_ansic.h and add
-	includes now missing.
+    Fix server regeneration problem mapping the aperture
 
-2006-03-10  Alan Hourihane  <alanh@fairlite.demon.co.uk>
+commit 07cdc60be8ebe5d0c21149f3cd2aeb8fed05022a
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Wed Oct 4 11:05:30 2006 +0100
 
-	* src/i830_cursor.c: (I830InitHWCursor), (I830ShowCursor),
-	(I830HideCursor):
-	Enable gamma for hw cursor when ARGB cursor in use (Lukas Hejtmanek)
+    Fix bug #5795, VT switching fails because of a bad test on some platforms.
 
-2006-03-03  Alan Hourihane  <alanh@fairlite.demon.co.uk>
+commit 8da10d15f84ccc992b828546af5ba0d848e7263e
+Author: Keith Packard <keithp@neko.keithp.com>
+Date:   Tue Oct 3 22:00:14 2006 -0700
 
-	* configure.ac:
-	* src/i810.h:
-	* src/i830.h:
-	* src/i830_dri.h:
-	* src/i830_driver.c: (I830BIOSPreInit), (I830BIOSScreenInit),
-	(I830BIOSCloseScreen):
-	* src/i830_video.c:
-	Check the version of shadow being used and turn off rotation if
-	it isn't the right one.
-	Bump the Xvideo resolution support from 1920x1080 to 1920x1088.
+    Enable XV_PORT attribute even when not in Clone mode.
+    
+    As Clone mode is now something that can change after server startup, always
+    enable the XV_PORT attribute as we cannot change the list of reported
+    attributes.
+    (cherry picked from 1bc1cedbcdf6ea4d2a3e8b07b553ac50b3c126f4 commit)
 
-2006-02-20  Alan Hourihane  <alanh@fairlite.demon.co.uk>
+commit f337eea9e73cbf5c71d07df50d2e5b661a1f34cf
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Mon Oct 2 11:16:42 2006 +0100
 
-	* src/i830_rotate.c: (I915UpdateRotate), (I830UpdateRotate):
-	Fix a rotation problem when DRI is disabled
+    silence warning
 
-2005-01-25  Alan Hourihane   <alanh@fairlite.demon.co.uk>
+commit 2b9bdd8a4021231e4b5f4c5831a46c9ff1e38081
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Mon Oct 2 11:12:23 2006 +0100
 
-	* src/i830_driver.c: When going dual head only take a portion of
-	  memory for the second head instead of doubling the requirements.
+    bump to 1.7.0
 
-2005-01-25  Alan Hourihane   <alanh@fairlite.demon.co.uk>
+commit eca082ca0fec12973a4dbb0106b841136b5b6cdb
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Sat Sep 30 13:44:43 2006 +0100
 
-	* src/i830_driver.c: Fix a glitch in a dual head fix from #3105
+    Missing gamma bit
 
-2005-01-24  Alan Hourihane   <alanh@fairlite.demon.co.uk>
+commit cece9a455b54ab184a3277c164ee6dfa65b70f48
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Sat Sep 30 13:27:27 2006 +0100
 
-	* configure.ac, man/i810.man, src/Makefile.am, src/common.h,
-	  src/i810.h, src/i810_dri.c, src/i810_driver.c, src/i830.h,
-	  src/i830_common.h, src/i830_cursor.c, src/i830_dga.c,
-	  src/i830_dri.c, src/i830_dri.h, src/i830_driver.c,
-	  src/i830_memory.c, src/i830_modes.c, src/i830_randr.c,
-	  src/i830_rotate.c, src/i830_shadow.c, src/i830_video.c: 
-	  Bump version to 1.5.0.0 
-	  Add Intel 945GM support 
-	  Add RandR rotation support (full 3D acceleration, HWcursor & 
-	  Xvideo rotated too)
-	  Remove older shadow framebuffer rotation code 
-	  Add a new LinearAlloc option to allow more offscreen memory 
-	  to be allocated for XVideo applications. This allows HDTV movies
-	  to be played via Xvideo.
+    Fix issues with Xv locking up the engine. bug #7915.
 
-2005-12-20  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+commit 2013b839de3733fd12becb2cc3c1daadde329eb4
+Author: Michel Dänzer <michel@tungstengraphics.com>
+Date:   Thu Sep 28 13:49:44 2006 +0200
 
-	* configure.ac:
-	Update package version for X11R7 release.
+    Always call I830UpdateXineramaScreenInfo() unconditionally, and document why.
 
-2005-12-14  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+commit fe691953f08b4d299295f91450412404ba42810b
+Author: Michel Dänzer <michel@tungstengraphics.com>
+Date:   Thu Aug 31 18:35:10 2006 +0200
 
-	* configure.ac:
-	Update package version number for final X11R7 release candidate.
+    Store viewport limits of both pipes in SAREA.
+    
+    This allows DRI clients to determine which pipe they should synchronize buffer
+    swaps of each window to.
 
-2005-12-06  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+commit 06c5f7bd076e9ba4b925e061a40b837714bc8267
+Author: Michel Dänzer <michel@tungstengraphics.com>
+Date:   Wed Aug 30 19:45:33 2006 +0200
 
-	* man/Makefile.am:
-	Change *man_SOURCES ==> *man_PRE to fix autotools warnings.
+    If the DRM can handle it, enable vertical blank interrupts for both pipes.
 
-2005-12-03  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+commit 89cbc6e215a5f313ccc17370424c35630cf75892
+Author: Michel Dänzer <michel@tungstengraphics.com>
+Date:   Thu Aug 24 10:30:27 2006 +0200
 
-	* configure.ac:
-	Update package version number for X11R7 RC3 release.
+    Only enable the IRQ after DRIFinishScreenInit.
+    
+    This makes sure we've been assigned a context ID, so the interrupt context
+    won't mess things up if it grabs the HW lock.
 
-2005-12-01  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+commit 6614b4bda2e079fd1e56e0825894481b80e2df58
+Merge: d6ca9fe... b3ddcf3...
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Mon Sep 25 12:04:01 2006 +0100
 
-	* configure.ac:
-	Remove extraneous AC_MSG_RESULT.
+    Merge branch 'master' of git+ssh://git.freedesktop.org/git/xorg/driver/xf86-video-intel
 
-2005-11-30  Adam Jackson  <ajax@freedesktop.org>
+commit d6ca9feb78a9211758510751bbf47013caabff49
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Mon Sep 25 12:03:27 2006 +0100
 
-	* configure.ac:
-	Bump libdrm dep to 2.0.
+    Fix bug #7943 where video flickers when changing
+    attributes. This code was a leftover from testing lockups
+    and shouldn't be needed anymore.
 
-2005-11-29  Adam Jackson  <ajax@freedesktop.org>
+commit b3ddcf3348365873aed4a2b8b2750b330fb4cf26
+Author: A Costa <agcosta@gis.net>
+Date:   Thu Sep 21 23:18:43 2006 +1000
 
-	* configure.ac:
-	Only build dlloader modules by default.
+    Typo fix in man page (Debian bug #364559).
 
-2005-11-19  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+commit 564c830a91afda76706a8c4c2f3287d0b8d514e9
+Merge: bf49084... b970166...
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Wed Sep 13 16:34:10 2006 +0100
 
-	* configure.ac:
-	Update dependencies to work with separate build roots.
+    Merge branch 'master' of git+ssh://git.freedesktop.org/git/xorg/driver/xf86-video-intel
 
-2005-11-09  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+commit bf49084ad700f064b732bf39a163209eee1d6845
+Author: root <root@jetpack.demon.co.uk>
+Date:   Wed Sep 13 16:32:39 2006 +0100
 
-	* configure.ac:
-	Update package version number for X11R7 RC2 release.
+    bump max Xvideo height to 1088 to cope with some players.
 
-2005-11-01  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+commit b970166eab95ac024ff481b0f5fd9aaf3644aabf
+Author: Eric Anholt <eric@anholt.net>
+Date:   Fri Sep 8 11:09:19 2006 -0700
 
-	* configure.ac:
-	Update pkgcheck dependencies to work with separate build roots.
+    Fix a compile failure from the last commit.
+
+commit 8b9d7a5f8560ee55ca5cb5376517a4246cd79fb9
+Merge: 6500a3a... 1e6e288...
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Thu Sep 7 17:45:57 2006 +0100
+
+    Merge branch 'master' of git+ssh://git.freedesktop.org/git/xorg/driver/xf86-video-intel
+
+commit 6500a3aa134e11a75b7ddaf7fff253003b223241
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Thu Sep 7 17:45:28 2006 +0100
+
+    When in MergedFB mode, fix offscreen memory allocation.
+
+commit 1e6e288b8826789f3b2520d12426ff7852a67ccd
+Author: Eric Anholt <eric@anholt.net>
+Date:   Fri Sep 1 16:47:17 2006 -0700
+
+    Add a check for intel-gen4asm, and rules to compile {wm,sf}_prog.h using it.
+    
+    This adds assembly source for the two programs used in the textured video
+    implementation on the 965, which should make them easier to modify in the
+    future. The compiled versions are also included, so that intel-gen4asm isn't a
+    build requirement for people that aren't modifying these programs.
+    
+    There are minor differences in the compiled versions of these programs compared
+    to their previous versions which were compiled with a different tool.  I
+    believe the changes should be harmless, and video continues to work on my
+    system.
+
+commit 1feb733eb8b09a8b07b7a6987add5149c53b0157
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Tue Aug 29 14:54:15 2006 +0100
+
+    Fix bug with probing info of DFP2 and LFP2 connected
+    devices (Aaron Ridout)
+
+commit 26e6c074c17b2d4e9b9f165468ad45a3b0ecc0ef
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Mon Aug 28 11:55:38 2006 +0100
+
+    Fix SetVBlank to operate all the time
+
+commit ea63e82ef417a9918e7d7105910a8ddeba2994f6
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Tue Aug 22 16:40:08 2006 +0100
+
+    fix typo
+
+commit dc4128ea0781124984dee0cb41e7b6ee87e362a1
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Mon Aug 21 12:13:42 2006 +0100
+
+    remove GL* usage
+
+commit dad0e7fc09fa7794f20278d9d99abd96a21b691e
+Merge: 361c49a... 43daaec...
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Mon Aug 21 12:08:01 2006 +0100
+
+    Merge branch 'master' of git+ssh://git.freedesktop.org/git/xorg/driver/xf86-video-intel
+
+commit 361c49ad3cfe58b9ab98dfb6e95de505c0d63730
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Mon Aug 21 12:07:29 2006 +0100
+
+    Fix bug #7930, i810 doesn't compile without DRI
+    (Samuel Thibault)
+
+commit 43daaec63929c1f0e54a5125375d8147629da4b9
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Thu Aug 17 15:57:31 2006 -0700
+
+    Bug #7905: Mark DRI state as dirty in 965 textured video, fixing hangs with 3d.
+
+commit cdcc6f23e8cad797e6cfd57e2ff454ec8509b5ba
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Wed Aug 16 17:16:28 2006 +0100
+
+    Disable device check when mergedfb in operation.
+
+commit a94c96abf90c691faecbebf0c8d08f8010bc67ef
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Wed Aug 16 17:15:26 2006 +0100
+
+    Fix bug #5150. Disable LVDS usage on i915G, i945G and i965G.
+
+commit 2a4e486d2990af433e915cfa26dc57cae02e01b7
+Author: Wang Zhenyu <zhenyu.z.wang@intel.com>
+Date:   Fri Aug 11 11:07:08 2006 +0800
+
+    Fix undefined alloc type for agp memory
+    
+    This shuts up the nonfatal warning that type 3 for alloc agp
+    memory is undefined for intel-agp.
+
+commit 4cfed93df6b23903704348cafe050a6546e84479
+Author: Eric Anholt <eric@anholt.net>
+Date:   Thu Aug 10 15:41:32 2006 -0700
+
+    Bump to 1.6.5 for release.
+
+commit 38e7e48418cd48a46e48f5bc8a6547721db8f76d
+Author: Eric Anholt <eric@anholt.net>
+Date:   Thu Aug 10 15:38:14 2006 -0700
+
+    Fix README typos from in the generated file.
+
+commit 975e60261088dee124b329d28c64e508bce1f90b
+Author: Eric Anholt <eric@anholt.net>
+Date:   Thu Aug 10 13:49:43 2006 -0700
+
+    Bug #7829: Fix reported driver version.
+    
+    The driver now reports itself as the PACKAGE_VERSION from autoconf.  The DRI
+    DDX -> client interface version is dissociated from this so that we can do
+    appropriate major/minor versioning of the interface that's not tied to the
+    package version.  Bumped the i830 ddx dri version patchlevel to note the
+    fix in the previous commit.
+
+commit 820e9a22fdb759cbdaac4a488322825bc0908b0d
+Author: Eric Anholt <eric@anholt.net>
+Date:   Thu Aug 10 13:37:18 2006 -0700
+
+    Bug #7835: Restore unused fields in I830DRIRec to avoid i915 DRI breakage.
+    
+    As it was, 1.6.4 broke compatibility with the released DRI driver.
+
+commit caa3b35cd772fc75d65a7ff791f00addbb39a764
+Author: Eric Anholt <eric@anholt.net>
+Date:   Wed Aug 9 16:11:30 2006 -0700
+
+    Correct typos in README source.
+
+commit 2a7426cf138e518a5eafb40f478359160a7ec98b
+Author: Eric Anholt <eric@anholt.net>
+Date:   Wed Aug 9 15:47:09 2006 -0700
+
+    Clean up warnings.
+
+commit 24e59a0daa20b7c3e5028c9ca7972052801d02a1
+Merge: bb60807... 32f1199...
+Author: Eric Anholt <eric@anholt.net>
+Date:   Wed Aug 9 14:19:06 2006 -0700
+
+    Merge branch 'textured-video', bringing in fixed-up i915 textured video.
+    
+    Conflicts:
+    
+    	src/i830_video.c
+
+commit bb6080735efc40e103e92b65d0c2f1f729156632
+Author: Eric Anholt <eric@anholt.net>
+Date:   Wed Aug 9 12:21:16 2006 -0700
+
+    Bump to 1.6.4 for release.
+
+commit 3ca14275d13b1261b69b0e3fda90a112cb567472
+Author: Keith Packard <keithp@neko.keithp.com>
+Date:   Wed Aug 9 10:35:57 2006 -0700
+
+    Add missing headers to i810_drv_la_SOURCES
+
+commit 309374f78df35207b1398e14bba986fb891f3643
+Author: Keith Packard <keithp@neko.keithp.com>
+Date:   Wed Aug 9 10:30:41 2006 -0700
+
+    Use double quotes to avoid sgml syntax error
+
+commit dca9f856ca21e63abeb87e4ef2c40944c26d4429
+Author: Keith Packard <keithp@neko.keithp.com>
+Date:   Wed Aug 9 10:29:59 2006 -0700
+
+    Reformat README
+
+commit b19ea222727ed47b69d28a03242c09d3a6ab2673
+Author: Eric Anholt <eric@anholt.net>
+Date:   Wed Aug 9 10:01:29 2006 -0700
+
+    Update the README.sgml file for the upcoming release.
+
+commit f8b47f607297e0591b63e5f25296af07ee74f433
+Author: Keith Packard <keithp@neko.keithp.com>
+Date:   Tue Aug 8 16:19:51 2006 -0700
+
+    Update manual page to include i945 and later details.
+    (cherry picked from 7833d0733bc146cf1ae7f588516c49797886b396 commit)
+
+commit d150b53d102c511f3c9245ef1f6fd36c12b01ca3
+Merge: bb65a4d... bc5f565...
+Author: Eric Anholt <eric@anholt.net>
+Date:   Tue Aug 8 15:51:58 2006 -0700
+
+    Merge branch 'i965', adding i965G support.
+    
+    Conflicts:
+    
+    	src/i830_cursor.c
+    	src/i830_driver.c
+
+commit bc5f56568021d8c63313e2b6bf30710e7516c04a
+Author: Eric Anholt <eric@anholt.net>
+Date:   Tue Aug 8 15:48:04 2006 -0700
+
+    Intel bug #49: Fix video output at 32bpp by using B8G8R8A8 instead of B8G8R8X8.
+    
+    While here, don't overallocate video memory for the i965G state.
+
+commit c3b3d479788fcea7e543f29acf83c85b8b148fbe
+Author: Alan Hourihane <alanh@tungstengraphics.com>
+Date:   Tue Aug 8 15:28:14 2006 -0700
+
+    Intel bug #35: Fix accelerator syncing with DGA.
+    
+    Fixes glitches seen with Mark Vojkovich's "texture" demo.
+
+commit bc12208f6e145ec29c3ebe38ae04dc2ebca1b4cc
+Author: Wang Zhenyu <zhenyu.z.wang@intel.com>
+Date:   Mon Aug 7 13:27:00 2006 +0800
+
+    Disable error register dumping in dri TransitionTo2d. This's for
+    debug which might confuse QA.
+
+commit bb65a4dc55b416437d61ccbee8b6056fe8e08357
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Tue Aug 8 14:51:18 2006 +0100
+
+    bump to 1.6.3
+
+commit 37644293da751bfc7268c9fc74ecda1044607dee
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Tue Aug 8 14:42:32 2006 +0100
+
+    check for xineramaproto
+
+commit 3661d4df86db012682ab4b393287aa02e9fc8453
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Tue Aug 8 12:25:03 2006 +0100
+
+    Re-enable monitor detect after a few fixups.
+
+commit 995b142f510d1daab3914d336f3c0d017a043b41
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Tue Aug 8 12:01:39 2006 +0100
+
+    Disable detecting of new monitors on VT switch.
+    It's doesn't always work. The modesetting
+    branch will deal with hotplug displays correctly.
+
+commit 8e5844bbf9c8880c9eb6eff29b6db2db06b01933
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Tue Aug 8 11:43:10 2006 +0100
+
+    bump to 1.6.2 to indicate mergedfb support
+
+commit e4f63eaf5efb654121db148f2f8e32cc3b23b6b5
+Merge: 633a683... e26f3e3...
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Tue Aug 8 11:07:56 2006 +0100
+
+    Merge branch 'master' of git+ssh://xorg.freedesktop.org/git/xorg/driver/xf86-video-intel
+
+commit 633a683a4adcb9a44a54519fd7ff66aab2d12f97
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Tue Aug 8 10:23:29 2006 +0100
+
+    Ensure palette is updated in mergedfb & clone modes
+
+commit 0fd4831fdcf4c8f43d80c66e43eff8942f89b324
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Fri Aug 4 00:21:53 2006 -0700
+
+    Disable dynamic front buffer mapping on i965.
+    
+    Moving front buffers should only be necessary for rotation.  Currently, the
+    server isn't ready for it, and the method attempted to work around it caused
+    crashes with DRI.  Since i965 doesn't support rotation yet, this should be
+    harmless for now.
+
+commit 8d0a5138503586cbf980eb9464f2db91b72509c7
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Thu Aug 3 19:16:59 2006 -0700
+
+    Add parenthesis so that IS_I965G doesn't make the test pass for 8-bit.
+
+commit aa69018c01d2fa963fb940718dbd653d6ca2c9eb
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Thu Aug 3 19:12:15 2006 -0700
+
+    Turn off video debugging now that it appears to work fine.
+
+commit d15f87110807111ab7d71f1254ebe3dfef1fee80
+Merge: a79aa0d... d56ffa5...
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Thu Aug 3 19:08:34 2006 -0700
+
+    Merge branch 'broadwater-video-rehash' into i965
+    
+    The previous merge wasn't done on a synced-up tree, and missed necessary
+    changes.
+
+commit a79aa0d7b27b0b9b032472776d7dda410fd66a98
+Merge: 760021e... f9e94c1...
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Thu Aug 3 17:58:56 2006 -0700
+
+    Merge branch 'broadwater-video-rehash' into broadwater
+    
+    Conflicts:
+    
+    	src/Makefile.am
+    	src/common.h
+    	src/i810_driver.c
+    	src/i810_reg.h
+    	src/i830.h
+    	src/i830_accel.c
+    	src/i830_cursor.c
+    	src/i830_dri.c
+    	src/i830_dri.h
+    	src/i830_driver.c
+    	src/i830_memory.c
+    	src/i830_rotate.c
+    	src/i830_video.c
+
+commit 760021e3983f7783900075b8c9603bd4fbe7e0a2
+Author: Alan Hourihane <alanh@tungstengraphics.com>
+Date:   Thu Aug 3 17:08:39 2006 -0700
+
+    Add current Tungsten Graphics code drop for i965 support.
+
+commit d56ffa5f35e3cf4262d66469052b2122fdb24027
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Thu Aug 3 16:03:50 2006 -0700
+
+    Bump PS_MAX_THREADS to 32 now that the program doesn't fail.
+
+commit 4525379d95ff292d7322e1a7a516c0bedd1f7543
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Thu Aug 3 16:03:15 2006 -0700
+
+    Make the sampler's payload be the WM payload rather than uninitialized data.
+    
+    The sampler's payload happens to be in the same format as the WM payload,
+    though most of the fields are ignored.
+    
+    This appears to fix the program in the presence of multiple PS threads.
+
+commit ad2c70b4121121f1fb53190ea49edf2323c804a9
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Thu Aug 3 12:47:19 2006 -0700
+
+    Remove some stale XXX-prefixed comments.
+
+commit f9e94c17c55e4c75802d8574c908744e286e7843
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Wed Aug 2 21:18:19 2006 -0700
+
+    Set the WM scratch space that we had already allocated.
+    
+    It appears to be required, even if the kernel doesn't use any scratch space.
+
+commit aefa6fdfc5300546caeb64ace14a7854d3dc7dae
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Wed Aug 2 21:14:14 2006 -0700
+
+    Clean up GRF allocation (which was wrong at 16-register boundaries).
+    
+    Also use PS_MAX_THREADS rather than hard-coding 1 thread, and remove the dead
+    SF_KERNEL_NUM_URB macro.
+
+commit 7a64e14624514ef31f6fa9f15e8804c45f930212
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Wed Aug 2 20:48:13 2006 -0700
+
+    Crank down the SF allocation and comment on why this is a fine lower limit.
+
+commit bc6a2bb7576a7c1e7971f6d1e0b893b2ada1aaa3
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Wed Aug 2 20:34:57 2006 -0700
+
+    Remove the clip URB allocation.
+    
+    Previously, the VS was misconfigured and exceeding its allocation, which the
+    (unused) clip was providing padding for.
+
+commit defe2795429484ffe4c1438bafb86bb5e5469ba9
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Wed Aug 2 20:32:41 2006 -0700
+
+    Correct the VS setup, and allocate a correct, minimal number of URB entries.
+    
+    The VS number of URB entries and URB entry size are always used, even when
+    the VS is disabled.  Similarly, the cache enable bit is always used.
+
+commit b57ccb682cb3dea3e26c6f1b0c709e63dfde0d31
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Wed Aug 2 19:46:15 2006 -0700
+
+    Replace the SF max threads setting with a define for easier tweaking.
+    
+    Tweak it to 1 for now.
+
+commit 82037a12758c41a304f2e0bbd033d3345cccbe1a
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Wed Aug 2 19:33:28 2006 -0700
+
+    Remove CS URB allocation since we don't use any constants.
+
+commit 1d45668d7a42bfa5d7f5bfb68d8bae38bda0936b
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Wed Aug 2 19:18:20 2006 -0700
+
+    We only need 3 vertices to fit in the URB, since we only dispatch 3.
+
+commit a076d35bed6f13cf943a0f8948176aa0c999e2da
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Wed Aug 2 19:16:03 2006 -0700
+
+    No GS URB allocation is necessary when the function is disabled.
+
+commit befa655168fb8dcb6806592eb44f7ac49f191822
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Wed Aug 2 19:11:38 2006 -0700
+
+    Reduce URB_VS_ENTRY_SIZE to 1 as our vertices are under 8 floats.
+
+commit 33acbdca0a0f82725e5bf7887b325726403a6ffd
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Wed Aug 2 19:09:19 2006 -0700
+
+    Remove the VS kernel and binding table.
+    
+    The VS URB entries have to remain as they're used to store the VF output which
+    isn't modified by a VS program.
+
+commit aafa48cb85cd03c735fb968a4275c19e1a68cd02
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Wed Aug 2 18:26:26 2006 -0700
+
+    Fix wm prog to correct the ordering of the Cr and Cb channels.
+
+commit bc2c842d93de04d48c7de60482814db346bd0b78
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Wed Aug 2 18:10:01 2006 -0700
+
+    Allocate space for the 965's state at the end of the video buffer.
+    
+    Fixes corruption in the first few lines of the video.
+    
+    Based on 1b506798d98d911be733543da2c40cb451a28912
+
+commit 524460ea1f02bb6e8e2239d7763334666012cec4
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Wed Aug 2 17:47:55 2006 -0700
+
+    Updated WM kernel to load video and do colorspace conversion.
+
+commit ba896c779c697e1d7458028798ec49013bd9da9f
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Wed Aug 2 17:47:37 2006 -0700
+
+    Updated grf/urb state for WM.
+
+commit 21b62df7c34217be5dd95985c35e33be11c25846
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Wed Aug 2 17:36:49 2006 -0700
+
+    Move the WM kernel to a separate file.
+
+commit 5d3424492f9586a4c5a28962a9757f48f2c12e83
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Wed Aug 2 17:34:12 2006 -0700
+
+    Replace SF kernel with the one from broadwater-video HEAD.
+
+commit e71108f1e05b7a8d8edd174eb64edd6cccacbcdc
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Fri Jul 28 10:32:12 2006 +0100
+
+    Fix DGA with MergedFB
+    Turn off rotation support when MergedFB enabled
+
+commit a91a4f95c664f6905fef61dab251707bf2548bb8
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Thu Jul 27 16:11:48 2006 +0100
+
+    Fix pipe reversal for Xv
+
+commit ac3ad32f667b306e771617d784648f7111743f1a
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Thu Jul 27 15:28:42 2006 +0100
+
+    Calculate allowable refresh rates on the private
+    mode data for each independent screen in mergedfb.
+    
+    Lots of other fixes too.
+
+commit e786e2f9f3a4df31702736db6f68a44c9ebba546
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Wed Jul 26 16:45:38 2006 +0100
+
+    When detecting new monitors in mergedfb renew the modepool.
+
+commit 8e6e990db34d63174670512f494fa9adb44786f5
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Wed Jul 26 10:48:47 2006 +0100
+
+    Update Xvideo to deal with MergedFB modes.
+
+commit e26f3e30b30a57ab4aad0267d689a9a5d7a5e877
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Wed Jul 26 09:17:52 2006 +0100
+
+    Fix a build problem
+
+commit b919db75d2f6dc1019f981534b0d5d87c6029727
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Wed Jul 26 09:07:19 2006 +0100
+
+    Bump to 1.6.1
+
+commit fd19b12793f09b6714468556ace875ef36ed9e1c
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Tue Jul 25 11:14:11 2006 +0100
+
+    Add mergedfb support to the intel driver with
+    additional pseudo-Xinerama support.
+
+commit 32f1199937e92b9100aba52cbbb97157014e3182
+Author: Wang Zhenyu <zhenyu.z.wang@intel.com>
+Date:   Mon Jul 24 15:42:15 2006 +0800
+
+    remove an extra '-'
+
+commit baf65ce98abcdd21dff2531a43bb9c5044732c28
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Tue Jul 18 19:42:37 2006 -0400
+
+    Re-convert i915 video to new fragment shader API.
+    
+    Although in the history of this branch it had happened before, this time it's
+    for real.
+
+commit bb81e8d6c777a5e16b8193c07667fbee8e21203e
+Merge: 2a1b3cf... 8480516...
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Tue Jul 18 19:23:21 2006 -0400
+
+    Merge branch 'master' into textured-video
+    
+    This moves the i915 textured video implementation into i915_video.c to avoid
+    conflicts in register definitions with i830_reg.h when we use i915_reg.h.
+    This also means that i810_reg.h's i915 3D regs definitions are removed and
+    replaced with i915_reg.h usage.
+    
+    Conflicts:
+    
+    	src/i830_rotate.c
+
+commit 84805167ab8a422966355b9753bfcb4dad802413
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Tue Jul 18 18:27:10 2006 -0400
+
+    Convert i915 rotate code to the new fragment program API.
+
+commit 5176d62ba58c100c87f75a4f333d00129d780c99
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Tue Jul 18 16:18:18 2006 -0400
+
+    Add an API for programming i915 fragment programs.
+
+commit 148ef9bdd9e0ef3e7ac86b56a8662b53a3ea9168
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Mon Jul 17 22:32:25 2006 -0700
+
+    Convert magic numbers to symbolic names in i915 rotate code.
+    
+    This doesn't cover the fragment shader yet, which we need to make a sensible
+    set of macros for (at least the basic bits).
+    
+    Reviewed by:	md5
+
+commit 16d6263e6518a4a05562e2842ff2d0fdb4710304
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Sun Jul 16 20:39:52 2006 +0100
+
+    whoops, reverse part of that.
+
+commit 2f50f6d1b1b3fa4fbec98bd8fa5818df890070e7
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Sun Jul 16 20:17:38 2006 +0100
+
+    move ContextMem out of XF86DRI
+
+commit b1c2ea653502dd8547079e7014b698f241433dff
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Tue Jul 11 08:13:30 2006 +0100
+
+    whoops, revert some unnecessary changes
+
+commit 8a44a7acfcadbba2410dca750afc9d32bc83706e
+Merge: 584b544... e7723a4...
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Tue Jul 11 07:41:27 2006 +0100
+
+    Merge branch 'master' of git+ssh://git.freedesktop.org/git/xorg/driver/xf86-video-intel
+
+commit 584b544987be5cf23dce29ddaf3130e59cfe6fa8
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Tue Jul 11 07:40:40 2006 +0100
+
+    Add an additional check before rotating
+
+commit e7723a4e5725147d3bd9ba22c5a3314b0556e440
+Merge: 5111b88... dae9cb7...
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Mon Jun 26 16:04:33 2006 +0200
+
+    Merge branch 'origin'
+
+commit 5111b883480a5a9cc82200f2684cba67b515aa73
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Mon Jun 26 14:53:10 2006 +0200
+
+    Turn on extra warning flags for GCC, and clean up the resulting fallout.
+
+commit dae9cb7712d5d8f88697ca83808c59af08364c0e
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Thu Jun 22 15:07:16 2006 -0700
+
+    Provide definitions of __FUNCTION__ for non-gcc compilers
+
+commit 5a1b68993f3a3a2e8dcd428a7118e29c36703cd6
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Wed Jun 21 08:41:16 2006 +0100
+
+    Fix build without DRI
+
+commit 16b310823bacab6be4947da234b3a081b0a3cd62
+Author: Matthieu Herrb <matthieu@deville.herrb.com>
+Date:   Wed Jun 21 00:12:27 2006 +0200
+
+    Fix build without DRI
+
+commit 8a6edba33213911cc2210b5e903428b81d45862f
+Author: Keith Packard <keithp@neko.keithp.com>
+Date:   Mon Jun 19 13:47:28 2006 -0700
+
+    Set vblank interrupt configuration to match pipe configuration
+    
+    New i915 drm ioctl (in version 1.5) allows the X server to select
+    which pipe drives vblank interrupts. Use this to drive from the 'preferred'
+    pipe. Yes, per-window vblanks would be nice in a shared fb environment.
+    Maybe someday.
+    (cherry picked from 2fb375b665f4802819b89f2277fd6154006c11ee commit)
+
+commit a73ab7f0e6e3b0462e05c0031ffd602ed3e2bcd4
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Mon Jun 19 11:35:42 2006 +0100
+
+    additions for rotation fixes
+
+commit 1fe3dd38eb613475d62140850e64767defed7d34
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Mon Jun 19 11:27:28 2006 +0100
+
+    Set some invarient state, cures some problems with
+    rotation at startup.
+    
+    This mimicks the 3D drivers setup.
+
+commit 3592b432b48d51d2273c1e1064f85e656fbba130
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Tue Jun 13 21:42:53 2006 +0100
+
+    fix 8bpp & 16bpp rotation modes for i8xx
+    series chips
+
+commit a50610b7719bfe800c3496c17d0ba77739167b35
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Mon Jun 12 13:53:20 2006 +0100
+
+    Use 800x600 mode to double check
+
+commit f02268b2091c9a785d26e82bcb35a8b713463072
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Mon Jun 12 12:16:58 2006 +0100
+
+    Don't rely on register check to find out
+    if we're resuming - it's not reliable.
+    
+    But then, neither is the BIOS, but it's
+    the best we can hope for until Eric's work
+    is complete.
+    
+    Try setting another mode to cater for some
+    broken BIOS' too.
+
+commit 672c3d18dbb405095e465126053ff887d891409e
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Mon Jun 12 10:02:06 2006 +0100
+
+    Only mark rotation flags after initial screen setup.
+    Fixes bug #7053
+
+commit 6812b5382077e5d3f421aceeeb2f337e9b3f570e
+Author: Dave Airlie <airlied@linux.ie>
+Date:   Fri Jun 2 12:22:14 2006 +1000
+
+    intel: fix VT switch DRI locking
+    
+    The DRI locking is incorrect at VT switch, due to reference counting
+    inside the driver. Just call the DRI directly.
+
+commit 3f158fd610a3363a23daa7205bcd9f213686cf1c
+Author: Keith his master's voice Packard <keithp@bw.jf.intel.com>
+Date:   Mon May 29 18:05:57 2006 -0700
+
+    Nice texture coordinate gradient, broken slightly in y
+
+commit bb0ad04d46eba2fed57a888ff960d2436ec7d70d
+Author: Keith his master's voice Packard <keithp@bw.jf.intel.com>
+Date:   Sun May 28 22:59:58 2006 -0700
+
+    Ok, finally something sensible up on the screen.
+    Replace PS kernel with constant data source (pink).
+    Dodge g0/g1 so URB data doesn't land on top of thread data.
+    Flip source/dest coordinates (dunno why they're fetched this way).
+
+commit ddf3e5b2737399dca6d401f91db51a51f93b6373
+Author: Keith his master's voice Packard <keithp@bw.jf.intel.com>
+Date:   Sun May 28 21:03:39 2006 -0700
+
+    Using tiny rectangle, still locks up in pixel shader program somehow
+
+commit 2e16c79dc2f24b0a04111aa6236a44870c6c64df
+Author: Keith his master's voice Packard <keithp@bw.jf.intel.com>
+Date:   Sun May 28 20:31:23 2006 -0700
+
+    Lots more debug code. Appears to execute pixel shader thread now though. hurray!
+
+commit 79a514412bda7e38e018c105a603970c4a9d758a
+Author: Keith his master's voice Packard <keithp@bw.jf.intel.com>
+Date:   Sun May 28 16:09:59 2006 -0700
+
+    dump out piles of debug. Create VS thread just to see how it works
+
+commit 9c111d89fe19f1773af2eefb000e1c2389b4b6e1
+Author: Keith his master's voice Packard <keithp@bw.jf.intel.com>
+Date:   Sat May 27 19:52:13 2006 -0700
+
+    Push all of the obvious Mesa state setting into the video code
+
+commit 01101196b16010ac3dadab647bfe7000a53fa94d
+Author: Keith his master's voice Packard <keithp@bw.jf.intel.com>
+Date:   Sat May 27 01:05:09 2006 -0700
+
+    flesh out cc state. set cull mode to none. enable sf kernel
+
+commit 462a860af89ed855fe2b718342fcaf9c169af3fb
+Author: Keith his master's voice Packard <keithp@bw.jf.intel.com>
+Date:   Sat May 27 00:17:25 2006 -0700
+
+    Rename BRW instructions, check video instruction generation. Doesnt lock up, but doesnt display anything either
+
+commit 9ec7cf22e3f03c13524bb2d15711699dfcc02984
+Author: Keith his master's voice Packard <keithp@bw.jf.intel.com>
+Date:   Fri May 26 21:30:55 2006 -0700
+
+    Use broadwater video code on broadwater hardware. Pad ring to even length. compute state base as address rather than offset
+
+commit f5fe700b9a943c956bcfcc3a0d2de13c23b978bc
+Author: Keith his master's voice Packard <keithp@bw.jf.intel.com>
+Date:   Fri May 26 13:47:39 2006 -0700
+
+    Prepare real SF kernel and fake WM kernel
+
+commit 1549accb6f52498fef3dcbd87bb72d89fcd5bccd
+Author: Keith his master's voice Packard <keithp@bw.jf.intel.com>
+Date:   Thu May 25 16:10:31 2006 -0700
+
+    Scale video source vertices. Allocate space for kernels
+
+commit 2a1b3cfccb7de53f7ce8f9e4816e4278afb1fcab
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Mon May 22 10:32:13 2006 -0700
+
+    Use RECTLIST instead of TRIFAN for video so we get horizontal shearing instead
+    of diagonal.  Also remove the unnecessary vertex elements that were being
+    emitted.
+
+commit bce209cd3f60cb5d51aadc5fc8ec1a4151435ec3
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Fri May 19 17:13:37 2006 -0700
+
+    Put in code for idling accelerator on subsequent cliprects.
+
+commit 3640117bd9f2073ff54dc474f0cdefff49742584
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Fri May 19 17:10:04 2006 -0700
+
+    Set up the state buffer in framebuffer.
+
+commit de06cd70a9edb8b56d05d3f505137f7c7f083c2f
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Thu May 18 18:27:11 2006 -0700
+
+    Checkpoint for filling out more 3D state.
+
+commit ad7ec6a24b436d5492d38e4fa56845b229cf5fb8
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Thu May 18 15:26:28 2006 -0700
+
+    Checkpoint of BW textured video work, filling out vertex submission stuff and
+    some more other state.
+
+commit 291770efc691a02650e3c580ca40c2f9fce3896c
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Thu May 18 10:43:07 2006 -0700
+
+    Start laying out some of the bits that need to be done for BW textured video.
+    Headers taken from TG code drop.
+
+commit bc51d6525a12c748d0a293b7e560f6dcea33eecb
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Wed May 17 13:42:51 2006 -0700
+
+    Turn off overlay video on BW until we have stable PCI IDs so we can know whether
+    the hardware supports overlay.
+
+commit f97895efd5532cca145b6f224f9615739b1e8f26
+Author: Dave Airlie <airlied@linux.ie>
+Date:   Wed May 17 14:46:37 2006 +1000
+
+    fixup chipid override
+    
+    This makes the ChipID override work so that we actually override the pci id
+    that gets used everywhere in the driver.
+
+commit b0ac5303f33f75dc607cf0c705c23db1da836983
+Merge: 4c72725... c2cd10e...
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Tue May 16 15:21:17 2006 -0700
+
+    Merge branch 'textured-video' into broadwater-video
+    
+    Conflicts:
+    
+    	src/i830_video.c
+
+commit c2cd10e1fba0e75c0ed3db5d17211bddf7ab1e33
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Tue May 16 10:08:58 2006 -0700
+
+    Flag the 3D state as dirty when we draw textured video, which should help
+    
+    rotation (I have other issues with rotation anyway).
+
+commit 63a72e46fa20a4a4ba74efed386f6c3c167be5b5
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Tue May 16 08:54:43 2006 -0700
+
+    Turn debugging back off.
+
+commit 01c043de0393170e98515169f8239fef4d3e2053
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Tue May 16 08:53:40 2006 -0700
+
+    Use linear min/mag blending.
+
+commit db3683907d15959e79adfb8f0cd94e861fae5c36
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Tue May 16 08:40:53 2006 -0700
+
+    For textured video, disable double buffering and sync before uploading new video
+    
+    data.  Allows more videos to play simultaneously.
+
+commit 29a8e88ed01c9e15a2ceba5eb62b19773e14c1f8
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Mon May 15 17:19:33 2006 -0700
+
+    Relax the alignment requirements for textured video.
+
+commit c9be11459bc2198b435c97c5a3432425246c4d2d
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Mon May 15 17:04:27 2006 -0700
+
+    Enable overlay and/or textured video at runtime according to hardware
+    
+    capabilities.  Sets up 16 textured-video ports.  Left in one hack (disconnected
+    but advertised BRIGHTNESS and CONTRAST atoms) which may actually not be
+    necessary.
+
+commit f268979a0c779641c84e8d5b763acbda131474cf
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Mon May 15 10:05:19 2006 -0700
+
+    Correct drawing issues with planar formats when top or left != 0, and Y didn't
+    
+    get its offset.
+
+commit b09fd42d7088ead6c23e040ac4b71114f62de82b
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Mon May 15 09:29:43 2006 -0700
+
+    Fix the planar formats to display correctly in textured mode. Still has issues
+    
+    with clipping, and some sampling differences between ximagesink and xvimagesink.
+
+commit dd48790f4600a880fc4907c6e3b1cd51e9c0f0b7
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Fri May 12 13:27:33 2006 -0700
+
+    Divide width by 2 in planar-to-packed conversion loop, since each pass through
+    
+    the loop writes two source pixels.
+
+commit eec5e996ec9361099bf81d8d3b66933d5981c5a8
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Thu May 11 20:26:26 2006 -0700
+
+    Merge textured-video-wip to textured-video-planar-full.
+
+commit 4154a2f74811b91c0ef5bef32a919d6f8baf1a70
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Wed May 10 12:09:00 2006 -0700
+
+    Experimental work to use a full pixel shader for planar to YUV conversion, which
+    
+    also doesn't quite work.
+
+commit 3e0a9c9082942eb6f52612235d84b8408e1e03e9
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Tue May 9 16:57:19 2006 -0700
+
+    Do a separate BEGIN/ADVANCE_LP_RING set in the planar vs packed blocks, so I
+    
+    can adjust the planar code more easily.
+
+commit 3af4a967e73b367bb531f2760b4803db1388bcf9
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Tue May 9 16:50:48 2006 -0700
+
+    Add a couple of macros to simplify writing of video pixel shaders.
+
+commit 06e62ec521ed3f7ed232ace8e188891bedb53097
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Tue May 9 12:04:58 2006 -0700
+
+    Commit a WIP implementation of the planar video shader that does the
+    
+    planar-to-packed conversion for us.  Unfortunately the documentation is unclear,
+    and I haven't managed to get any implementation of it working correctly.
+
+commit b1090a42b200710628dd8b0c7ced15db7bbe71a1
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Mon May 8 14:22:00 2006 -0700
+
+    More magic number reduction in rotation code.
+
+commit 3a2d8af214a79591322ce6e5546f856a1ee41736
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Mon May 8 09:42:40 2006 -0700
+
+    Add initial textured XV support for i915, which can do YUY2 and UYVY, but fails
+    
+    on I420 and YV12 currently, doesn't support the composite extension, and should
+    break XV support on non-i915.
+
+commit 66875c1559bc20b531ab72e5d6b921d9f50b29f3
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Fri May 5 10:15:23 2006 -0700
+
+    Convert magic numbers in i915 rotation 3D state to symbolic names.
+
+commit 4c727254da354cfd6f35148a334d046d67a50e99
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Fri May 12 16:26:58 2006 -0700
+
+    Remove the local, renamed copy of lnx_agp.c.  The diff between lnx_agp.c and it
+    appeared to be removal of bugfixes.
+
+commit a115c4b872a385530dcf94b7e7f2fa9b3b7e3155
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Fri May 12 16:11:29 2006 -0700
+
+    Remove the code that changes our behavior based on whether a magic file exists
+    with magic contents in /tmp (created by some install script).
+
+commit 0cb251fadca1cbb3d4c5b97982cd0d8c2fc3e840
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Fri May 12 16:10:02 2006 -0700
+
+    Do a couple of reverts to get the DRI code building.  At this point, the whole
+    driver builds.
+
+commit 78b95386b630039864b31954ebcd02ec8829b0c8
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Fri May 12 16:09:40 2006 -0700
+
+    Remove intel_randr.c and stick with the previous code.  Broadwater shouldn't be
+    changing our randr, and the new version didn't compile.
+
+commit 2e58aa401dfbab438752038a9034df571c8f8bde
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Fri May 12 15:54:37 2006 -0700
+
+    Make the intel_acpi.c code non-modular and make it compile.  I think we'll end
+    up nuking this code anyway, as keithp (and I, as well) disagree about how ACPI
+    should be handled, but the goal is to compile at the moment.
+
+commit 2cd6c8fa2321ca217ef89db1027dbe9e716ad7aa
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Fri May 12 15:37:44 2006 -0700
+
+    Revert internal shadow module changes back like master, along with RandR
+    initialization.  RandR initialization retains the no-rotation setting for BW.
+
+commit 88558ebeed12d6cefd73bba0ddac3c043861ac89
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Fri May 12 15:00:17 2006 -0700
+
+    Start fixing up the build and remove a regression from master (I think) in
+    rotation.
+
+commit 9e387ef92be9b38c68bda8a6a28b0d9eb98d53a4
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Fri May 12 13:41:38 2006 -0700
+
+    Re-add authorship note in i830_driver.c accidentally left out of last commit.
+
+commit af2432322ba1d561057c34ab185561a8e799e8cd
+Author: Eric Anholt <anholt@FreeBSD.org>
+Date:   Fri May 12 13:32:38 2006 -0700
+
+    First pass of integrating the Tungsten Graphics driver for Broadwater.  This
+    patch is based off of diffing from the branchpoint to the supplied code, but
+    with many chunks containing reversions of commits removed.  Won't work yet.
+
+commit f2967a2f5f47b636b2445fa69dbc3ec79e065c90
+Author: Keith Packard <keithp@neko.keithp.com>
+Date:   Tue May 9 13:51:25 2006 -0700
+
+    Video overlay gamma bounds checking must be done bytewise.
+    Also, pend bound computations to register writes to allow
+    updates to individual values that are 'out of spec' so
+    the client can update multiple values.
+    (cherry picked from 190f9ad0606e96e684e0b028d576d822dc9aa3cf commit)
+
+commit 99b0e53244aa49f4e7461a1c96aba69453b3516f
+Author: Matthieu Herrb <matthieu@reactor.herrb.com>
+Date:   Mon May 1 10:47:09 2006 +0200
+
+    Fix non-dri build.
+
+commit 86f0119f47d8be975016ffdea850f0227e32eebc
+Author: Matthieu Herrb <matthieu@reactor.herrb.com>
+Date:   Mon May 1 10:41:10 2006 +0200
+
+    Fix non-dri build.
+
+commit 1dbb19059f5dd5cd2ad386c4f73498095987b943
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Thu Apr 20 10:43:19 2006 +0100
+
+    fix bug 6365
+
+commit a85be820033af8bf30d1fec4a899349af35a6ef6
+Author: Ian Romanick <idr@localhost.localdomain>
+Date:   Mon Apr 17 12:52:30 2006 -0700
+
+    Add missing new-line character in log message.
+
+commit 3c9bc19db63a317db9e2d67a5bc15b1de1a1060a
+Author: Alan Hourihane <alanh@jetpack.demon.co.uk>
+Date:   Wed Apr 12 21:54:50 2006 +0100
+
+    fix typo
+
+commit a797a6626a8117cd16456a206ed96300e4a0ceeb
+Author: Wang Zhenyu <zhenyu.z.wang@intel.com>
+Date:   Tue Apr 11 16:44:42 2006 -0700
+
+    Fix a broken test that resulted in page flipping always being enabled, not just
+    when the user enabled it.
+
+commit 66d216da3bfe7c143d681b610130e6daf6dfa52f
+Author: Eric Anholt <anholt@leguin.anholt.net>
+Date:   Tue Apr 11 16:37:10 2006 -0700
+
+    Replace .cvsignore with .gitignore.
+
+commit 692a4a4bafd4cab197b761cda22368581b78f996
+Author: Adam Jackson <ajax@freedesktop.org>
+Date:   Mon Apr 10 11:27:25 2006 -0700
+
+    Bump to 1.6.0.
+
+commit 43c93057c044f33c20b1dd639eaeabefc0901589
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Mon Apr 10 11:26:33 2006 -0700
+
+    Add a DrawablePtr argument to the XV functions to pave the way for redirected
+    video.
+
+commit 39bdfbb4c23c9ba2a44888f22330a892c4becedc
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Mon Apr 10 11:26:06 2006 -0700
+
+    x86_64 warning fixes
+
+commit 35e4756645891bfc85f25f1ab60c287eba9ef749
+Author: Dave Airlie <airlied@linux.ie>
+Date:   Wed Apr 5 07:12:00 2006 +0000
+
+    Fix some argument inversions in xf86DrvMsg function calls
+
+commit 6e5f9b026372eea295c390b18fc41f7018e0e797
+Author: Kristian Høgsberg <krh@redhat.com>
+Date:   Tue Apr 4 18:22:32 2006 +0000
+
+    Add more missing #include's, in particular assert.h.
+
+commit fdfce49c54dabf0f6b0d20aa7e5eeb62b5b57eda
+Author: Kristian Høgsberg <krh@redhat.com>
+Date:   Wed Mar 22 23:24:03 2006 +0000
+
+    Drop libc wrapper; don't include xf86_ansic.h and add includes now missing.
+
+commit 58817c9909ba659d0070afab0ff7f4e26f722403
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Fri Mar 10 13:07:00 2006 +0000
+
+    Enable gamma for hw cursor when ARGB cursor in use (Lukas Hejtmanek)
+
+commit ab4c2f3bf4b26fdd597ea7b7a726ae77778617b2
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Fri Mar 3 16:27:37 2006 +0000
+
+    Check the version of shadow being used and turn off rotation if it isn't the
+    right one.
+    Bump the Xvideo resolution support from 1920x1080 to 1920x1088.
+
+commit be6216cd8c6a47dd053240f7a5d1445b61f79038
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Mon Feb 20 03:25:50 2006 +0000
+
+    Fix a rotation problem when DRI is disabled
+
+commit 073c4a6a18e98e2dde114756b5d787b13bb2b7a5
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Mon Feb 20 03:22:26 2006 +0000
+
+    Fix a rotation problem when DRI is disabled
+
+commit 7cca2ae73e0114a9df2152ed5ed5b66fc44f65dd
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Sun Feb 19 00:04:49 2006 +0000
+
+    fix another build problem
+
+commit 2e01277da0be55687ca901efadcaf5c919826824
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Fri Feb 17 16:16:10 2006 +0000
+
+    fix build failure
+
+commit 86fa25369353471dc9a1041df74e66e9029863a7
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Wed Feb 15 18:31:22 2006 +0000
+
+    a little more of a workaround until we unplug the frontbuffer from libdri
+
+commit 32f97e02ac3611fd5e3870826dedf701f3b69a51
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Fri Feb 10 21:59:37 2006 +0000
+
+    temporary workaround until DRI frontbuffer mapping code is removed from
+    libdri.a
+
+commit 50e5c2696389cb4d5907a822aa79d5e0e03cee8c
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Thu Jan 26 09:55:15 2006 +0000
+
+    update Changelog
+
+commit 91d2ba5743041077754de3bd3565df930b036c7d
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Thu Jan 26 09:05:50 2006 +0000
+
+    add changelog
+
+commit 076971b95ed3b89e1a333adbffceab1c2a5b7743
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Wed Jan 25 22:22:42 2006 +0000
+
+    When going dual head only take a portion of memory for the second head
+    instead of doubling the requirements.
+
+commit 77d1c579f3031789031dd203175d3c9555226f79
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Wed Jan 25 22:17:00 2006 +0000
+
+    Fix a glitch in a dual head fix from #3105
+
+commit d8d749080923e88376db1aa18ae2ad722d5113d9
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Tue Jan 24 15:20:34 2006 +0000
+
+    Bump version to 1.5.0.0
+    Add Intel 945GM support
+    Add RandR rotation support (full 3D acceleration, HWcursor & Xvideo rotated too)
+    Remove shadow framebuffer rotation code
+    Add a new LinearAlloc option to allow more offscreen memory to be allocated
+    for XVideo applications. This allows HDTV movies to be played via Xvideo.
+
+commit 919d36b6717e9a7d930c5120309778da7b0fe16c
+Author: Kevin E Martin <kem@redhat.com>
+Date:   Wed Dec 21 02:30:00 2005 +0000
+
+    Update package version for X11R7 release.
+
+commit 92962f32fccac6df751268190928d8becb558b64
+Author: Adam Jackson <ajax@nwnk.net>
+Date:   Mon Dec 19 16:25:53 2005 +0000
+
+    Stub COPYING files
+
+commit d2ef609211306b6bd3861c0e5f6d3a9af3e145fb
+Author: Alan Coopersmith <Alan.Coopersmith@sun.com>
+Date:   Mon Dec 19 09:07:50 2005 +0000
+
+    Typo fixes, mailing list & url updates, and other changes to prepare for
+    X11R6.9 & 7.0 releases.
+
+commit 1c51ff5c652690d66d1f7cba803c0bb26208b509
+Author: Kevin E Martin <kem@redhat.com>
+Date:   Thu Dec 15 00:24:17 2005 +0000
+
+    Update package version number for final X11R7 release candidate.
+
+commit c5007a4b46ffb66f5d98abe8bcae6df8c6eb1b31
+Author: Kevin E Martin <kem@redhat.com>
+Date:   Tue Dec 6 22:48:35 2005 +0000
+
+    Change *man_SOURCES ==> *man_PRE to fix autotools warnings.
+
+commit 15df4215347854604fd3f6795ac5f971444cf39d
+Author: Kevin E Martin <kem@redhat.com>
+Date:   Sat Dec 3 05:49:33 2005 +0000
+
+    Update package version number for X11R7 RC3 release.
+
+commit c50cd5a7f5af7d45550f25f173b512eb89bf41c5
+Author: Kevin E Martin <kem@redhat.com>
+Date:   Fri Dec 2 02:16:08 2005 +0000
+
+    Remove extraneous AC_MSG_RESULT.
+
+commit da2c00c0e85a284e3fbd237f3a77212f9647da37
+Author: Adam Jackson <ajax@nwnk.net>
+Date:   Wed Nov 30 18:47:54 2005 +0000
+
+    Bump libdrm dep to 2.0.
+
+commit ca36f1da4e254c779b38df30fd655533e548a294
+Author: Adam Jackson <ajax@nwnk.net>
+Date:   Tue Nov 29 23:29:59 2005 +0000
+
+    Only build dlloader modules by default.
+
+commit 0b337390d6919e9a3d31ca654c8bc44b30756862
+Author: Alan Coopersmith <Alan.Coopersmith@sun.com>
+Date:   Mon Nov 28 22:04:09 2005 +0000
+
+    Change *mandir targets to use new *_MAN_DIR variables set by xorg-macros.m4
+    update to fix bug #5167 (Linux prefers *.1x man pages in man1 subdir)
+
+commit 159bea027893ce5996a452a6f493372792e95122
+Author: Eric Anholt <anholt@freebsd.org>
+Date:   Mon Nov 21 10:49:14 2005 +0000
+
+    Add .cvsignores for drivers.
+
+commit e62939e30e664592085ce394680fd8e7f3d31339
+Author: Kevin E Martin <kem@redhat.com>
+Date:   Sat Nov 19 07:15:38 2005 +0000
+
+    Update pkgconfig files to separate library build-time dependencies
+    from application build-time dependencies, and update package deps
+    to work with separate build roots.
+
+commit 08f03e4237ce9a54f0dffa37307af402b0bd2e55
+Author: Kevin E Martin <kem@redhat.com>
+Date:   Wed Nov 9 21:31:20 2005 +0000
+
+    Bump version numbers for X11R6.9/X11R7 RC2.
+
+commit a600e89a1547908f2018de96b5ecb814e2427b34
+Author: Kevin E Martin <kem@redhat.com>
+Date:   Wed Nov 9 21:15:15 2005 +0000
+
+    Update package version number for X11R7 RC2 release.
+
+commit f73c23b4c588c2f5dbc3c36a2f43b8bbb1e0f36a
+Author: Kevin E Martin <kem@redhat.com>
+Date:   Tue Nov 1 15:08:53 2005 +0000
+
+    Update pkgcheck depedencies to work with separate build roots.
+
+commit 25a63bfefda420f85b3cba89bdae4b35ef80c84f
+Author: Adam Jackson <ajax@nwnk.net>
+Date:   Fri Oct 21 18:40:19 2005 +0000
+
+    Bug #4829: Remove some useless DRI symbol checks.
+
+commit 53c122fa162709f618be26d5940e3488c0cbbafa
+Author: Kevin E Martin <kem@redhat.com>
+Date:   Wed Oct 19 02:48:03 2005 +0000
+
+    Update package version number for RC1 release.
+
+commit 4b97a544cac9fb507b4a2a7c8017607ea2cac1bb
+Author: Alan Coopersmith <Alan.Coopersmith@sun.com>
+Date:   Tue Oct 18 00:01:53 2005 +0000
+
+    Use @DRIVER_MAN_SUFFIX@ instead of $(DRIVER_MAN_SUFFIX) in macro substitutions
+    to work better with BSD make
+
+commit c7b7ece6330561b3745f0e1136b57575eadec5ad
+Author: Adam Jackson <ajax@nwnk.net>
+Date:   Mon Oct 17 22:57:33 2005 +0000
+
+    More 1.7 braindamage: define EXTRA_DIST in terms of @DRIVER_NAME@ instead of indirectly
+
+commit 0586dbe1c5d0432e8d8da2f3576ac2ccbe139919
+Author: Alan Coopersmith <Alan.Coopersmith@sun.com>
+Date:   Mon Oct 17 00:09:03 2005 +0000
+
+    Use sed & cpp to substitute variables in driver man pages
+
+commit 1317f2d1f35241969dcf376abd106ffe3f918432
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Tue Oct 4 20:01:03 2005 +0000
+
+    Check in generated README files
+
+commit bd48e0531a16bdf27fc8549826cc1123ba12d5bd
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Mon Oct 3 21:22:07 2005 +0000
+
+    - For all drivers that have a <driver>.sgml file, add code in their build
+      system to build the README file at make dist time
+    
+    - in util/macros/xorg-macros.m4, add a new XORG_CHECK_LINUXDOC macro that
+      will check if the required tools and files exist, and if so set a
+      conditional.
+    
+    - util/modular/symlink.sh
+      - Link all the <driver>.sgml to xf86-video-<driver>/README.sgml
+      - Add all the README.<driver> to the list of excluded files
+    
+    - xc/programs/Xserver/hw/xfree86/doc/sgml/SiS.sgml: Various changes
+      to make it spew less warnings when the text file is built.
+
+commit 6fda4e886c30669e346f7f30a38b93a77004a7f6
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Mon Oct 3 09:39:17 2005 +0000
+
+    Bug #4353: Fix lockup when suspend and resume when playing video.
+    Shutdown the overlay on LeaveVT.
+
+commit 154724cc4be1e951649c29e4abdbde964a8c112e
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Tue Sep 27 08:58:23 2005 +0000
+
+    Put back the print code to display the DDC information, and remove some bogus
+    DDC messages.
+
+commit 2174848266940e1896970c12717e106a4742dcbc
+Author: Adam Jackson <ajax@nwnk.net>
+Date:   Sat Sep 24 18:45:45 2005 +0000
+
+    Disable the {Open,Close}FullScreen DRI protocol.
+    Remove empty FullScreen stubs from drivers, comment the non-empty ones.
+
+commit b6443515e9d485b1ab8ee266c5b21750d2a5a551
+Author: Alan Coopersmith <Alan.Coopersmith@sun.com>
+Date:   Thu Sep 22 01:58:17 2005 +0000
+
+    Don't build xvmc module if DRI support is not present
+
+commit 76033c2c885524c2116ccf0bdd30c89fa2636150
+Author: Eric Anholt <anholt@freebsd.org>
+Date:   Thu Sep 15 06:04:59 2005 +0000
+
+    Bug #4458: Check for the xvmc proto package, since it's required to build these.
+    (Joshua Baergen)
+
+commit 50f0bf51a67c89bf445a682f8fec34c52ff909a8
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Thu Sep 8 14:51:40 2005 +0000
+
+    fix another possible crash
+
+commit 521e357c1846960b48e83fb97f77025f6f91e638
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Thu Sep 8 09:31:04 2005 +0000
+
+    Fix a crash situation
+
+commit e8c46c897564f038744b9274949482568d654ecc
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Tue Sep 6 10:31:33 2005 +0000
+
+    Fix DirectColor visual colormap issues at 16bpp in the i830 driver.
+
+commit bf6fef41935ebf624cc1ae6faa084dfa0a7eee72
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Tue Sep 6 10:23:57 2005 +0000
+
+    Sync the accelerator before calling AdjustFrame to avoid lockups.
+
+commit 5fc5f02d76e077b09bf3ab1c7deeb1263033d57a
+Author: Dave Airlie <airlied@linux.ie>
+Date:   Mon Aug 29 12:06:13 2005 +0000
+
+    Add i810 XvMC support, it passes distcheck for me.
+
+commit 86e6935bd50b129519b24ee3d694a3f75b8d4f1c
+Author: Dave Airlie <airlied@linux.ie>
+Date:   Mon Aug 29 12:02:29 2005 +0000
+
+    Fix include paths for i810 XvMC add config.h to driDrawable.c
+
+commit 6f1406753da102ccce1898b3f160d6eaaccc9b7c
+Author: Kristian Høgsberg <krh@redhat.com>
+Date:   Fri Aug 26 15:32:40 2005 +0000
+
+    Added i830_io.c, which just includes i810_io.c with BUILD_FOR_I830 set.
+
+commit 219beaca91b88dabfe05b8e756d558269f7a5148
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Sun Aug 21 06:26:33 2005 +0000
+
+    Fix typo in debug ErrorF.
+
+commit fdc6997f2edf4dfdcfd877152028bff2a0306999
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Thu Aug 18 09:03:47 2005 +0000
+
+    Update autogen.sh to one that does objdir != srcdir.
+
+commit 461d43be78f49e6cb965b7a206c77f6fe1622601
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Mon Aug 15 07:30:05 2005 +0000
+
+    Egbert's 64bit fixes for mixed 32/64bit clients
+
+commit 95bd8dbee69b4b35e4c37e19d15e0449c38726b6
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Fri Aug 12 21:23:59 2005 +0000
+
+    add missing i830_shadow.c
+
+commit 7476d0413f161ddb3f3cc4a77c3f2a2912d17e60
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Mon Aug 8 09:17:06 2005 +0000
+
+    Enable gamma correction bit even for 8bit modes.
+    
+    The pipeconf register handles the real enablement.
+
+commit a89f89a2423aecb199d5f4af2e9430e180aa1131
+Author: Ian Romanick <idr@us.ibm.com>
+Date:   Fri Aug 5 23:04:33 2005 +0000
+
+    I have resolved this by making all the "Direct rendering disabled" messages
+    X_WARNING and all the "Direct rendering enabled" messages X_INFO.  Ideally,
+    we need to factor some of this stuff out to common code.  There is a *LOT* of
+    duplication among the *_dri.c files under programs/Xserver/hw/xfree86/drivers.
+    
+    I'm trying to clean up as much low hanging fruit as I can and got tired of
+    waiting for ajax. :P
+
+commit fd6d7d7f7ea03961c5ecf7db029f12ece93d414a
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Tue Aug 2 16:22:42 2005 +0000
+
+    Adjust newPipe code for BIOS's starting at 1200
+
+commit da7b85176fc061995e1b04fa22dc736b6c9353e6
+Author: Adam Jackson <ajax@nwnk.net>
+Date:   Sun Jul 31 17:19:29 2005 +0000
+
+    Post-merge fixups:
+    - Disable building the gamma driver
+    - Fix numerous Imakefiles to get header paths and subdirs right
+    - Symlink client-side GLX lib source from Mesa
+    - Add new shader subdirs to the Mesa core build
+    - Tweak the DDX drivers to not ask for "xf86dri.h"; they don't need
+      it, since they don't generate protocol, and it was breaking the
+      build.
+
+commit 1561ec3ca4f0d774f2664e9354d537061a0102d1
+Author: Kevin E Martin <kem@redhat.com>
+Date:   Fri Jul 29 21:22:43 2005 +0000
+
+    Various changes preparing packages for RC0:
+    - Verify and update package version numbers as needed
+    - Implement versioning scheme
+    - Change bug address to point to bugzilla bug entry form
+    - Disable loadable i18n in libX11 by default (use --enable-loadable-i18n
+      to reenable it)
+    - Fix makedepend to use pkgconfig and pass distcheck
+    - Update build script to build macros first
+    - Update modular Xorg version
+
+commit d165b7dc4ec3793e921363cdeb1ad41c0a3653d6
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Wed Jul 27 21:23:29 2005 +0000
+
+    Add xf86driproto to dependencies for drivers with DRI support. Patch from
+    Donnie Berkholz
+
+commit 0cd371c6e57f899c34c4d2e2a8531ef7ce3967a4
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Tue Jul 26 21:55:42 2005 +0000
+
+    Bump the DDX version to 1.4.0 to indicate the removal of drmAddress.
+    Thus allowing 32/64bit clients to cohabit.
+
+commit adef005c2f96395d396834f2173125f0c06d40cb
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Tue Jul 26 08:07:37 2005 +0000
+
+    Bug #3850: <https://bugs.freedesktop.org/show_bug.cgi?id=3850>
+    Fix non-DRI builds.
+
+commit 09e871b1b4a67cfe818613bc012d72965b449f1c
+Author: Søren Sandmann Pedersen <sandmann@daimi.au.dk>
+Date:   Tue Jul 26 00:41:42 2005 +0000
+
+    Build system for i810
+
+commit ac920dae7c22ed3956e4f31a0d3baf1909762b76
+Author: Adam Jackson <ajax@nwnk.net>
+Date:   Mon Jul 11 02:29:51 2005 +0000
+
+    Prep for modular builds by adding guarded #include "config.h" everywhere.
+
+commit f90f661652e5fe0986eb804f8dff3eeffe0af820
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Sat Jul 9 21:19:11 2005 +0000
+
+    Copy mode strings upon mode copy
+
+commit 8fced5b648b0666ca88221e37bc1131ab5c2072d
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Tue Jul 5 09:25:03 2005 +0000
+
+    Fix Xvideo when operating in one line mode and video is pushed off the top of
+    the screen. Also some fixes for Xvideo skew in certain resolutions.
+
+commit 68bc259fa1082f7780e524fc703e926a27fc7f9a
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Mon Jul 4 20:45:39 2005 +0000
+
+    NULL check
+
+commit 83c3e3ee49a0aa3ceaf52e2408cc253fc5dc8af4
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Tue Jun 28 16:13:02 2005 +0000
+
+    Add support to check the in-built VESA mode list.
+
+commit 0d64e9e1f5494cff633a1499545d55a0edd0d92e
+Author: Adam Jackson <ajax@nwnk.net>
+Date:   Sat Jun 25 21:16:55 2005 +0000
+
+    Bug #3626: _X_EXPORT tags for video and input drivers.
+
+commit 67174d67e740b9082ed0a65a79f08b5df3b4fcfb
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Mon Jun 13 12:15:25 2005 +0000
+
+    commit missing piece from resume patch
+
+commit ddab0558d584fb906cc0dfb383cc0e7a122d5336
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Thu Jun 9 09:26:03 2005 +0000
+
+    Bug #3496 <https://bugs.freedesktop.org/show_bug.cgi?id=3496>
+    Remove a bogus check for DRM 1.2 for resume functionality as it's
+    been present since 1.1
+
+commit 7f49513afe9d4490bdfdac182d50383c089875e0
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Wed Jun 8 17:50:32 2005 +0000
+
+    Fix the mode validation such that using function 5f05 to set the refresh rate
+    works again.
+
+commit f8de9b4b9a5ce2756652c6b9ec1e84aedbc3519a
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Tue Jun 7 18:54:10 2005 +0000
+
+    Fix text restoration when display switching has been activated and we could be
+    potentially on a different display than the initial one.
+
+commit 1f538007e9da7d4ad30ec4d4d281fb07ef300ddb
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Mon Jun 6 09:47:29 2005 +0000
+
+    missed a hunk
+
+commit d8a32bf4274ad91cc2b9ca425f5b0a017c2dd293
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Mon Jun 6 09:40:23 2005 +0000
+
+    Bug #3436 <https://bugs.freedesktop.org/show_bug.cgi?id=3054>
+    Fix some offset, pitch and overlay scaler size problems with
+    the video overlay. Solves various spontaneous lockups.
+
+commit 005d121d280ff4502f4d6e3d3d585ff0175367bb
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Tue May 31 20:29:01 2005 +0000
+
+    and another. sheesh.
+
+commit 27f86d693c32e550d9ebf4d6ff05c2d827754c8b
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Tue May 31 20:27:24 2005 +0000
+
+    missed hunk
+
+commit 27feb0f3474c1e21557225e10b13558e002c0ebf
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Tue May 31 17:58:26 2005 +0000
+
+    Add Intel(R) 945G support
+
+commit 2d10e8dc8184b0514e8ac9f835a06b85d609bb1b
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Wed May 25 09:10:44 2005 +0000
+
+    Change the sequence on how refresh rates are set in the i830 driver. This works
+    much better with custom modelines.
+
+commit 89ec4ac201c09329d5d732323bdce6250b8592fe
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Fri May 20 15:24:02 2005 +0000
+
+    Bugzilla #3292: https://bugs.freedesktop.org/show_bug.cgi?id=3292
+    Add shadowFB support to the Intel driver (Dima Dorfman)
+
+commit df0964ea8f92c6b278dd87b95380dbc3ada625e5
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Fri May 20 13:24:02 2005 +0000
+
+    Bugzilla #2339: https://bugs.freedesktop.org/show_bug.cgi?id=2339
+    Bugzilla #1064: https://bugs.freedesktop.org/show_bug.cgi?id=1064
+    Bugzilla #3055: https://bugs.freedesktop.org/show_bug.cgi?id=3055
+    Much better display switching support for mobile chipsets using
+    the Fn+F? combination keys.
+    Add DirectColor support.
+    Add gamma correction support.
+
+commit b99ef9cd59fce0e02e8829210c7cb8aadb6a3499
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Fri May 20 11:56:45 2005 +0000
+
+    Bugzilla #2585: https://bugs.freedesktop.org/show_bug.cgi?id=2585
+    Support the Intel E7221 server chipset.
+
+commit 3b87fac327b5549678f91a9c961b9fe5c0bf8a37
+Author: Adam Jackson <ajax@nwnk.net>
+Date:   Wed May 18 17:47:35 2005 +0000
+
+    Bug #3163: Create new DRIINFO_*_VERSION macros to indicate the
+    version number of the DRIInfoRec, disambiguating it from the XF86DRI
+    protocol version number.  Modify DRIQueryVersion to return the libdri
+    version number, which all DDXes were requesting implicitly.  Fix the
+    DDXes to check for the DRIINFO version they were compiled against.
+
+commit 72100ac7cff7485db3e869f1331caddb0bc21a24
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Wed Apr 20 12:25:28 2005 +0000
+
+    Fix includes right throughout the Xserver tree:
+      * change "foo.h" to <X11/foo.h> for core headers, e.g. X.h, Xpoll.h;
+      * change "foo.h", "extensions/foo.h" and "X11/foo.h" to
+        <X11/extensions/foo.h> for extension headers, e.g. Xv.h;
+      * change "foo.[ch]" to <X11/Xtrans/foo.[ch]> for Xtrans files.
+
+commit c813bf655908cd72049f346919abbdff8365b944
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Thu Apr 14 22:55:01 2005 +0000
+
+    Fix initial DDC parameters when validating modes.
+
+commit e637630908f40f42367c94344d44918b6cdb0eb2
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Fri Apr 1 14:17:24 2005 +0000
+
+    Check the VESA BIOS scanline requirements and adjust the displayWidth
+    accordingly. Fixes an assumption that the screen width was always used as the
+    displayWidth.
+
+commit 5090c8ba6778091aa4ce24b16b058d534ba78dc7
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Mon Mar 21 21:20:39 2005 +0000
+
+    a one line fixup to the UseDDC code
+
+commit 8bc9b0d7da5de9a3294687f450afb50452898c7d
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Mon Mar 21 18:57:39 2005 +0000
+
+    Fix some bad alignment problems when allocating memory from
+    the end of AGP space.
+    Bugzilla #2764 (https://bugs.freedesktop.org/show_bug.cgi?id=2764)
+
+commit 50a105e88cfdfc22fef8cfd2397fc5e9fae17663
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Tue Mar 15 13:10:23 2005 +0000
+
+    LFP's may exist on Pipe A in older i830's. Check that case so that Panel ID can
+    be obtained and Xvideo is correctly setup for panel fitting.
+
+commit eb8b5df739e7be4509423c2bf757a7df35ce02f6
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Tue Mar 15 11:32:10 2005 +0000
+
+    Enforce DDC monitor ranges usage if we have them and reject bad
+    modes. Use NoDDC option to override DDC timings. We currently
+    only use DS_RANGES, but could use other DDC information, as does
+    the common layer, to deduce the h/v ranges.
+
+commit 49dcbacf7fa7f29d18c18eec7e2f99e859bf4c7e
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Thu Mar 3 18:01:51 2005 +0000
+
+    Limit the maximum refresh rate to 85Hz and remove the bogus
+    100Hz and 120Hz settings as they don't match close enough and
+    are really unsupported.
+
+commit 7eaf88d00d7539fde68422ae6566f23993aa2633
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Tue Mar 1 19:53:28 2005 +0000
+
+    Fix an off by one error when scaling which caused occasional
+    overlay color lines at the far right and bottom of the window.
+
+commit 28d65bceaec3ef636f0f5bdd03b38fd76f87c8c6
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Thu Feb 10 13:16:08 2005 +0000
+
+    Fix unaligned YV12 videos that caused skew when playing.
+
+commit 6352e65b9cd635e9f266e0e9ed64c5beae9e5c44
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Thu Feb 10 10:41:20 2005 +0000
+
+    Fix pixmap cache corruption when Xv was in use due to a memory allocator
+    calculation problem.
+
+commit f691f959213d3eb5c365edaf5a5a53fa96300491
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Tue Feb 8 20:13:33 2005 +0000
+
+    Setup the Xv atoms correctly.
+
+commit 31a4191a97f538b2c6d4b8036796f06443f783c1
+Author: Egbert Eich <eich@suse.de>
+Date:   Mon Feb 7 11:56:31 2005 +0000
+
+    Check the pixel clock choosen for a specific refresh rate
+    against the maximally allowed pixel clock when choosing
+    mode lines for VBESetVBEMode() and VESA BIOS version >= 3.0
+    (Bugzilla #2486).
+
+commit a103496e08f699b609be875827ecf1f3afa45e68
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Tue Feb 1 19:47:32 2005 +0000
+
+    Check return value of i830InitDma() and fail to initialize the DRI
+    if that fails.
+    Also, check the DRM module name that it matches i915 and not the
+    older i830 driver which some people were still trying to use
+    and was causing Dma Initialization failures and lockups.
+
+commit 7ff7cec9220815eb5f74cfd95860aaa5f1f263bd
+Author: Egbert Eich <eich@suse.de>
+Date:   Mon Jan 24 15:02:17 2005 +0000
+
+    Unmap XCursor AGP memory on VT switch to prevent system from lockup
+    (Matthias Hopf).
+
+commit d4c87adf6792ae9af641b9824c547d18cdd1e521
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Mon Jan 10 11:29:02 2005 +0000
+
+    Revert some changes to TweakMemorySize
+
+commit 076c5116ae5eda1822da70184cbcc8942b470541
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Thu Jan 6 14:43:14 2005 +0000
+
+    Add:
+    - Intel i915GM support to 2D DDX and 3D Mesa drivers.
+    - PanelID identification
+    - DRI suspend/resume support
+    - Detection of monitor changes on VT switches
+    - Support custom video modes if available in the Video BIOS
+    - 3D enhancements:
+    	* GL_ARB_texture_cube_map
+    	* GL_EXT_blend_equation_separate
+    	* GL_ATI_blend_equation_separate
+    	* GL_ARB_point_parameters
+    	* GL_NV_blend_square
+    	* GL_EXT_cull_vertex
+    	* GL_ARB_depth_texture
+    	* GL_SGIX_depth_texture
+    	* GL_ARB_shadow
+    	* GL_EXT_shadow_funcs
+    	* GL_3DFX_texture_compression_FXT1
+    By Tungsten Graphics, Keith Whitwell & Alan Hourihane.
+
+commit edb9b6fde0948bb1121a8456500ef9f55f734376
+Author: Adam Jackson <ajax@nwnk.net>
+Date:   Mon Jan 3 16:03:56 2005 +0000
+
+    Bug #1488: Fix crash on i830 during startup.  (Eric Anholt)
+
+commit 59cecb714b78f7f384c24bf159bd39c81e9c7ee1
+Author: Markus Kuhn <Markus.Kuhn@cl.cam.ac.uk>
+Date:   Sat Dec 4 00:43:09 2004 +0000
+
+    Encoding of numerous files changed to UTF-8
+
+commit c24b0e04f3a1b064412e0bea44c4af546ec9fb77
+Author: Egbert Eich <eich@suse.de>
+Date:   Tue Nov 2 08:54:53 2004 +0000
+
+    Fixed KGA handling for i810. KGA handling for chips derived from C&T chips is
+    slightly different. The changes make the code consistent with the C&T (chips)
+    and i740 drivers.
+
+commit 7ce4898ee319d149cf86e938e7257ea7490d327f
+Author: Egbert Eich <eich@suse.de>
+Date:   Wed Oct 27 09:52:15 2004 +0000
+
+    Removing vtSema shilding of accel sync - should have been '&&' instead of '||'
+    anyway.
+
+commit 88714c3b2274fcfe50837631b1d38a7cd96f692a
+Author: Egbert Eich <eich@suse.de>
+Date:   Tue Oct 12 19:13:43 2004 +0000
+
+    Change order of SetDisplayDevice(), HWRestore(), UnbindGART() and
+    RestoreBIOSMemSize() to be exactly opposite to the Save procedure in EnterVT()
+    (Matthias Hopf, Alan Hourihane).
+    Fixed server crash on reset when a structure allocated in PreInit() was freed on
+    CloseScreen().
+    Fixed ring buffer lock ups that happened because the structure that contained
+    ringbuffer data was not zeroed after allocation.
+    Fixed numerous warnings due to signed unsigned comparisons.
+
+commit 687298daed40aaade44e61342a9abe984088541b
+Author: Egbert Eich <eich@suse.de>
+Date:   Mon Oct 11 09:58:04 2004 +0000
+
+    Checking if server isn't switched away before calling sync.
+    Sanity check for possible bugs in aother areas of the code.
+    Fixing default amount of of allocated video memory from AGP for i810: Use 16MB
+    if less than 192MB are installed else use 24MB (Matthias Hopf).
+
+commit d2866271b8d42a0d44b65e30667adab96ac8fd54
+Author: Adam Jackson <ajax@nwnk.net>
+Date:   Wed Sep 22 04:38:03 2004 +0000
+
+    Bug #1252, #1253, #1255, #1256: Various typo fixes from Dave Jones.
+
+commit 88fd270d23ed1a1761cfdb98367c89ca89735b12
+Author: Adam Jackson <ajax@nwnk.net>
+Date:   Fri Sep 17 03:04:51 2004 +0000
+
+    Bug #1192: Remove cfb support from drivers where its use is an option.
+    Delete xf24_32bpp, as s3virge was the last user.  Fix up some comments
+    to refer to fb rather than cfb.
+
+commit 9e8e19c6fde15fe5b9bb7532316dedeeca54b8d9
+Author: Kevin E Martin <kem@redhat.com>
+Date:   Mon Aug 30 03:19:08 2004 +0000
+
+    Fix ARGB cursor problem on i810 (Bug #1195, Alan Hourihane).
+
+commit 15c61546ea1a64d6c7dd60764164143ea7174123
+Author: Kevin E Martin <kem@redhat.com>
+Date:   Thu Aug 26 05:10:56 2004 +0000
+
+    Fix i810 compilation without Xinerama (Bug #1180, Simon Schubert).
+
+commit 828c0fb8050dcbed8026365cbcb17d4d4330c268
+Author: Kevin E Martin <kem@redhat.com>
+Date:   Wed Aug 25 00:30:41 2004 +0000
+
+    Fix i810 driver startup on Sony VAIO laptop (Bug #1084, Dave Airlie).
+
+commit c4626af83d760c2a6aae90ad478430eac1c4f4ea
+Author: Egbert Eich <eich@suse.de>
+Date:   Fri Jul 30 21:36:40 2004 +0000
+
+    Do I810EmitFlush() during screen init to make sure 2D engine is in a sane state
+    (Peter Kunzmann).
+
+commit e0e01b7d6188a83c7539256ac1710ace04ce132a
+Author: Egbert Eich <eich@suse.de>
+Date:   Fri Jul 30 20:38:27 2004 +0000
+
+    add i845 to the list of chips that allow memory size tweaking.
+
+commit 199620cdc924e6aa98683e305843ea91c7e1771d
+Author: Adam Jackson <ajax@nwnk.net>
+Date:   Fri Jul 30 20:30:52 2004 +0000
+
+    Bug #400 (partial): Driver fixes for the dlloader.  When using
+    dlloader, all framebuffer formats except cfb and the overlay modes
+    should work, and r128 and radeon need to be loaded from the ati
+    driver (both issues to be fixed soon).  Tested on i740, s3virge,
+    mach64, tdfx, vesa, and vga drivers.  elfloader users shouldn't be
+    affected.
+
+commit 54e644ffbb63290b7e2ec51b041f5b2df26e164b
+Author: Egbert Eich <eich@suse.de>
+Date:   Fri Jul 30 19:04:14 2004 +0000
+
+    Removed bugs on TweakMemorySize() which prevented it from working at all.
+    Initialized last element of BIOS version number string to 0 to avoid random
+    problems.
+
+commit 3a3b00f18ac5edd7dfef06a96342c95f3cb97f79
+Author: Kevin E Martin <kem@redhat.com>
+Date:   Fri Jul 30 04:44:13 2004 +0000
+
+    Fix "DoLoadableServer NO" build
+
+commit 986bc24892e7ce3784fc723fda54b1f89dd75b66
+Author: Egbert Eich <eich@suse.de>
+Date:   Tue Jul 6 14:37:47 2004 +0000
+
+    Increase default video RAM size to 16MB when DRI is enabled and more than 128MB
+    are available (Egbert Eich).
+    Fixed lockups during mode switch. Problem was introduced when attempting to copy
+    the behavior during LeaveVT()/EnterVT() but but forgetting to call
+    I810DRILeave() before I810DRIEnter(). The entire DRILeave()/Enter() scenario has
+    been commented out as it didn't seem to be necessary (Egbert Eich).
+    Fix TweakMemorySize() (tested with i855/i865) (Egbert Eich).
+
+commit b7310758e60956a7de14dcf968bb713dfc56738f
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Tue Jun 22 15:12:42 2004 +0000
+
+    add CmdBuffer
+
+commit 5ed7e6f8424236dd57d83f6ab1282693260969cb
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Tue Jun 22 14:28:46 2004 +0000
+
+    i915 support
+    Dual Head support for i830, i855, i915.
+    ARGB cursor support (including i810) for all chipsets.
+
+commit a46e95722d3c2b9dfb9eacf9a390a7c47d427773
+Author: Eric Anholt <anholt@freebsd.org>
+Date:   Wed Jun 16 19:16:54 2004 +0000
+
+    Mop-up from the DRI 20040613 import, taking care of some drm.h
+    header location and type changes, and update the ChangeLog.
+
+commit 35a5cf103e9e41d178f980f685307f8c8063a006
+Author: Eric Anholt <anholt@freebsd.org>
+Date:   Wed Jun 16 09:44:00 2004 +0000
+
+    Merge DRI-trunk-20040613 changes in programs/Xserver/hw/xfree86/drivers, with
+    the following notes:
+    
+    - Savage and Mach64 (= ati/ati*.[ch] changes) DRI not merged due to insecurity.
+    - VIA driver converted to new drmContext and drmHandle names.
+    - Radeon driver merge conflicted in many places, and MergedFB at least could
+      probably use some checking at this point.
+
+commit bec47f9369b6f02ce4537ab1ac547ba933609edc
+Author: Eric Anholt <anholt@freebsd.org>
+Date:   Wed Jun 16 09:26:18 2004 +0000
+
+    DRI trunk-20040613 import
+
+commit c5b1972b50a6dbe57c67d3cc88ae010386b908a6
+Author: Eric Anholt <anholt@freebsd.org>
+Date:   Wed Jun 16 09:23:18 2004 +0000
+
+    DRI XFree86-4_3_99_12-merge import
+
+commit 41eba03d0d62fe03a7b437c9c4914016c3125141
+Author: Egbert Eich <eich@suse.de>
+Date:   Fri Apr 23 19:35:55 2004 +0000
+
+    Merging XORG-CURRENT into trunk
+
+commit e27494f2a9262b6310c2f1e0a40c406f578fc693
+Author: Egbert Eich <eich@suse.de>
+Date:   Sun Mar 14 08:33:22 2004 +0000
+
+    Importing vendor version xf86-4_4_99_1 on Sun Mar 14 00:26:39 PST 2004
+
+commit 5ece535dc7f77185cc8c327a57ae3c02c8b9f918
+Author: Egbert Eich <eich@suse.de>
+Date:   Wed Mar 3 12:12:19 2004 +0000
+
+    Importing vendor version xf86-4_4_0 on Wed Mar  3 04:09:24 PST 2004
+
+commit ba904078dd22e013f4112479e7c2669c33e708a8
+Author: Egbert Eich <eich@suse.de>
+Date:   Thu Feb 26 13:35:53 2004 +0000
+
+    readding XFree86's cvs IDs
+
+commit 13ea363db30dc0010cd09df29df90074db77f646
+Author: Egbert Eich <eich@suse.de>
+Date:   Thu Feb 26 09:23:19 2004 +0000
+
+    Importing vendor version xf86-4_3_99_903 on Wed Feb 26 01:21:00 PST 2004
+
+commit 64b129e800d915f0d82a67ce0f8b1850e67012fc
+Author: Egbert Eich <eich@suse.de>
+Date:   Thu Jan 29 08:08:35 2004 +0000
+
+    Importing vendor version xf86-012804-2330 on Thu Jan 29 00:06:33 PST 2004
+
+commit 64d7bbf0ac060a57761aa2ecf21ddbe8169674c0
+Author: Kaleb Keithley <kaleb@freedesktop.org>
+Date:   Fri Dec 19 20:55:10 2003 +0000
+
+    XFree86 4.3.99.902 (RC 2)
+
+commit 418eaaee109acd3ea178b147dd29f90318d159f9
+Author: Kaleb Keithley <kaleb@freedesktop.org>
+Date:   Thu Dec 4 22:03:17 2003 +0000
+
+    XFree86 4.3.99.901 (RC 1)
+
+commit 72063c52b82faf80a0183f66d2fd5789def76d8f
+Author: Kaleb Keithley <kaleb@freedesktop.org>
+Date:   Tue Nov 25 19:28:37 2003 +0000
+
+    XFree86 4.3.99.16
+    Bring the tree up to date for the Cygwin folks
+
+commit e04a1a8f862eb63b546fb74e73ee602fefb82e00
+Author: Kaleb Keithley <kaleb@freedesktop.org>
+Date:   Fri Nov 14 16:48:55 2003 +0000
+
+    XFree86 4.3.0.1
+
+commit 3ad0d9a73bc0a4f3edb858d5f3a7c36827b7a429
+Author: Kaleb Keithley <kaleb@freedesktop.org>
+Date:   Fri Nov 14 16:48:55 2003 +0000
+
+    Initial revision

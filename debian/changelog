@@ -1,3 +1,11 @@
+xserver-xorg-video-i810 (2:1.7.2-1) UNRELEASED; urgency=low
+
+  * New upstream version
+    + Shipping the git log as part of our diff.gz rather than a separate patch
+      since upstream didn't include an updated Changelog
+
+ -- David Nusinow <dnusinow@debian.org>  Fri, 13 Oct 2006 14:27:49 -0400
+
 xserver-xorg-video-i810 (2:1.6.5-4) UNRELEASED; urgency=low
 
   * Typo fix in man page. Closes: #364559.

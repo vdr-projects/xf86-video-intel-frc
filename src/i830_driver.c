@@ -1342,15 +1342,49 @@ I830UpdateXineramaScreenInfo(ScrnInfoPtr pScrn1)
     Bool infochanged = FALSE;
     Bool usenonrect = pI830->NonRect;
     const char *rectxine = "\t... setting up rectangular Xinerama layout\n";
+#ifdef XF86DRI
+    drmI830Sarea *sarea = NULL;
+
+    if (pI830->directRenderingEnabled) {
+       sarea = (drmI830Sarea *) DRIGetSAREAPrivate(pScrn1->pScreen);
+    }
+#endif
 
     pI830->MBXNR1XMAX = pI830->MBXNR1YMAX = pI830->MBXNR2XMAX = pI830->MBXNR2YMAX = 65536;
     pI830->HaveNonRect = pI830->HaveOffsRegions = FALSE;
 
-    if(!pI830->MergedFB) return;
+    if(!pI830->MergedFB) {
+#ifdef XF86DRI
+       if (pI830->directRenderingEnabled) {
+          sarea->pipeA_x = sarea->pipeA_y = sarea->pipeB_x = sarea->pipeB_y = 0;
 
-    if(I830noPanoramiXExtension) return;
+          if (pI830->planeEnabled[0]) {
+             sarea->pipeA_w = pScrn1->virtualX;
+             sarea->pipeA_h = pScrn1->virtualY;
+          } else {
+             sarea->pipeA_w = 0;
+             sarea->pipeA_h = 0;
+          }
 
-    if(!I830XineramadataPtr) return;
+          if (pI830->planeEnabled[1]) {
+             sarea->pipeB_w = pScrn1->virtualX;
+             sarea->pipeB_h = pScrn1->virtualY;
+          } else {
+             sarea->pipeB_w = 0;
+             sarea->pipeB_h = 0;
+          }
+       }
+#endif
+
+       return;
+    }
+
+    if (I830noPanoramiXExtension || !I830XineramadataPtr) {
+#ifdef XF86DRI
+       if (!pI830->directRenderingEnabled)
+#endif
+	  return;
+    }
 
     if(pI830->SecondIsScrn0) {
        scrnnum1 = 1;
@@ -1631,14 +1665,30 @@ I830UpdateXineramaScreenInfo(ScrnInfoPtr pScrn1)
 
     }
 
-    I830XineramadataPtr[scrnnum1].x = x1;
-    I830XineramadataPtr[scrnnum1].y = y1;
-    I830XineramadataPtr[scrnnum1].width = w1;
-    I830XineramadataPtr[scrnnum1].height = h1;
-    I830XineramadataPtr[scrnnum2].x = x2;
-    I830XineramadataPtr[scrnnum2].y = y2;
-    I830XineramadataPtr[scrnnum2].width = w2;
-    I830XineramadataPtr[scrnnum2].height = h2;
+#ifdef XF86DRI
+    if (pI830->directRenderingEnabled) {
+       sarea->pipeA_x = x1;
+       sarea->pipeA_y = y1;
+       sarea->pipeA_w = w1;
+       sarea->pipeA_h = h1;
+       sarea->pipeB_x = x2;
+       sarea->pipeB_y = y2;
+       sarea->pipeB_w = w2;
+       sarea->pipeB_h = h2;
+    }
+#endif
+
+    if (I830XineramadataPtr && !I830noPanoramiXExtension) {
+       I830XineramadataPtr[scrnnum1].x = x1;
+       I830XineramadataPtr[scrnnum1].y = y1;
+       I830XineramadataPtr[scrnnum1].width = w1;
+       I830XineramadataPtr[scrnnum1].height = h1;
+       I830XineramadataPtr[scrnnum2].x = x2;
+       I830XineramadataPtr[scrnnum2].y = y2;
+       I830XineramadataPtr[scrnnum2].width = w2;
+       I830XineramadataPtr[scrnnum2].height = h2;
+    } else
+       return;
 
     if(infochanged) {
        xf86DrvMsg(pScrn1->scrnIndex, X_INFO,
@@ -2014,9 +2064,6 @@ I830XineramaExtensionInit(ScrnInfoPtr pScrn)
        pI830->I830XineramaVY = 0;
 
     }
-
-    I830UpdateXineramaScreenInfo(pScrn);
-
 }
 
 static void
@@ -2573,37 +2620,15 @@ static Bool
 I830Set640x480(ScrnInfoPtr pScrn)
 {
    I830Ptr pI830 = I830PTR(pScrn);
-   int m = 0x30; /* 640x480 8bpp */
+   int m;
 
-   switch (pScrn->depth) {
-   case 15:
-	 m = 0x40;
-	 break;
-   case 16:
-	 m = 0x41;
-	 break;
-   case 24:
-	 m = 0x50;
-	 break;
-   }
-
-   m |= (1 << 15) | (1 << 14);
+   /* 640x480 8bpp */
+   m = 0x30 | (1 << 15) | (1 << 14);
    if (VBESetVBEMode(pI830->pVbe, m, NULL))
 	   return TRUE;
 
-
    /* if the first failed, let's try the next - usually 800x600 */
-   m = 0x32;
-   switch (pScrn->depth) {
-   case 15:
-   case 16:
-	 m = 0x42;
-	 break;
-   case 24:
-	 m = 0x52;
-	 break;
-   }
-   m |= (1 << 15) | (1 << 14);
+   m = 0x32 | (1 << 15) | (1 << 14);
 
    if (VBESetVBEMode(pI830->pVbe, m, NULL))
 	   return TRUE;
@@ -2709,7 +2734,7 @@ SetDisplayDevices(ScrnInfoPtr pScrn, int devices)
    } 
 
    /* LVDS doesn't exist on these */
-   if (IS_I830(pI830) || IS_845G(pI830) || IS_I865G(pI830))
+   if (IS_I830(pI830) || IS_845G(pI830) || IS_I865G(pI830) || IS_I915G(pI830) || IS_I945G(pI830) || IS_I965G(pI830))
       singlepipe &= ~(PIPE_LFP | (PIPE_LFP<<8));
 
    if (pI830->availablePipes == 1) 
@@ -2852,12 +2877,14 @@ GetDisplayInfo(ScrnInfoPtr pScrn, int device, Bool *attached, Bool *present,
    DPRINTF(PFX, "GetDisplayInfo: device: 0x%x\n", device);
 
    switch (device & 0xff) {
-   case 0x01:
-   case 0x02:
-   case 0x04:
-   case 0x08:
-   case 0x10:
-   case 0x20:
+   case PIPE_CRT:
+   case PIPE_TV:
+   case PIPE_DFP:
+   case PIPE_LFP:
+   case PIPE_CRT2:
+   case PIPE_TV2:
+   case PIPE_DFP2:
+   case PIPE_LFP2:
       break;
    default:
       xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
@@ -2964,10 +2991,6 @@ PrintDisplayDeviceInfo(ScrnInfoPtr pScrn)
 	    name = DeviceToString(-1);
 	 } while (name);
 
-	 if (pipe & PIPE_UNKNOWN_ACTIVE)
-	    xf86DrvMsg(pScrn->scrnIndex, X_INFO,
-		       "\tSome unknown display devices may also be present\n");
-
       } else {
 	 xf86DrvMsg(pScrn->scrnIndex, X_INFO,
 		    "No active displays on Pipe %c.\n", PIPE_NAME(n));
@@ -3000,7 +3023,7 @@ GetPipeSizes(ScrnInfoPtr pScrn)
       pipe = (pI830->operatingDevices >> PIPE_SHIFT(n)) & PIPE_ACTIVE_MASK;
       pI830->pipeDisplaySize[n].x1 = pI830->pipeDisplaySize[n].y1 = 0;
       pI830->pipeDisplaySize[n].x2 = pI830->pipeDisplaySize[n].y2 = 4096;
-      for (i = 0; i < NumKnownDisplayTypes; i++) {
+      for (i = 0; i < NumDisplayTypes; i++) {
          if (pipe & (1 << i) & PIPE_SIZED_DISP_MASK) {
 	    if (pI830->displaySize[i].x2 != 0) {
 	       xf86DrvMsg(pScrn->scrnIndex, X_INFO,
@@ -3037,7 +3060,7 @@ I830DetectDisplayDevice(ScrnInfoPtr pScrn)
 		  "\t      If you encounter this problem please add \n"
 		  "\t\t Option \"DisplayInfo\" \"FALSE\"\n"
 		  "\t      to the Device section of your XF86Config file.\n");
-      for (i = 0; i < NumKnownDisplayTypes; i++) {
+      for (i = 0; i < NumDisplayTypes; i++) {
          if (GetDisplayInfo(pScrn, 1 << i, &pI830->displayAttached[i],
 			 &pI830->displayPresent[i],
 			 &pI830->displaySize[i].x2,
@@ -4398,7 +4421,7 @@ I830BIOSPreInit(ScrnInfoPtr pScrn, int flags)
    /*
     * Let's setup the mobile systems to check the lid status
     */
-   if (IS_MOBILE(pI830)) {
+   if (IS_MOBILE(pI830) && !pI830->MergedFB) {
       pI830->checkDevices = TRUE;
 
       if (!xf86ReturnOptValBool(pI830->Options, OPTION_CHECKDEVICES, TRUE)) {
@@ -6920,6 +6943,7 @@ I830InitFBManager(
     BoxPtr FullBox
 ){
    ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
+   I830Ptr pI830 = I830PTR(pScrn);
    RegionRec ScreenRegion;
    RegionRec FullRegion;
    BoxRec ScreenBox;
@@ -6928,7 +6952,7 @@ I830InitFBManager(
    ScreenBox.x1 = 0;
    ScreenBox.y1 = 0;
    ScreenBox.x2 = pScrn->displayWidth;
-   if (pScrn->virtualX > pScrn->virtualY)
+   if (!pI830->MergedFB && pScrn->virtualX > pScrn->virtualY)
       ScreenBox.y2 = pScrn->virtualX;
    else
       ScreenBox.y2 = pScrn->virtualY;
@@ -7441,6 +7465,9 @@ I830BIOSScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
       /* Rotation */
       xf86DrvMsg(pScrn->scrnIndex, X_INFO, "libshadow is version %d.%d.%d, required 1.1.0 or greater for rotation.\n",pI830->shadowReq.majorversion,pI830->shadowReq.minorversion,pI830->shadowReq.patchlevel);
    }
+
+   /* Call this unconditionally, as it also sets some fields in the SAREA */
+   I830UpdateXineramaScreenInfo(pScrn);
 
    if (serverGeneration == 1)
       xf86ShowUnusedOptions(pScrn->scrnIndex, pScrn->options);
@@ -8014,7 +8041,11 @@ I830BIOSEnterVT(int scrnIndex, int flags)
       * the Video BIOS with our saved devices, and only when that fails,
       * we'll warm boot it.
       */
-      if (!I830Set640x480(pScrn)) {
+      /* Check Pipe conf registers or possibly HTOTAL/VTOTAL for 0x00000000)*/
+      CARD32 temp;
+      Bool set = I830Set640x480(pScrn);
+      temp = pI830->pipe ? INREG(PIPEBCONF) : INREG(PIPEACONF);
+      if (!set || !(temp & 0x80000000)) {
          xf86Int10InfoPtr pInt;
 
          xf86DrvMsg(pScrn->scrnIndex, X_INFO, 
@@ -8079,13 +8110,15 @@ I830BIOSEnterVT(int scrnIndex, int flags)
 
 #ifdef XF86DRI
    if (pI830->directRenderingEnabled) {
+
+      I830DRISetVBlankInterrupt (pScrn, TRUE);
+
       if (!pI830->starting) {
          ScreenPtr pScreen = pScrn->pScreen;
          drmI830Sarea *sarea = (drmI830Sarea *) DRIGetSAREAPrivate(pScreen);
          int i;
 
 	 I830DRIResume(screenInfo.screens[scrnIndex]);
-         I830DRISetVBlankInterrupt (pScrn, TRUE);
       
 	 I830RefreshRing(pScrn);
 	 I830Sync(pScrn);
@@ -8184,10 +8217,9 @@ I830BIOSSwitchMode(int scrnIndex, DisplayModePtr mode, int flags)
 
    /* Since RandR (indirectly) uses SwitchMode(), we need to
     * update our Xinerama info here, too, in case of resizing
+    * Call this unconditionally, as it also sets some fields in the SAREA
     */
-   if(pI830->MergedFB) {
-      I830UpdateXineramaScreenInfo(pScrn);
-   }
+   I830UpdateXineramaScreenInfo(pScrn);
 
    return ret;
 }
