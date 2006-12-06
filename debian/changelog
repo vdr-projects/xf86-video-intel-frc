@@ -1,11 +1,22 @@
-xserver-xorg-video-i810 (2:1.7.2-2) UNRELEASED; urgency=low
+xserver-xorg-video-i810 (2:1.7.2-2) unstable; urgency=low
 
+  [ Julien Cristau ]
   * Add link to xserver-xorg-core bug script, so that bugreports contain
     the user's config and log files.
   * Bump dependency on xserver-xorg-core to >= 2:1.1.1-11, as previous
     versions don't have the bug script.
 
- -- Julien Cristau <julien.cristau@ens-lyon.org>  Tue,  7 Nov 2006 07:30:41 +0100
+  [ Drew Parsons ]
+  * Apply upstream patch 1-overlay_fix_lockup.patch (git commit
+    e065324661ad08b3b359136f48090232f6138959, upstream bug #5774).
+    Should remove remaining lockup problems in I830WaitLpRing().
+    Closes: #272294.
+  * While we're at it, apply upstream patch 11-xv_lockup.patch (git
+    commit fbb376bd1a4daad4c86e349df98438989ce173f1, upstream bug
+    #8594), fixing lockups related to Xv.  We'll have no lockup bugs
+    in etch, dammit!  Closes: #397485.
+
+ -- Drew Parsons <dparsons@debian.org>  Wed,  6 Dec 2006 11:50:10 +1100
 
 xserver-xorg-video-i810 (2:1.7.2-1) unstable; urgency=low
 
