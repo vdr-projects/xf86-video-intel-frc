@@ -1,3 +1,12 @@
+xserver-xorg-video-i810 (2:1.7.2-3) unstable; urgency=low
+
+  * Build-Depends: quilt, needed to apply patches.
+  * Replace the cvs source url in the long description with an XS-Vcs-Git
+    control field and a reference to the xf86-video-intel module.
+    Added a link to www.X.org.
+
+ -- Drew Parsons <dparsons@debian.org>  Wed,  6 Dec 2006 12:52:18 +1100
+
 xserver-xorg-video-i810 (2:1.7.2-2) unstable; urgency=low
 
   [ Julien Cristau ]
