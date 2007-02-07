@@ -1,0 +1,20 @@
+From: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date: Tue, 9 Jan 2007 14:02:47 +0000 (+0000)
+Subject: Fix bug #8536, i915 BIOS fails when restarting Xserver.
+X-Git-Tag: xf86-video-i810-1.7.4 / xf86-video-intel-1.7.4
+X-Git-Url: http://gitweb.freedesktop.org/?p=xorg/driver/xf86-video-intel.git;a=commitdiff;h=33c0fac6d63d9a509a24c7a5e5a46a0d6ee4dc5d
+
+Fix bug #8536, i915 BIOS fails when restarting Xserver.
+---
+
+--- a/src/i830_driver.c
++++ b/src/i830_driver.c
+@@ -7087,7 +7087,7 @@ IntelEmitInvarientState(ScrnInfoPtr pScr
+    I830Ptr pI830 = I830PTR(pScrn);
+    CARD32 ctx_addr;
+ 
+-   if (pI830->noAccel)
++   if (pI830->noAccel || !I830IsPrimary(pScrn))
+       return;
+ 
+    ctx_addr = pI830->ContextMem.Start;
