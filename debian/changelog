@@ -1,3 +1,9 @@
+xserver-xorg-video-i810 (2:1.7.2-6) UNRELEASED; urgency=low
+
+  * Bump xserver ABI metadata to 1.1 for use with server 1.2
+
+ -- David Nusinow <dnusinow@debian.org>  Sat, 10 Feb 2007 21:23:40 -0500
+
 xserver-xorg-video-i810 (2:1.7.2-5) UNRELEASED; urgency=low
 
   * Drop duplicate build dependency on libdrm-dev, so this really
