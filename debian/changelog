@@ -9,8 +9,9 @@ xserver-xorg-video-i810 (2:1.7.4-1) UNRELEASED; urgency=low
   * Add support for the armeb and armel architectures, thanks to Riku Voipio
     (closes: #408797).
   * Drop all our patches, applied upstream.
+  * debian/rules clean needs to depend on xsfclean.
 
- -- Julien Cristau <jcristau@debian.org>  Mon, 12 Feb 2007 22:06:01 +0100
+ -- Julien Cristau <jcristau@debian.org>  Mon, 12 Feb 2007 22:06:58 +0100
 
 xserver-xorg-video-i810 (2:1.7.2-4) unstable; urgency=low
 
