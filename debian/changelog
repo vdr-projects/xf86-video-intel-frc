@@ -1,7 +1,6 @@
 xserver-xorg-video-i810 (2:1.7.4-1) UNRELEASED; urgency=low
 
   [ David Nusinow ]
-  * Bump xserver ABI metadata to 1.1 for use with server 1.2
   * New upstream version
 
   [ Julien Cristau ]
@@ -10,7 +9,7 @@ xserver-xorg-video-i810 (2:1.7.4-1) UNRELEASED; urgency=low
   * Add support for the armeb and armel architectures, thanks to Riku Voipio
     (closes: #408797).
 
- -- David Nusinow <dnusinow@debian.org>  Sun, 11 Feb 2007 22:08:27 -0500
+ -- Julien Cristau <jcristau@debian.org>  Mon, 12 Feb 2007 22:04:00 +0100
 
 xserver-xorg-video-i810 (2:1.7.2-4) unstable; urgency=low
 
