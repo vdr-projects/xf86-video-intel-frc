@@ -10,8 +10,9 @@ xserver-xorg-video-i810 (2:1.7.4-1) UNRELEASED; urgency=low
     (closes: #408797).
   * Drop all our patches, applied upstream.
   * debian/rules clean needs to depend on xsfclean.
+  * Generate the dependency on xserver-xorg-core automatically.
 
- -- Julien Cristau <jcristau@debian.org>  Mon, 12 Feb 2007 22:06:58 +0100
+ -- Julien Cristau <jcristau@debian.org>  Sat, 17 Feb 2007 17:10:49 +0100
 
 xserver-xorg-video-i810 (2:1.7.2-4) unstable; urgency=low
 
