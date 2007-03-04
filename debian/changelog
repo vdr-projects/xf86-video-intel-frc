@@ -1,4 +1,4 @@
-xserver-xorg-video-i810 (2:1.7.4-1) UNRELEASED; urgency=low
+xserver-xorg-video-i810 (2:1.7.4-1) experimental; urgency=low
 
   [ David Nusinow ]
   * New upstream version
@@ -14,10 +14,7 @@ xserver-xorg-video-i810 (2:1.7.4-1) UNRELEASED; urgency=low
   * debian/rules clean needs to depend on xsfclean.
   * Generate the dependency on xserver-xorg-core automatically.
 
-  [ David Nusinow ]
-  * 
-
- -- David Nusinow <dnusinow@debian.org>  Sun,  4 Mar 2007 18:19:22 -0500
+ -- David Nusinow <dnusinow@debian.org>  Sun,  4 Mar 2007 18:20:38 -0500
 
 xserver-xorg-video-i810 (2:1.7.2-4) unstable; urgency=low
 
