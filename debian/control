@@ -3,14 +3,14 @@ Section: x11
 Priority: optional
 Maintainer: Debian X Strike Force <debian-x@lists.debian.org>
 Uploaders: David Nusinow <dnusinow@debian.org>, Branden Robinson <branden@debian.org>, Fabio M. Di Nitto <fabbione@fabbione.net>, Drew Parsons <dparsons@debian.org>
-Build-Depends: debhelper (>= 5), quilt, pkg-config, xserver-xorg-dev (>= 2:1.2.0-3), x11proto-gl-dev, x11proto-video-dev, libgl1-mesa-dev | libgl-dev, libxvmc-dev (>= 1:1.0.1-1), x11proto-core-dev, x11proto-fonts-dev, x11proto-randr-dev, x11proto-render-dev, x11proto-xinerama-dev, libdrm-dev (>> 2.0) [!hurd-i386], x11proto-xf86dri-dev
+Build-Depends: debhelper (>= 5), quilt, pkg-config, xserver-xorg-dev (>= 2:1.2.0-6), x11proto-gl-dev, x11proto-video-dev, libgl1-mesa-dev | libgl-dev, libxvmc-dev (>= 1:1.0.1-1), x11proto-core-dev, x11proto-fonts-dev, x11proto-randr-dev, x11proto-render-dev, x11proto-xinerama-dev, libdrm-dev (>> 2.0) [!hurd-i386], x11proto-xf86dri-dev
 Standards-Version: 3.7.2
 XS-Vcs-Git: git://anongit.freedesktop.org/git/xorg/driver/xf86-video-intel
 
 Package: xserver-xorg-video-i810
 Architecture: alpha amd64 arm armeb armel hppa hurd-i386 i386 ia64 kfreebsd-i386 m68k mips mipsel netbsd-i386 powerpc
 Depends: ${shlibs:Depends}, ${misc:Depends}, ${xserver:Depends}
-Provides: xserver-xorg-video-1.0
+Provides: ${xviddriver:Provides}
 Replaces: xserver-xorg (<< 6.8.2-35)
 Description: X.Org X server -- Intel i8xx, i9xx display driver
  This package provides the driver for the Intel i8xx and i9xx family

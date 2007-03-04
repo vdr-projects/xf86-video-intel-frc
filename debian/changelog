@@ -2,6 +2,8 @@ xserver-xorg-video-i810 (2:1.7.4-1) UNRELEASED; urgency=low
 
   [ David Nusinow ]
   * New upstream version
+  * Generate Provides: line automatically
+  * Bump xserver-xorg-core build-depend to 2:1.2.0-6 to handle this properly
 
   [ Julien Cristau ]
   * Drop duplicate build dependency on libdrm-dev, so this really
@@ -12,7 +14,10 @@ xserver-xorg-video-i810 (2:1.7.4-1) UNRELEASED; urgency=low
   * debian/rules clean needs to depend on xsfclean.
   * Generate the dependency on xserver-xorg-core automatically.
 
- -- Julien Cristau <jcristau@debian.org>  Sat, 17 Feb 2007 17:10:49 +0100
+  [ David Nusinow ]
+  * 
+
+ -- David Nusinow <dnusinow@debian.org>  Sun,  4 Mar 2007 18:19:22 -0500
 
 xserver-xorg-video-i810 (2:1.7.2-4) unstable; urgency=low
 
