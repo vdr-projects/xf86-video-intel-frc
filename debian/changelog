@@ -1,3 +1,9 @@
+xserver-xorg-video-i810 (2:1.7.4-2) experimental; urgency=low
+
+  * Bump build-dep on libdrm-dev to >= 2.2.  Thanks, Marc 'HE' Brockschmidt!
+
+ -- Julien Cristau <jcristau@debian.org>  Mon,  5 Mar 2007 13:27:18 +0100
+
 xserver-xorg-video-i810 (2:1.7.4-1) experimental; urgency=low
 
   [ David Nusinow ]
