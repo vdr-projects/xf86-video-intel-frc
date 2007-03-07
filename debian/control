@@ -1,4 +1,4 @@
-Source: xserver-xorg-video-i810
+Source: xserver-xorg-video-intel
 Section: x11
 Priority: optional
 Maintainer: Debian X Strike Force <debian-x@lists.debian.org>
@@ -7,11 +7,12 @@ Build-Depends: debhelper (>= 5), quilt, pkg-config, xserver-xorg-dev (>= 2:1.2.0
 Standards-Version: 3.7.2
 XS-Vcs-Git: git://anongit.freedesktop.org/git/xorg/driver/xf86-video-intel
 
-Package: xserver-xorg-video-i810
+Package: xserver-xorg-video-intel
 Architecture: alpha amd64 arm armeb armel hppa hurd-i386 i386 ia64 kfreebsd-i386 m68k mips mipsel netbsd-i386 powerpc
 Depends: ${shlibs:Depends}, ${misc:Depends}, ${xserver:Depends}
 Provides: ${xviddriver:Provides}
-Replaces: xserver-xorg (<< 6.8.2-35)
+Replaces: xserver-xorg (<< 6.8.2-35), xserver-xorg-video-i810 (<< 2:1.9.91-1), xserver-xorg-video-i810-modesetting, xserver-xorg-video-intel-modesetting
+Conflicts: xserver-xorg-video-i810 (<< 2:1.9.91-1), xserver-xorg-video-i810-modesetting, xserver-xorg-video-intel-modesetting
 Description: X.Org X server -- Intel i8xx, i9xx display driver
  This package provides the driver for the Intel i8xx and i9xx family
  of chipsets, including i810, i815, i830, i845, i855, i865, i915, and
@@ -26,3 +27,11 @@ Description: X.Org X server -- Intel i8xx, i9xx display driver
  <URL:http://lists.freedesktop.org/mailman/listinfo/xorg>
  .
  This package is built from the X.org xf86-video-intel driver module.
+
+Package: xserver-xorg-video-i810
+Architecture: all
+Section: oldlibs
+Depends: xserver-xorg-video-intel
+Description: X.Org X server -- Intel i8xx, i9xx display driver
+ This is a transitional package providing the Xorg video driver for the
+ Intel i8xx and i9xx family of chipsets, and can be safely removed.
