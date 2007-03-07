@@ -65,8 +65,17 @@
 /* Version number of package */
 #undef VERSION
 
+/* Enable debug support */
+#undef VIDEO_DEBUG
+
 /* Enable DRI driver support */
 #undef XF86DRI
 
 /* Enable developmental DRI driver support */
 #undef XF86DRI_DEVEL
+
+/* Extended DRI memory management */
+#undef XF86DRI_MM
+
+/* X server has built-in mode code */
+#undef XMODES
