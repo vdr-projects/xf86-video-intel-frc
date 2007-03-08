@@ -1,11 +1,11 @@
-xserver-xorg-video-intel (2:1.9.91-1) UNRELEASED; urgency=low
+xserver-xorg-video-intel (2:1.9.91-1) experimental; urgency=low
 
   * Bump build-dep on libdrm-dev to >= 2.2.  Thanks, Marc 'HE' Brockschmidt!
   * New upstream release candidate.
   * Rename from -i810 to -intel to follow upstream naming.
   * (Build-)Depend on a newer xserver.
 
- -- Julien Cristau <jcristau@debian.org>  Thu,  8 Mar 2007 18:49:29 +0100
+ -- Julien Cristau <jcristau@debian.org>  Thu,  8 Mar 2007 18:55:05 +0100
 
 xserver-xorg-video-i810 (2:1.7.4-1) experimental; urgency=low
 
