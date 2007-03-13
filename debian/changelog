@@ -1,3 +1,12 @@
+xserver-xorg-video-intel (2:1.9.91-2) experimental; urgency=low
+
+  * Revert commit c2c62559e702e7de1fa2ef309fa647ab13564dc3 "Move
+    single mode setting code to X server."  Brings i830PipeFindClosestMode
+    back into a consistent state.  Closes: #414612.
+  * autoreconf and git-add Makefile.in files in ./src subdirectories.
+
+ -- Drew Parsons <dparsons@debian.org>  Tue, 13 Mar 2007 22:49:18 +1100
+
 xserver-xorg-video-intel (2:1.9.91-1) experimental; urgency=low
 
   * Bump build-dep on libdrm-dev to >= 2.2.  Thanks, Marc 'HE' Brockschmidt!
