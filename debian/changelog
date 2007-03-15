@@ -1,3 +1,10 @@
+xserver-xorg-video-intel (2:1.9.92-1) experimental; urgency=low
+
+  * New upstream release candidate.
+  * Build-depend on xserver-xorg-dev 1.3rc2.
+
+ -- Julien Cristau <jcristau@debian.org>  Thu, 15 Mar 2007 14:38:06 +0100
+
 xserver-xorg-video-intel (2:1.9.91-2) experimental; urgency=low
 
   * Revert commit c2c62559e702e7de1fa2ef309fa647ab13564dc3 "Move
