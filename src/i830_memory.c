@@ -99,6 +99,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "config.h"
 #endif
 
+#include <assert.h>
 #include <string.h>
 
 #include "xf86.h"
@@ -240,6 +241,7 @@ i830_reset_allocations(ScrnInfoPtr pScrn)
     pI830->xaa_linear = NULL;
     pI830->logical_context = NULL;
     pI830->back_buffer = NULL;
+    pI830->third_buffer = NULL;
     pI830->depth_buffer = NULL;
     pI830->textures = NULL;
     pI830->memory_manager = NULL;
@@ -257,6 +259,8 @@ i830_free_3d_memory(ScrnInfoPtr pScrn)
 
     i830_free_memory(pScrn, pI830->back_buffer);
     pI830->back_buffer = NULL;
+    i830_free_memory(pScrn, pI830->third_buffer);
+    pI830->third_buffer = NULL;
     i830_free_memory(pScrn, pI830->depth_buffer);
     pI830->depth_buffer = NULL;
     i830_free_memory(pScrn, pI830->textures);
@@ -611,6 +615,10 @@ i830_describe_allocations(ScrnInfoPtr pScrn, int verbosity, const char *prefix)
 	i830_describe_tiling(pScrn, verbosity, prefix, pI830->back_buffer,
 			     pI830->back_tiled);
     }
+    if (pI830->third_buffer != NULL) {
+	i830_describe_tiling(pScrn, verbosity, prefix, pI830->third_buffer,
+			     pI830->third_tiled);
+    }
     if (pI830->depth_buffer != NULL) {
 	i830_describe_tiling(pScrn, verbosity, prefix, pI830->depth_buffer,
 			     pI830->depth_tiled);
@@ -835,6 +843,8 @@ i830_allocate_framebuffer(ScrnInfoPtr pScrn, I830Ptr pI830, BoxPtr FbMemBox,
 	return NULL;
     }
 
+    if (pI830->FbBase)
+	memset (pI830->FbBase + front_buffer->offset, 0, size);
     return front_buffer;
 }
 
@@ -936,6 +946,20 @@ i830_allocate_2d_memory(ScrnInfoPtr pScrn)
 		   "Failed to allocate logical context space.\n");
 	return FALSE;
     }
+#ifdef I830_USE_EXA
+    if (pI830->useEXA) {
+	if (IS_I965G(pI830) && pI830->exa_965_state == NULL) {
+	    pI830->exa_965_state =
+		i830_allocate_memory(pScrn, "exa G965 state buffer",
+				     EXA_LINEAR_EXTRA, GTT_PAGE_SIZE, 0);
+	    if (pI830->exa_965_state == NULL) {
+		xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
+			   "Failed to allocate exa state buffer for 965.\n");
+		return FALSE;
+	    }
+	}
+    }
+#endif
 
 #ifdef I830_XV
     /* Allocate overlay register space and optional XAA linear allocator
@@ -979,17 +1003,6 @@ i830_allocate_2d_memory(ScrnInfoPtr pScrn)
 	    if (pI830->exa_offscreen == NULL) {
 		xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
 			   "Failed to allocate EXA offscreen memory.");
-		return FALSE;
-	    }
-	}
-
-	if (IS_I965G(pI830) && pI830->exa_965_state == NULL) {
-	    pI830->exa_965_state =
-		i830_allocate_memory(pScrn, "exa G965 state buffer",
-				     EXA_LINEAR_EXTRA, GTT_PAGE_SIZE, 0);
-	    if (pI830->exa_965_state == NULL) {
-		xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
-			   "Failed to allocate exa state buffer for 965.\n");
 		return FALSE;
 	    }
 	}
@@ -1052,7 +1065,8 @@ myLog2(unsigned int n)
 }
 
 static Bool
-i830_allocate_backbuffer(ScrnInfoPtr pScrn)
+i830_allocate_backbuffer(ScrnInfoPtr pScrn, i830_memory **buffer,
+			 unsigned int *tiled, const char *name)
 {
     I830Ptr pI830 = I830PTR(pScrn);
     unsigned int pitch = pScrn->displayWidth * pI830->cpp;
@@ -1068,26 +1082,23 @@ i830_allocate_backbuffer(ScrnInfoPtr pScrn)
     if (!pI830->disableTiling && IsTileable(pScrn, pitch))
     {
 	size = ROUND_TO_PAGE(pitch * ALIGN(height, 16));
-	pI830->back_buffer =
-	    i830_allocate_memory_tiled(pScrn, "back buffer",
-				       size, pitch, GTT_PAGE_SIZE,
-				       ALIGN_BOTH_ENDS,
-				       TILING_XMAJOR);
-	pI830->back_tiled = FENCE_XMAJOR;
+	*buffer = i830_allocate_memory_tiled(pScrn, name, size, pitch,
+					     GTT_PAGE_SIZE, ALIGN_BOTH_ENDS,
+					     TILING_XMAJOR);
+	*tiled = FENCE_XMAJOR;
     }
 
     /* Otherwise, just allocate it linear */
-    if (pI830->back_buffer == NULL) {
+    if (*buffer == NULL) {
 	size = ROUND_TO_PAGE(pitch * height);
-	pI830->back_buffer = i830_allocate_memory(pScrn, "back buffer",
-						  size, GTT_PAGE_SIZE,
-						  ALIGN_BOTH_ENDS);
-	pI830->back_tiled = FENCE_LINEAR;
+	*buffer = i830_allocate_memory(pScrn, name, size, GTT_PAGE_SIZE,
+				       ALIGN_BOTH_ENDS);
+	*tiled = FENCE_LINEAR;
     }
 
-    if (pI830->back_buffer == NULL) {
+    if (*buffer == NULL) {
 	xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
-		   "Failed to allocate back buffer space.\n");
+		   "Failed to allocate %s space.\n", name);
 	return FALSE;
     }
 
@@ -1111,13 +1122,20 @@ i830_allocate_depthbuffer(ScrnInfoPtr pScrn)
     /* First try allocating it tiled */
     if (!pI830->disableTiling && IsTileable(pScrn, pitch))
     {
+	enum tile_format tile_format;
+
 	size = ROUND_TO_PAGE(pitch * ALIGN(height, 16));
+
+	/* The 965 requires that the depth buffer be in Y Major format, while
+	 * the rest appear to fail when handed that format.
+	 */
+	tile_format = IS_I965G(pI830) ? TILING_YMAJOR: TILING_XMAJOR;
 
 	pI830->depth_buffer =
 	    i830_allocate_memory_tiled(pScrn, "depth buffer", size, pitch,
 				       GTT_PAGE_SIZE, ALIGN_BOTH_ENDS,
-				       TILING_YMAJOR);
-	pI830->depth_tiled = FENCE_YMAJOR;
+				       tile_format);
+	pI830->depth_tiled = FENCE_XMAJOR;
     }
 
     /* Otherwise, allocate it linear. */
@@ -1138,7 +1156,7 @@ i830_allocate_depthbuffer(ScrnInfoPtr pScrn)
     return TRUE;
 }
 
-static Bool
+Bool
 i830_allocate_texture_memory(ScrnInfoPtr pScrn)
 {
     I830Ptr pI830 = I830PTR(pScrn);
@@ -1187,10 +1205,22 @@ i830_allocate_texture_memory(ScrnInfoPtr pScrn)
 Bool
 i830_allocate_3d_memory(ScrnInfoPtr pScrn)
 {
+    I830Ptr pI830 = I830PTR(pScrn);
+
     DPRINTF(PFX, "i830_allocate_3d_memory\n");
 
-    if (!i830_allocate_backbuffer(pScrn))
+    if (!i830_allocate_backbuffer(pScrn, &pI830->back_buffer,
+				  &pI830->back_tiled, "back buffer"))
 	return FALSE;
+
+    if (pI830->TripleBuffer && !i830_allocate_backbuffer(pScrn,
+							 &pI830->third_buffer,
+							 &pI830->third_tiled,
+							 "third buffer")) {
+       xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
+		  "Failed to allocate third buffer, triple buffering "
+		  "inactive\n");
+    }
 
     if (!i830_allocate_depthbuffer(pScrn))
 	return FALSE;
@@ -1364,7 +1394,9 @@ i830_set_fence(ScrnInfoPtr pScrn, int nr, unsigned int offset,
    	}
     }
 
-    if (IS_I9XX(pI830))
+    if ((IS_I945G(pI830) || IS_I945GM(pI830)) && tile_format == TILING_YMAJOR)
+	fence_pitch = pitch / 128;
+    else if (IS_I9XX(pI830))
 	fence_pitch = pitch / 512;
     else
 	fence_pitch = pitch / 128;
