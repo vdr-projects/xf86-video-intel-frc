@@ -254,12 +254,36 @@ DEBUGSTRING(i830_debug_dpll_test)
 		     dpllbndiv, dpllbmdiv, dpllbinput);
 }
 
+DEBUGSTRING(i830_debug_adpa)
+{
+    char pipe = (val & ADPA_PIPE_B_SELECT) ? 'B' : 'A';
+    char *enable = (val & ADPA_DAC_ENABLE) ? "enabled" : "disabled";
+    char hsync = (val & ADPA_HSYNC_ACTIVE_HIGH) ? '+' : '-';
+    char vsync = (val & ADPA_VSYNC_ACTIVE_HIGH) ? '+' : '-';
+
+    return XNFprintf("%s, pipe %c, %chsync, %cvsync",
+		     enable, pipe, hsync, vsync);
+}
+
 DEBUGSTRING(i830_debug_lvds)
 {
     char pipe = val & LVDS_PIPEB_SELECT ? 'B' : 'A';
     char *enable = val & LVDS_PORT_EN ? "enabled" : "disabled";
+    int depth;
+    char *channels;
 
-    return XNFprintf("%s, pipe %c", enable, pipe);
+    if ((val & LVDS_A3_POWER_MASK) == LVDS_A3_POWER_UP)
+	depth = 24;
+    else
+	depth = 18;
+    if ((val & LVDS_B0B3_POWER_MASK) == LVDS_B0B3_POWER_UP)
+	channels = "2 channels";
+    else
+	channels = "1 channel";
+
+
+    return XNFprintf("%s, pipe %c, %d bit, %s",
+		     enable, pipe, depth, channels);
 }
 
 DEBUGSTRING(i830_debug_sdvo)
@@ -313,7 +337,7 @@ static struct i830SnapshotRec {
     DEFINEREG(DSPFW2),
     DEFINEREG(DSPFW3),
 
-    DEFINEREG(ADPA),
+    DEFINEREG2(ADPA, i830_debug_adpa),
     DEFINEREG2(LVDS, i830_debug_lvds),
     DEFINEREG(DVOA),
     DEFINEREG(DVOB),
