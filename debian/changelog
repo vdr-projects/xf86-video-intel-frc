@@ -1,8 +1,9 @@
 xserver-xorg-video-intel (2:1.9.93-1) experimental; urgency=low
 
   * New upstream release candidate.
+    + bump build-dep on xserver-xorg-dev to >= 2:1.2.99.903.
 
- -- Julien Cristau <jcristau@debian.org>  Tue, 27 Mar 2007 08:24:28 +0200
+ -- Julien Cristau <jcristau@debian.org>  Tue, 27 Mar 2007 08:25:39 +0200
 
 xserver-xorg-video-intel (2:1.9.92-1) experimental; urgency=low
 
