@@ -1,3 +1,9 @@
+xserver-xorg-video-intel (2:1.9.93-2) UNRELEASED; urgency=low
+
+  * Build a xserver-xorg-video-intel-dbg package with debugging symbols.
+
+ -- Brice Goglin <Brice.Goglin@ens-lyon.org>  Sat, 31 Mar 2007 14:10:59 +0200
+
 xserver-xorg-video-intel (2:1.9.93-1) experimental; urgency=low
 
   * New upstream release candidate.
