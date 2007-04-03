@@ -216,6 +216,7 @@ i830_lvds_mode_set(xf86OutputPtr output, DisplayModePtr mode,
 {
     ScrnInfoPtr pScrn = output->scrn;
     I830Ptr pI830 = I830PTR(pScrn);
+    I830CrtcPrivatePtr intel_crtc = output->crtc->driver_private;
     CARD32 pfit_control;
 
     /* The LVDS pin pair will already have been turned on in the
@@ -230,8 +231,12 @@ i830_lvds_mode_set(xf86OutputPtr output, DisplayModePtr mode,
 		    VERT_AUTO_SCALE | HORIZ_AUTO_SCALE |
 		    VERT_INTERP_BILINEAR | HORIZ_INTERP_BILINEAR);
 
-    if (pI830->panel_wants_dither)
-	pfit_control |= PANEL_8TO6_DITHER_ENABLE;
+    if (!IS_I965G(pI830)) {
+	if (pI830->panel_wants_dither)
+	    pfit_control |= PANEL_8TO6_DITHER_ENABLE;
+    } else {
+	pfit_control |= intel_crtc->pipe << PFIT_PIPE_SHIFT;
+    }
 
     OUTREG(PFIT_CONTROL, pfit_control);
 }
@@ -468,7 +473,9 @@ i830_lvds_init(ScrnInfoPtr pScrn)
     bios_mode = i830_bios_get_panel_mode(pScrn);
     if (bios_mode != NULL) {
 	if (pI830->panel_fixed_mode != NULL) {
-	    if (!xf86ModesEqual(pI830->panel_fixed_mode, bios_mode)) {
+	    if (pI830->debug_modes &&
+		!xf86ModesEqual(pI830->panel_fixed_mode, bios_mode))
+	    {
 		xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
 			   "BIOS panel mode data doesn't match probed data, "
 			   "continuing with probed.\n");

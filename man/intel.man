@@ -38,7 +38,7 @@ memory for video use is required in order to use this driver.  For the 830M
 and later, this is required in order for the driver to use more video ram
 than has been pre-allocated at boot time by the BIOS.  This is usually
 achieved with an "agpgart" or "agp" kernel driver.  Linux, FreeBSD, OpenBSD,
-and NetBSD have such kernel drivers available.
+NetBSD, and Solaris have such kernel drivers available.
 .PP
 By default, the i810 will use 8 megabytes
 of system memory for graphics.  For the 830M and later, the driver will
@@ -175,6 +175,10 @@ Choose acceleration architecture, either "XAA" or "EXA".  XAA is the old
 (but stable) XFree86 based acceleration architecture.  EXA is a newer and
 simpler acceleration architecture designed to better accelerate the X Render
 extension.  Default: "XAA".
+.TP
+.BI "Option \*qModeDebug\*q \*q" boolean \*q
+Enable printing of additional debugging information about modesetting to
+the server log.
 
 .PP
 The 830M and newer driver supports RandR 1.2, exposing the VGA, LVDS
