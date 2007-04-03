@@ -95,12 +95,12 @@ am__intel_drv_la_SOURCES_DIST = brw_defines.h brw_structs.h sf_prog.h \
 	i915_render.c i965_render.c local_xf86Rename.h \
 	parser/xf86Parser.h parser/xf86Optrec.h modes/xf86Modes.h \
 	modes/xf86Modes.c modes/xf86cvt.c modes/xf86Crtc.h \
-	modes/xf86Crtc.c modes/xf86EdidModes.c modes/xf86RandR12.c \
-	modes/xf86RandR12.h modes/xf86Rename.h modes/xf86Rotate.c \
-	modes/xf86DiDGA.c i810_dri.c i810_dri.h i830_dri.c i810_hwmc.c \
-	i830_dri.h
-am__objects_1 = xf86Modes.lo xf86cvt.lo xf86Crtc.lo xf86EdidModes.lo \
-	xf86RandR12.lo xf86Rotate.lo xf86DiDGA.lo
+	modes/xf86Crtc.c modes/xf86Cursors.c modes/xf86EdidModes.c \
+	modes/xf86RandR12.c modes/xf86RandR12.h modes/xf86Rename.h \
+	modes/xf86Rotate.c modes/xf86DiDGA.c i810_dri.c i810_dri.h \
+	i830_dri.c i810_hwmc.c i830_dri.h
+am__objects_1 = xf86Modes.lo xf86cvt.lo xf86Crtc.lo xf86Cursors.lo \
+	xf86EdidModes.lo xf86RandR12.lo xf86Rotate.lo xf86DiDGA.lo
 @XMODES_TRUE@am__objects_2 = $(am__objects_1)
 am__objects_3 = i810_dri.lo i830_dri.lo i810_hwmc.lo
 @DRI_TRUE@am__objects_4 = $(am__objects_3)
@@ -310,7 +310,8 @@ XMODE_SRCS = \
 	 modes/xf86cvt.c \
 	 modes/xf86Crtc.h \
 	 modes/xf86Crtc.c \
-         modes/xf86EdidModes.c \
+	 modes/xf86Cursors.c \
+	 modes/xf86EdidModes.c \
 	 modes/xf86RandR12.c \
 	 modes/xf86RandR12.h \
 	 modes/xf86Rename.h \
@@ -322,7 +323,7 @@ INTEL_DRI_SRCS = \
          i810_dri.h \
          i830_dri.c \
          i810_hwmc.c \
-         i830_dri.h 
+         i830_dri.h
 
 intel_drv_la_SOURCES = brw_defines.h brw_structs.h sf_prog.h wm_prog.h \
 	common.h i2c_vid.h i810_accel.c i810_common.h i810_cursor.c \
@@ -472,6 +473,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/i965_render.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/i965_video.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xf86Crtc.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xf86Cursors.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xf86DiDGA.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xf86EdidModes.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xf86Modes.Plo@am__quote@
@@ -520,6 +522,13 @@ xf86Crtc.lo: modes/xf86Crtc.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='modes/xf86Crtc.c' object='xf86Crtc.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o xf86Crtc.lo `test -f 'modes/xf86Crtc.c' || echo '$(srcdir)/'`modes/xf86Crtc.c
+
+xf86Cursors.lo: modes/xf86Cursors.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT xf86Cursors.lo -MD -MP -MF "$(DEPDIR)/xf86Cursors.Tpo" -c -o xf86Cursors.lo `test -f 'modes/xf86Cursors.c' || echo '$(srcdir)/'`modes/xf86Cursors.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/xf86Cursors.Tpo" "$(DEPDIR)/xf86Cursors.Plo"; else rm -f "$(DEPDIR)/xf86Cursors.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='modes/xf86Cursors.c' object='xf86Cursors.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o xf86Cursors.lo `test -f 'modes/xf86Cursors.c' || echo '$(srcdir)/'`modes/xf86Cursors.c
 
 xf86EdidModes.lo: modes/xf86EdidModes.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT xf86EdidModes.lo -MD -MP -MF "$(DEPDIR)/xf86EdidModes.Tpo" -c -o xf86EdidModes.lo `test -f 'modes/xf86EdidModes.c' || echo '$(srcdir)/'`modes/xf86EdidModes.c; \
