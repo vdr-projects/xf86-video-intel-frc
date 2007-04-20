@@ -6,9 +6,10 @@ xserver-xorg-video-intel (2:2.0.0-1) unstable; urgency=low
   * Remove Fabio from Uploaders, with his permission.
   * Install the bug script in the xserver-xorg-video-intel dir instead of
     -i810.
+  * Install the upstream changelog.
   * Upload to unstable.
 
- -- Julien Cristau <jcristau@debian.org>  Fri, 20 Apr 2007 08:48:33 +0200
+ -- Julien Cristau <jcristau@debian.org>  Fri, 20 Apr 2007 08:54:20 +0200
 
 xserver-xorg-video-intel (2:1.9.94-1) experimental; urgency=low
 
