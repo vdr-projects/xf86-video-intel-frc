@@ -3,11 +3,12 @@ xserver-xorg-video-intel (2:2.0.0-2) UNRELEASED; urgency=low
   [ Julien Cristau ]
   * Build xserver-xorg-video-i810 in binary-indep instead of binary-arch
     (closes: #420240).  Thanks, Aaron M. Ucko!
+  * Mention i965 chipsets in the long description.
 
   [ Timo Aaltonen ]
   * Replaces/Conflicts: xserver-xorg-driver-i810.
 
- -- Timo Aaltonen <tjaalton@cc.hut.fi>  Tue, 24 Apr 2007 13:30:27 +0300
+ -- Julien Cristau <jcristau@debian.org>  Thu, 10 May 2007 18:11:11 +0200
 
 xserver-xorg-video-intel (2:2.0.0-1) unstable; urgency=low
 

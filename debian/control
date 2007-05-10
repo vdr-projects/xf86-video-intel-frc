@@ -16,8 +16,8 @@ Replaces: xserver-xorg (<< 6.8.2-35), xserver-xorg-video-i810 (<< 2:1.9.91-1), x
 Conflicts: xserver-xorg-video-i810 (<< 2:1.9.91-1), xserver-xorg-video-i810-modesetting, xserver-xorg-video-intel-modesetting, xserver-xorg-driver-i810
 Description: X.Org X server -- Intel i8xx, i9xx display driver
  This package provides the driver for the Intel i8xx and i9xx family
- of chipsets, including i810, i815, i830, i845, i855, i865, i915, and
- i945 series chips.
+ of chipsets, including i810, i815, i830, i845, i855, i865, i915, i945
+ and i965 series chips.
  .
  This package also provides an XvMC (XVideo Motion Compensation) driver
  for the same chipsets.
