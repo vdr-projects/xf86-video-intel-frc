@@ -270,6 +270,22 @@ I830EXADoneCopy(PixmapPtr pDstPixmap)
 #endif
 }
 
+void
+i830_enter_render(ScrnInfoPtr pScrn)
+{
+    I830Ptr pI830 = I830PTR(pScrn);
+#ifdef XF86DRI
+    if (pI830->directRenderingEnabled) {
+        drmI830Sarea *pSAREAPriv = DRIGetSAREAPrivate(pScrn->pScreen);
+	pSAREAPriv->ctxOwner = DRIGetContext(pScrn->pScreen);
+    }
+#endif
+    if (pI830->last_3d != LAST_3D_RENDER) {
+	i830WaitSync(pScrn);
+	pI830->last_3d = LAST_3D_RENDER;
+    }
+}
+
 #define xFixedToFloat(val) \
 	((float)xFixedToInt(val) + ((float)xFixedFrac(val) / 65536.0))
 
@@ -525,3 +541,19 @@ I830EXAInit(ScreenPtr pScreen)
 
     return TRUE;
 }
+
+#ifdef XF86DRI
+
+#ifndef ExaOffscreenMarkUsed
+extern void ExaOffscreenMarkUsed(PixmapPtr);
+#endif
+
+unsigned long long
+I830TexOffsetStart(PixmapPtr pPix)
+{
+    exaMoveInPixmap(pPix);
+    ExaOffscreenMarkUsed(pPix);
+
+    return exaGetPixmapOffset(pPix);
+}
+#endif

@@ -77,6 +77,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "exa.h"
 Bool I830EXAInit(ScreenPtr pScreen);
 #define EXA_LINEAR_EXTRA	(64*1024)
+unsigned long long I830TexOffsetStart(PixmapPtr pPix);
 #endif
 
 #ifdef I830_USE_XAA
@@ -191,20 +192,18 @@ typedef struct {
    external chips are via DVO or SDVO output */
 #define I830_OUTPUT_UNUSED 0
 #define I830_OUTPUT_ANALOG 1
-#define I830_OUTPUT_DVO 2
-#define I830_OUTPUT_SDVO 3
-#define I830_OUTPUT_LVDS 4
-#define I830_OUTPUT_TVOUT 5
-
-#define I830_DVO_CHIP_NONE 0
-#define I830_DVO_CHIP_LVDS 1
-#define I830_DVO_CHIP_TMDS 2
-#define I830_DVO_CHIP_TVOUT 4
+#define I830_OUTPUT_DVO_TMDS 2
+#define I830_OUTPUT_DVO_LVDS 3
+#define I830_OUTPUT_DVO_TVOUT 4
+#define I830_OUTPUT_SDVO 5
+#define I830_OUTPUT_LVDS 6
+#define I830_OUTPUT_TVOUT 7
 
 struct _I830DVODriver {
    int type;
    char *modulename;
    char *fntablename;
+   unsigned int dvo_reg;
    int address;
    const char **symbols;
    I830I2CVidOutputRec *vid_rec;
@@ -245,6 +244,8 @@ typedef struct _I830OutputPrivateRec {
    I2CBusPtr		    pDDCBus;
    struct _I830DVODriver    *i2c_drv;
    Bool			    load_detect_temp;
+   int                      pipe_mask;
+   int			    clone_mask;
    /** Output-private structure.  Should replace i2c_drv */
    void			    *dev_priv;
 } I830OutputPrivateRec, *I830OutputPrivatePtr;
@@ -261,6 +262,7 @@ enum last_3d {
 
 typedef struct _I830Rec {
    unsigned char *MMIOBase;
+   unsigned char *GTTBase;
    unsigned char *FbBase;
    int cpp;
 
@@ -306,6 +308,9 @@ typedef struct _I830Rec {
    int *used3D;
 
    i830_memory *logical_context;
+
+   unsigned int front_tiled;
+
 #ifdef XF86DRI
    i830_memory *back_buffer;
    i830_memory *third_buffer;
@@ -318,11 +323,11 @@ typedef struct _I830Rec {
    int mmModeFlags;
    int mmSize;
 
-   unsigned int front_tiled;
    unsigned int back_tiled;
    unsigned int third_tiled;
    unsigned int depth_tiled;
 
+   Bool want_vblank_interrupts;
 #ifdef DAMAGE
    DamagePtr pDamage;
    RegionRec driRegion;
@@ -462,13 +467,6 @@ typedef struct _I830Rec {
 
    int ddc2;
 
-   /* The BIOS's fixed timings for the LVDS */
-   DisplayModePtr panel_fixed_mode;
-
-   int backlight_duty_cycle;  /* restore backlight to this value */
-   
-   Bool panel_wants_dither;
-
    CARD32 saveDSPACNTR;
    CARD32 saveDSPBCNTR;
    CARD32 savePIPEACONF;
@@ -485,6 +483,7 @@ typedef struct _I830Rec {
    CARD32 saveVTOTAL_A;
    CARD32 saveVBLANK_A;
    CARD32 saveVSYNC_A;
+   CARD32 saveBCLRPAT_A;
    CARD32 saveDSPASTRIDE;
    CARD32 saveDSPASIZE;
    CARD32 saveDSPAPOS;
@@ -500,6 +499,7 @@ typedef struct _I830Rec {
    CARD32 saveVTOTAL_B;
    CARD32 saveVBLANK_B;
    CARD32 saveVSYNC_B;
+   CARD32 saveBCLRPAT_B;
    CARD32 saveDSPBSTRIDE;
    CARD32 saveDSPBSIZE;
    CARD32 saveDSPBPOS;
@@ -631,9 +631,6 @@ extern Bool I830I2CInit(ScrnInfoPtr pScrn, I2CBusPtr *bus_ptr, int i2c_reg,
 /* return a mask of output indices matching outputs against type_mask */
 int i830_output_clones (ScrnInfoPtr pScrn, int type_mask);
 
-/* i830_bios.c */
-DisplayModePtr i830_bios_get_panel_mode(ScrnInfoPtr pScrn);
-
 /* i830_display.c */
 Bool
 i830PipeHasType (xf86CrtcPtr crtc, int type);
@@ -698,6 +695,8 @@ void i965_composite(PixmapPtr pDst, int srcX, int srcY,
 void
 i830_get_transformed_coordinates(int x, int y, PictTransformPtr transform,
 				 float *x_out, float *y_out);
+
+void i830_enter_render(ScrnInfoPtr);
 
 extern const int I830PatternROP[16];
 extern const int I830CopyROP[16];

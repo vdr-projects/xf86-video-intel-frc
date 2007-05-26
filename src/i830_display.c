@@ -540,6 +540,8 @@ i830_crtc_dpms(xf86CrtcPtr crtc, int mode)
 	drmI830Sarea *sPriv = (drmI830Sarea *) DRIGetSAREAPrivate(pScrn->pScreen);
 	Bool enabled = crtc->enabled && mode != DPMSModeOff;
 
+	I830DRISetVBlankInterrupt (pScrn, TRUE);
+
 	if (!sPriv)
 	    return;
 
@@ -752,7 +754,9 @@ i830_crtc_mode_set(xf86CrtcPtr crtc, DisplayModePtr mode,
 	case I830_OUTPUT_SDVO:
 	    is_sdvo = TRUE;
 	    break;
-	case I830_OUTPUT_DVO:
+	case I830_OUTPUT_DVO_TMDS:
+	case I830_OUTPUT_DVO_LVDS:
+	case I830_OUTPUT_DVO_TVOUT:
 	    is_dvo = TRUE;
 	    break;
 	case I830_OUTPUT_TVOUT:
@@ -1255,6 +1259,7 @@ i830ReleaseLoadDetectPipe(xf86OutputPtr output)
     
     if (intel_output->load_detect_temp) 
     {
+	output->crtc->enabled = FALSE;
 	output->crtc = NULL;
 	intel_output->load_detect_temp = FALSE;
 	xf86DisableUnusedFunctions(pScrn);

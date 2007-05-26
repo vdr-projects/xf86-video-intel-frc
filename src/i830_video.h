@@ -53,7 +53,8 @@ typedef struct {
    int brightness;
    int contrast;
    int saturation;
-   int pipe;
+   xf86CrtcPtr current_crtc;
+   xf86CrtcPtr desired_crtc;
    int doubleBuffer;
 
    RegionRec clip;
@@ -76,6 +77,7 @@ typedef struct {
    int oneLineMode;
    int scaleRatio;
    Bool textured;
+   Bool started_video;
 } I830PortPrivRec, *I830PortPrivPtr;
 
 #define GET_PORT_PRIVATE(pScrn) \

@@ -521,6 +521,35 @@ I830MapMMIO(ScrnInfoPtr pScrn)
 				   pI830->MMIOAddr, I810_REG_SIZE);
    if (!pI830->MMIOBase)
       return FALSE;
+
+   /* Set up the GTT mapping for the various places it has been moved over
+    * time.
+    */
+   if (IS_I9XX(pI830)) {
+      if (IS_I965G(pI830)) {
+	 pI830->GTTBase = xf86MapPciMem(pScrn->scrnIndex, mmioFlags,
+					pI830->PciTag,
+					pI830->MMIOAddr + (512 * 1024),
+					512 * 1024);
+	 if (pI830->GTTBase == NULL)
+	    return FALSE;
+      } else {
+	 CARD32 gttaddr = pI830->PciInfo->memBase[3] & 0xFFFFFF00;
+
+	 pI830->GTTBase = xf86MapPciMem(pScrn->scrnIndex, mmioFlags,
+					pI830->PciTag,
+					gttaddr,
+					pI830->FbMapSize / 1024);
+	 if (pI830->GTTBase == NULL)
+	    return FALSE;
+      }
+   } else {
+      /* The GTT aperture on i830 is write-only.  We could probably map the
+       * actual physical pages that back it, but leave it alone for now.
+       */
+      pI830->GTTBase = NULL;
+   }
+
    return TRUE;
 }
 
@@ -558,6 +587,15 @@ I830UnmapMMIO(ScrnInfoPtr pScrn)
    xf86UnMapVidMem(pScrn->scrnIndex, (pointer) pI830->MMIOBase,
 		   I810_REG_SIZE);
    pI830->MMIOBase = NULL;
+
+   if (IS_I9XX(pI830)) {
+      if (IS_I965G(pI830))
+	 xf86UnMapVidMem(pScrn->scrnIndex, pI830->GTTBase, 512 * 1024);
+      else {
+	 xf86UnMapVidMem(pScrn->scrnIndex, pI830->GTTBase,
+			 pI830->FbMapSize / 1024);
+      }
+   }
 }
 
 static Bool
@@ -609,7 +647,7 @@ I830LoadPalette(ScrnInfoPtr pScrn, int numColors, int *indices,
 	 for (i = 0; i < numColors; i++) {
 	    index = indices[i];
 
-	    if (i <= 31) {
+	    if (index <= 31) {
 	       for (j = 0; j < 8; j++) {
 		  lut_r[index * 8 + j] = colors[index].red << 8;
 		  lut_b[index * 8 + j] = colors[index].blue << 8;
@@ -690,38 +728,20 @@ I830SetupOutputs(ScrnInfoPtr pScrn)
    {
       xf86OutputPtr	   output = config->output[o];
       I830OutputPrivatePtr intel_output = output->driver_private;
-      int		   crtc_mask = 0, clone_mask = 0;
+      int		   crtc_mask;
+      int		   c;
       
-      /*
-       * Valid crtcs
-       */
-      switch (intel_output->type) {
-      case I830_OUTPUT_DVO:
-      case I830_OUTPUT_SDVO:
-	 crtc_mask = ((1 << 0)|
-		      (1 << 1));
-	 clone_mask = ((1 << I830_OUTPUT_ANALOG) |
-		       (1 << I830_OUTPUT_DVO) |
-		       (1 << I830_OUTPUT_SDVO));
-	 break;
-      case I830_OUTPUT_ANALOG:
-	 crtc_mask = ((1 << 0));
-	 clone_mask = ((1 << I830_OUTPUT_ANALOG) |
-		       (1 << I830_OUTPUT_DVO) |
-		       (1 << I830_OUTPUT_SDVO));
-	 break;
-      case I830_OUTPUT_LVDS:
-	 crtc_mask = (1 << 1);
-	 clone_mask = (1 << I830_OUTPUT_LVDS);
-	 break;
-      case I830_OUTPUT_TVOUT:
-	 crtc_mask = ((1 << 0) |
-		      (1 << 1));
-	 clone_mask = (1 << I830_OUTPUT_TVOUT);
-	 break;
+      crtc_mask = 0;
+      for (c = 0; c < config->num_crtc; c++)
+      {
+	 xf86CrtcPtr	      crtc = config->crtc[c];
+	 I830CrtcPrivatePtr   intel_crtc = crtc->driver_private;
+
+	 if (intel_output->pipe_mask & (1 << intel_crtc->pipe))
+	    crtc_mask |= (1 << c);
       }
       output->possible_crtcs = crtc_mask;
-      output->possible_clones = i830_output_clones (pScrn, clone_mask);
+      output->possible_clones = i830_output_clones (pScrn, intel_output->clone_mask);
    }
 }
 
@@ -1136,6 +1156,27 @@ I830PreInit(ScrnInfoPtr pScrn, int flags)
    }
    xf86CrtcSetSizeRange (pScrn, 320, 200, max_width, max_height);
 
+   if (IS_I830(pI830) || IS_845G(pI830)) {
+      PCITAG bridge;
+      CARD16 gmch_ctrl;
+
+      bridge = pciTag(0, 0, 0);		/* This is always the host bridge */
+      gmch_ctrl = pciReadWord(bridge, I830_GMCH_CTRL);
+      if ((gmch_ctrl & I830_GMCH_MEM_MASK) == I830_GMCH_MEM_128M) {
+	 pI830->FbMapSize = 0x8000000;
+      } else {
+	 pI830->FbMapSize = 0x4000000; /* 64MB - has this been tested ?? */
+      }
+   } else {
+      if (IS_I9XX(pI830)) {
+	 pI830->FbMapSize = 1UL << pciGetBaseSize(pI830->PciTag, 2, TRUE,
+						  NULL);
+      } else {
+	 /* 128MB aperture for later i8xx series. */
+	 pI830->FbMapSize = 0x8000000;
+      }
+   }
+
    /* Some of the probing needs MMIO access, so map it here. */
    I830MapMMIO(pScrn);
 
@@ -1158,27 +1199,6 @@ I830PreInit(ScrnInfoPtr pScrn, int flags)
    OUTREG(SWF4, (pI830->saveSWF4 & ~((3 << 19) | (7 << 16))) |
 		(1 << 23) | (2 << 16));
 #endif
-
-   if (IS_I830(pI830) || IS_845G(pI830)) {
-      PCITAG bridge;
-      CARD16 gmch_ctrl;
-
-      bridge = pciTag(0, 0, 0);		/* This is always the host bridge */
-      gmch_ctrl = pciReadWord(bridge, I830_GMCH_CTRL);
-      if ((gmch_ctrl & I830_GMCH_MEM_MASK) == I830_GMCH_MEM_128M) {
-	 pI830->FbMapSize = 0x8000000;
-      } else {
-	 pI830->FbMapSize = 0x4000000; /* 64MB - has this been tested ?? */
-      }
-   } else {
-      if (IS_I9XX(pI830)) {
-	 pI830->FbMapSize = 1UL << pciGetBaseSize(pI830->PciTag, 2, TRUE,
-						  NULL);
-      } else {
-	 /* 128MB aperture for later i8xx series. */
-	 pI830->FbMapSize = 0x8000000;
-      }
-   }
 
    if (pI830->PciInfo->chipType == PCI_CHIP_E7221_G)
       num_pipe = 1;
@@ -1653,6 +1673,19 @@ SetHWOperatingState(ScrnInfoPtr pScrn)
 
    DPRINTF(PFX, "SetHWOperatingState\n");
 
+   /* Disable clock gating reported to work incorrectly according to the specs.
+    */
+   if (IS_I965GM(pI830)) {
+      OUTREG(RENCLK_GATE_D1, I965_RCC_CLOCK_GATE_DISABLE);
+   } else if (IS_I965G(pI830)) {
+      OUTREG(RENCLK_GATE_D1,
+	     I965_RCC_CLOCK_GATE_DISABLE | I965_ISC_CLOCK_GATE_DISABLE);
+   } else if (IS_I855(pI830) || IS_I865G(pI830)) {
+      OUTREG(RENCLK_GATE_D1, SV_CLOCK_GATE_DISABLE);
+   } else if (IS_I830(pI830)) {
+      OUTREG(DSPCLK_GATE_D, OVRUNIT_CLOCK_GATE_DISABLE);
+   }
+
    if (!pI830->noAccel)
       SetRingRegs(pScrn);
    SetFenceRegs(pScrn);
@@ -1684,6 +1717,7 @@ SaveHWState(ScrnInfoPtr pScrn)
    pI830->saveVTOTAL_A = INREG(VTOTAL_A);
    pI830->saveVBLANK_A = INREG(VBLANK_A);
    pI830->saveVSYNC_A = INREG(VSYNC_A);
+   pI830->saveBCLRPAT_A = INREG(BCLRPAT_A);
    pI830->saveDSPASTRIDE = INREG(DSPASTRIDE);
    pI830->saveDSPASIZE = INREG(DSPASIZE);
    pI830->saveDSPAPOS = INREG(DSPAPOS);
@@ -1708,6 +1742,7 @@ SaveHWState(ScrnInfoPtr pScrn)
       pI830->saveVTOTAL_B = INREG(VTOTAL_B);
       pI830->saveVBLANK_B = INREG(VBLANK_B);
       pI830->saveVSYNC_B = INREG(VSYNC_B);
+      pI830->saveBCLRPAT_B = INREG(BCLRPAT_B);
       pI830->saveDSPBSTRIDE = INREG(DSPBSTRIDE);
       pI830->saveDSPBSIZE = INREG(DSPBSIZE);
       pI830->saveDSPBPOS = INREG(DSPBPOS);
@@ -1806,6 +1841,7 @@ RestoreHWState(ScrnInfoPtr pScrn)
    OUTREG(VTOTAL_A, pI830->saveVTOTAL_A);
    OUTREG(VBLANK_A, pI830->saveVBLANK_A);
    OUTREG(VSYNC_A, pI830->saveVSYNC_A);
+   OUTREG(BCLRPAT_A, pI830->saveBCLRPAT_A);
    
    OUTREG(DSPASTRIDE, pI830->saveDSPASTRIDE);
    OUTREG(DSPASIZE, pI830->saveDSPASIZE);
@@ -1843,6 +1879,7 @@ RestoreHWState(ScrnInfoPtr pScrn)
       OUTREG(VTOTAL_B, pI830->saveVTOTAL_B);
       OUTREG(VBLANK_B, pI830->saveVBLANK_B);
       OUTREG(VSYNC_B, pI830->saveVSYNC_B);
+      OUTREG(BCLRPAT_B, pI830->saveBCLRPAT_B);
       OUTREG(DSPBSTRIDE, pI830->saveDSPBSTRIDE);
       OUTREG(DSPBSIZE, pI830->saveDSPBSIZE);
       OUTREG(DSPBPOS, pI830->saveDSPBPOS);
@@ -2123,8 +2160,30 @@ I830ScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
       from = X_DEFAULT;
       pScrn->videoRam = pI830->FbMapSize / KB(1);
    } else {
+#if 0
       from = X_CONFIG;
       pScrn->videoRam = pI830->pEnt->device->videoRam;
+#else
+      /* Disable VideoRam configuration, at least for now.  Previously,
+       * VideoRam was necessary to avoid overly low limits on allocated
+       * memory, so users created larger, yet still small, fixed allocation
+       * limits in their config files.  Now, the driver wants to allocate more,
+       * and the old intention of the VideoRam lines that had been entered is
+       * obsolete.
+       */
+      from = X_DEFAULT;
+      pScrn->videoRam = pI830->FbMapSize / KB(1);
+
+      if (pScrn->videoRam != pI830->pEnt->device->videoRam) {
+	 xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
+		    "VideoRam configuration found, which is no longer "
+		    "recommended.\n");
+	 xf86DrvMsg(pScrn->scrnIndex, X_INFO,
+		    "Continuing with default %dkB VideoRam instead of %d "
+		    "kB.\n",
+		    pScrn->videoRam, pI830->pEnt->device->videoRam);
+      }
+#endif
    }
 
    /* Limit videoRam to how much we might be able to allocate from AGP */
@@ -2218,6 +2277,9 @@ I830ScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
       pI830->used3D = pI8301->used3D;
    }
 
+   /* Need MMIO mapped to do GTT lookups during memory allocation. */
+   I830MapMMIO(pScrn);
+
 #if defined(XF86DRI)
    /*
     * If DRI is potentially usable, check if there is enough memory available
@@ -2231,17 +2293,17 @@ I830ScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 #endif
    }
 
+#ifdef I830_XV
+    /*
+     * Set this so that the overlay allocation is factored in when
+     * appropriate.
+     */
+    pI830->XvEnabled = !pI830->XvDisabled;
+#endif
+
    if (!pI830->directRenderingDisabled) {
       int savedDisplayWidth = pScrn->displayWidth;
       Bool tiled = FALSE;
-
-#ifdef I830_XV
-      /*
-       * Set this so that the overlay allocation is factored in when
-       * appropriate.
-       */
-      pI830->XvEnabled = !pI830->XvDisabled;
-#endif
 
       if (IS_I965G(pI830)) {
 	 int tile_pixels = 512 / pI830->cpp;
@@ -2357,6 +2419,8 @@ I830ScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
       }
       allocation_done = TRUE;
    }
+
+   I830UnmapMMIO(pScrn);
 
    i830_describe_allocations(pScrn, 1, "");
 
@@ -2809,6 +2873,8 @@ I830EnterVT(int scrnIndex, int flags)
 {
    ScrnInfoPtr pScrn = xf86Screens[scrnIndex];
    I830Ptr  pI830 = I830PTR(pScrn);
+   xf86CrtcConfigPtr	config = XF86_CRTC_CONFIG_PTR(pScrn);
+   int o;
 
    DPRINTF(PFX, "Enter VT\n");
 
@@ -2838,6 +2904,11 @@ I830EnterVT(int scrnIndex, int flags)
    /* Clear the framebuffer */
    memset(pI830->FbBase + pScrn->fbOffset, 0,
 	  pScrn->virtualY * pScrn->displayWidth * pI830->cpp);
+
+   for (o = 0; o < config->num_output; o++) {
+   	xf86OutputPtr  output = config->output[o];
+	output->funcs->dpms(output, DPMSModeOff);
+   }
 
    if (!xf86SetDesiredModes (pScrn))
       return FALSE;
