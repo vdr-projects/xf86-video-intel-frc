@@ -1,3 +1,9 @@
+xserver-xorg-video-intel (2:2.0.0-3) experimental; urgency=low
+
+  *  Pull in latest upstream git (updated Xv fix)
+
+ -- Drew Parsons <dparsons@debian.org>  Wed, 30 May 2007 12:20:45 +1000
+
 xserver-xorg-video-intel (2:2.0.0-2) experimental; urgency=low
 
   [ Julien Cristau ]
