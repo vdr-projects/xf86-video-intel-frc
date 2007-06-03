@@ -1,3 +1,9 @@
+xserver-xorg-video-intel (2:2.0.0-4) UNRELEASED; urgency=low
+
+  * Update watch file (s/i810/intel/).
+
+ -- Julien Cristau <jcristau@debian.org>  Sun, 03 Jun 2007 21:35:57 +0200
+
 xserver-xorg-video-intel (2:2.0.0-3) experimental; urgency=low
 
   *  Pull in latest upstream git (updated Xv fix)
