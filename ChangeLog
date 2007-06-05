@@ -1,3 +1,49 @@
+commit 8a19e7d57bc23dd163b45e0ab7deca4f074c934d
+Author: Keith Packard <keithp@dulcimer.keithp.com>
+Date:   Tue Jun 5 00:09:57 2007 -0700
+
+    Always ensure the pipe A is lit when activating overlay on pipe B.
+    
+    Ok, so moving video from pipe A to pipe B still requires that pipe A be
+    active during the transition. Instead of trying to be fancy, just ensure
+    that pipe A is running on each transition to pipe B.
+
+commit e986f6cb62f8644c5fa835bd7dfb7b014c2677c5
+Author: Keith Packard <keithp@dulcimer.keithp.com>
+Date:   Mon Jun 4 23:52:23 2007 -0700
+
+    Automatically switch overlay when crtcs are reconfigured.
+    
+    As crtcs are disabled and enabled, make sure the automatic crtc selection
+    mechanism drives overlay configuration at each request to display an image.
+
+commit 0984c1fc0963f1ebab31f5b8fce5ad4c387fbd2c
+Author: Wang Zhenyu <zhenyu.z.wang@intel.com>
+Date:   Thu May 31 10:17:26 2007 +0800
+
+    Add pci ids for 945GME
+
+commit 88ee25ebad78e54d243d728b775a69365359b5fb
+Author: Wang Zhenyu <zhenyu.z.wang@intel.com>
+Date:   Thu May 31 10:13:30 2007 +0800
+
+    Add pci ids for 965GME/GLE chip
+
+commit 92e4deb50e049cc83cbde4995ba0b901feceb15a
+Author: Keith Packard <keithp@neko.keithp.com>
+Date:   Wed May 30 11:49:07 2007 -0600
+
+    Extend XV_PIPE range to include new -1 value
+
+commit 888a4a5f469bf955e3ee3e184b628808ae8a4498
+Author: Wang Zhenyu <zhenyu.z.wang@intel.com>
+Date:   Wed May 30 14:42:35 2007 +0800
+
+    Fix i965 render's draw clip rectangle
+    
+    Use scrn's virtual size is not correct in rotation rendering.
+    This fixes initial rotation problem on i965.
+
 commit 516fb73ffee0aea7cf892e6703d37f8ecf52b812
 Author: Eric Anholt <eric@anholt.net>
 Date:   Tue May 29 10:22:25 2007 -0700
