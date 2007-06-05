@@ -229,11 +229,13 @@ static SymTabRec I830Chipsets[] = {
    {PCI_CHIP_I915_GM,		"915GM"},
    {PCI_CHIP_I945_G,		"945G"},
    {PCI_CHIP_I945_GM,		"945GM"},
+   {PCI_CHIP_I945_GME,		"945GME"},
    {PCI_CHIP_I965_G,		"965G"},
    {PCI_CHIP_I965_G_1,		"965G"},
    {PCI_CHIP_I965_Q,		"965Q"},
    {PCI_CHIP_I946_GZ,		"946GZ"},
    {PCI_CHIP_I965_GM,		"965GM"},
+   {PCI_CHIP_I965_GME,		"965GME/GLE"},
    {-1,				NULL}
 };
 
@@ -247,11 +249,13 @@ static PciChipsets I830PciChipsets[] = {
    {PCI_CHIP_I915_GM,		PCI_CHIP_I915_GM,	RES_SHARED_VGA},
    {PCI_CHIP_I945_G,		PCI_CHIP_I945_G,	RES_SHARED_VGA},
    {PCI_CHIP_I945_GM,		PCI_CHIP_I945_GM,	RES_SHARED_VGA},
+   {PCI_CHIP_I945_GME,		PCI_CHIP_I945_GME,	RES_SHARED_VGA},
    {PCI_CHIP_I965_G,		PCI_CHIP_I965_G,	RES_SHARED_VGA},
    {PCI_CHIP_I965_G_1,		PCI_CHIP_I965_G_1,	RES_SHARED_VGA},
    {PCI_CHIP_I965_Q,		PCI_CHIP_I965_Q,	RES_SHARED_VGA},
    {PCI_CHIP_I946_GZ,		PCI_CHIP_I946_GZ,	RES_SHARED_VGA},
    {PCI_CHIP_I965_GM,		PCI_CHIP_I965_GM,	RES_SHARED_VGA},
+   {PCI_CHIP_I965_GME,		PCI_CHIP_I965_GME,	RES_SHARED_VGA},
    {-1,				-1,			RES_UNDEFINED}
 };
 
@@ -1053,6 +1057,9 @@ I830PreInit(ScrnInfoPtr pScrn, int flags)
    case PCI_CHIP_I945_GM:
       chipname = "945GM";
       break;
+   case PCI_CHIP_I945_GME:
+      chipname = "945GME";
+      break;
    case PCI_CHIP_I965_G:
    case PCI_CHIP_I965_G_1:
       chipname = "965G";
@@ -1065,6 +1072,9 @@ I830PreInit(ScrnInfoPtr pScrn, int flags)
       break;
    case PCI_CHIP_I965_GM:
       chipname = "965GM";
+      break;
+   case PCI_CHIP_I965_GME:
+      chipname = "965GME/GLE";
       break;
    default:
       chipname = "unknown chipset";
