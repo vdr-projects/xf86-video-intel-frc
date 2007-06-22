@@ -236,6 +236,9 @@ static SymTabRec I830Chipsets[] = {
    {PCI_CHIP_I946_GZ,		"946GZ"},
    {PCI_CHIP_I965_GM,		"965GM"},
    {PCI_CHIP_I965_GME,		"965GME/GLE"},
+   {PCI_CHIP_G33_G,		"G33"},
+   {PCI_CHIP_Q35_G,		"Q35"},
+   {PCI_CHIP_Q33_G,		"Q33"},
    {-1,				NULL}
 };
 
@@ -256,6 +259,9 @@ static PciChipsets I830PciChipsets[] = {
    {PCI_CHIP_I946_GZ,		PCI_CHIP_I946_GZ,	RES_SHARED_VGA},
    {PCI_CHIP_I965_GM,		PCI_CHIP_I965_GM,	RES_SHARED_VGA},
    {PCI_CHIP_I965_GME,		PCI_CHIP_I965_GME,	RES_SHARED_VGA},
+   {PCI_CHIP_G33_G,		PCI_CHIP_G33_G,		RES_SHARED_VGA},
+   {PCI_CHIP_Q35_G,		PCI_CHIP_Q35_G,		RES_SHARED_VGA},
+   {PCI_CHIP_Q33_G,		PCI_CHIP_Q33_G,		RES_SHARED_VGA},
    {-1,				-1,			RES_UNDEFINED}
 };
 
@@ -436,6 +442,19 @@ I830DetectMemory(ScrnInfoPtr pScrn)
       default:
 	 FatalError("Unknown GTT size value: %08x\n", (int)INREG(PGETBL_CTL));
       }
+   } else if (IS_G33CLASS(pI830)) {
+      /* G33's GTT size is detect in GMCH_CTRL */
+      switch (gmch_ctrl & G33_PGETBL_SIZE_MASK) {
+      case G33_PGETBL_SIZE_1M:
+	 gtt_size = 1024;
+	 break;
+      case G33_PGETBL_SIZE_2M:
+	 gtt_size = 2048;
+	 break;
+      default:
+	 FatalError("Unknown GTT size value: %08x\n",
+		    (int)(gmch_ctrl & G33_PGETBL_SIZE_MASK));
+      }
    } else {
       /* Older chipsets only had GTT appropriately sized for the aperture. */
       gtt_size = pI830->FbMapSize / (1024*1024);
@@ -472,6 +491,14 @@ I830DetectMemory(ScrnInfoPtr pScrn)
       case I915G_GMCH_GMS_STOLEN_64M:
 	 if (IS_I9XX(pI830))
 	    memsize = MB(64) - KB(range);
+	 break;
+      case G33_GMCH_GMS_STOLEN_128M:
+	 if (IS_G33CLASS(pI830))
+	     memsize = MB(128) - KB(range);
+	 break;
+      case G33_GMCH_GMS_STOLEN_256M:
+	 if (IS_G33CLASS(pI830))
+	     memsize = MB(256) - KB(range);
 	 break;
       }
    } else {
@@ -1076,6 +1103,15 @@ I830PreInit(ScrnInfoPtr pScrn, int flags)
    case PCI_CHIP_I965_GME:
       chipname = "965GME/GLE";
       break;
+   case PCI_CHIP_G33_G:
+      chipname = "G33";
+      break;
+   case PCI_CHIP_Q35_G:
+      chipname = "Q35";
+      break;
+   case PCI_CHIP_Q33_G:
+      chipname = "Q33";
+      break;
    default:
       chipname = "unknown chipset";
       break;
@@ -1430,7 +1466,7 @@ I830PreInit(ScrnInfoPtr pScrn, int flags)
    else
       pI830->CursorNeedsPhysical = FALSE;
 
-   if (IS_I965G(pI830))
+   if (IS_I965G(pI830) || IS_G33CLASS(pI830))
       pI830->CursorNeedsPhysical = FALSE;
 
    /*
@@ -2009,28 +2045,37 @@ I830InitFBManager(
    return ret;
 }
 
-/* Initialize the first context */
+/**
+ * Intialiazes the hardware for the 3D pipeline use in the 2D driver.
+ *
+ * Some state caching is performed to avoid redundant state emits.  This
+ * function is also responsible for marking the state as clobbered for DRI
+ * clients.
+ */
 void
 IntelEmitInvarientState(ScrnInfoPtr pScrn)
 {
    I830Ptr pI830 = I830PTR(pScrn);
    CARD32 ctx_addr;
-#ifdef XF86DRI
-   drmI830Sarea *sarea;
-#endif
 
-   if (pI830->noAccel || !I830IsPrimary(pScrn))
+   if (pI830->noAccel)
       return;
 
 #ifdef XF86DRI
    if (pI830->directRenderingEnabled) {
-      sarea = DRIGetSAREAPrivate(pScrn->pScreen);
+      drmI830Sarea *sarea = DRIGetSAREAPrivate(pScrn->pScreen);
 
       /* Mark that the X Server was the last holder of the context */
       if (sarea)
 	 sarea->ctxOwner = DRIGetContext(pScrn->pScreen);
    }
 #endif
+
+   /* If we've emitted our state since the last clobber by another client,
+    * skip it.
+    */
+   if (*pI830->last_3d != LAST_3D_OTHER)
+      return;
 
    ctx_addr = pI830->logical_context->offset;
    assert((pI830->logical_context->offset & 2047) == 0);
@@ -2268,13 +2313,14 @@ I830ScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
          pI830->LpRing = xcalloc(1, sizeof(I830RingBuffer));
       if (!pI830->overlayOn)
          pI830->overlayOn = xalloc(sizeof(Bool));
-      if (!pI830->used3D)
-         pI830->used3D = xalloc(sizeof(int));
-      if (!pI830->LpRing || !pI830->overlayOn || !pI830->used3D) {
+      if (!pI830->last_3d)
+         pI830->last_3d = xalloc(sizeof(enum last_3d));
+      if (!pI830->LpRing || !pI830->overlayOn || !pI830->last_3d) {
          xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
 		 "Could not allocate primary data structures.\n");
          return FALSE;
       }
+      *pI830->last_3d = LAST_3D_OTHER;
       *pI830->overlayOn = FALSE;
       if (pI830->entityPrivate)
          pI830->entityPrivate->XvInUse = -1;
@@ -2284,7 +2330,7 @@ I830ScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
       pI830->LpRing = pI8301->LpRing;
       pI830->overlay_regs = pI8301->overlay_regs;
       pI830->overlayOn = pI8301->overlayOn;
-      pI830->used3D = pI8301->used3D;
+      pI830->last_3d = pI8301->last_3d;
    }
 
    /* Need MMIO mapped to do GTT lookups during memory allocation. */
@@ -2976,15 +3022,11 @@ I830EnterVT(int scrnIndex, int flags)
     */
    i830SetHotkeyControl(pScrn, HOTKEY_DRIVER_NOTIFY);
 
-   /* Needed for rotation */
-   IntelEmitInvarientState(pScrn);
-
    if (pI830->checkDevices)
       pI830->devicesTimer = TimerSet(NULL, 0, 1000, I830CheckDevicesTimer, pScrn);
 
-   /* Force invarient 3D state to be emitted */
-   *pI830->used3D = 1<<31;
-   pI830->last_3d = LAST_3D_OTHER;
+   /* Mark 3D state as being clobbered */
+   *pI830->last_3d = LAST_3D_OTHER;
 
    return TRUE;
 }
@@ -3075,8 +3117,8 @@ I830CloseScreen(int scrnIndex, ScreenPtr pScreen)
       pI830->LpRing = NULL;
       xfree(pI830->overlayOn);
       pI830->overlayOn = NULL;
-      xfree(pI830->used3D);
-      pI830->used3D = NULL;
+      xfree(pI830->last_3d);
+      pI830->last_3d = NULL;
    }
 
    pScrn->PointerMoved = pI830->PointerMoved;

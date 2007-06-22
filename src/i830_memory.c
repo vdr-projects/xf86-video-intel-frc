@@ -747,15 +747,19 @@ static Bool
 i830_allocate_overlay(ScrnInfoPtr pScrn)
 {
     I830Ptr pI830 = I830PTR(pScrn);
+    int flags = NEED_PHYSICAL_ADDR;
 
     /* Only allocate if overlay is going to be enabled. */
     if (!pI830->XvEnabled)
 	return TRUE;
 
+    if (OVERLAY_NOPHYSICAL(pI830))
+	flags = 0;
+
     if (!IS_I965G(pI830)) {
 	pI830->overlay_regs = i830_allocate_memory(pScrn, "overlay registers",
 						   OVERLAY_SIZE, GTT_PAGE_SIZE,
-						   NEED_PHYSICAL_ADDR);
+						   flags);
 	if (pI830->overlay_regs == NULL) {
 	    xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
 		       "Failed to allocate Overlay register space.\n");
@@ -786,7 +790,7 @@ IsTileable(ScrnInfoPtr pScrn, int pitch)
     switch (pitch) {
     case 128:
     case 256:
-	if (IS_I945G(pI830) || IS_I945GM(pI830))
+	if (IS_I945G(pI830) || IS_I945GM(pI830) || IS_G33CLASS(pI830))
 	    return TRUE;
 	else
 	    return FALSE;
@@ -1312,12 +1316,33 @@ i830_allocate_texture_memory(ScrnInfoPtr pScrn)
     return TRUE;
 }
 
+static Bool
+i830_allocate_hwstatus(ScrnInfoPtr pScrn)
+{
+#define HWSTATUS_PAGE_SIZE (4*1024)
+    I830Ptr pI830 = I830PTR(pScrn);
+
+    pI830->hw_status = i830_allocate_memory(pScrn, "G33 hw status",
+	    HWSTATUS_PAGE_SIZE, GTT_PAGE_SIZE, 0);
+    if (pI830->hw_status == NULL) {
+	xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
+		"Failed to allocate hw status page for G33.\n");
+	return FALSE;
+    }
+    return TRUE;
+}
+
 Bool
 i830_allocate_3d_memory(ScrnInfoPtr pScrn)
 {
     I830Ptr pI830 = I830PTR(pScrn);
 
     DPRINTF(PFX, "i830_allocate_3d_memory\n");
+
+    if (IS_G33CLASS(pI830)) {
+	if (!i830_allocate_hwstatus(pScrn))
+	    return FALSE;
+    }
 
     if (!i830_allocate_backbuffer(pScrn, &pI830->back_buffer,
 				  &pI830->back_tiled, "back buffer"))
@@ -1503,7 +1528,8 @@ i830_set_fence(ScrnInfoPtr pScrn, int nr, unsigned int offset,
    	}
     }
 
-    if ((IS_I945G(pI830) || IS_I945GM(pI830)) && tile_format == TILING_YMAJOR)
+    if ((IS_I945G(pI830) || IS_I945GM(pI830) || IS_G33CLASS(pI830))
+	    && tile_format == TILING_YMAJOR)
 	fence_pitch = pitch / 128;
     else if (IS_I9XX(pI830))
 	fence_pitch = pitch / 512;

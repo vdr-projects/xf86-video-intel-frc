@@ -525,6 +525,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define PGETBL_SIZE_512KB   (0 << 1)
 #define PGETBL_SIZE_256KB   (1 << 1)
 #define PGETBL_SIZE_128KB   (2 << 1)
+#define G33_PGETBL_SIZE_MASK		(3 << 8)
+#define G33_PGETBL_SIZE_1M		(1 << 8)
+#define G33_PGETBL_SIZE_2M		(2 << 8)
 
 #define I830_PTE_BASE			0x10000
 #define PTE_ADDRESS_MASK		0xfffff000
@@ -1052,6 +1055,14 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #define RENCLK_GATE_D2		0x6208
 #define RAMCLK_GATE_D		0x6210		/* CRL only */
+
+/*
+ * This is a PCI config space register to manipulate backlight brightness
+ * It is used when the BLM_LEGACY_MODE is turned on. When enabled, the first
+ * byte of this config register sets brightness within the range from
+ * 0 to 0xff
+ */
+#define LEGACY_BACKLIGHT_BRIGHTNESS 0xf4
 
 #define BLC_PWM_CTL		0x61254
 #define BACKLIGHT_MODULATION_FREQ_SHIFT		(17)
@@ -1964,9 +1975,30 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define DSPFW1			0x70034
 #define DSPFW2			0x70038
 #define DSPFW3			0x7003c
+/*
+ * The two pipe frame counter registers are not synchronized, so
+ * reading a stable value is somewhat tricky. The following code 
+ * should work:
+ *
+ *  do {
+ *    high1 = ((INREG(PIPEAFRAMEHIGH) & PIPE_FRAME_HIGH_MASK) >> PIPE_FRAME_HIGH_SHIFT;
+ *    low1 =  ((INREG(PIPEAFRAMEPIXEL) & PIPE_FRAME_LOW_MASK) >> PIPE_FRAME_LOW_SHIFT);
+ *    high2 = ((INREG(PIPEAFRAMEHIGH) & PIPE_FRAME_HIGH_MASK) >> PIPE_FRAME_HIGH_SHIFT);
+ *  } while (high1 != high2);
+ *  frame = (high1 << 8) | low1;
+ */
 #define PIPEAFRAMEHIGH		0x70040
+#define PIPE_FRAME_HIGH_MASK	0x0000ffff
+#define PIPE_FRAME_HIGH_SHIFT	0
 #define PIPEAFRAMEPIXEL		0x70044
-
+#define PIPE_FRAME_LOW_MASK	0xff000000
+#define PIPE_FRAME_LOW_SHIFT	24
+/*
+ * Pixel within the current frame is counted in the PIPEAFRAMEPIXEL register
+ * and is 24 bits wide.
+ */
+#define PIPE_PIXEL_MASK		0x00ffffff
+#define PIPE_PIXEL_SHIFT	0
 
 #define PIPEB_DSL		0x71000
 
@@ -2076,12 +2108,12 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define I830_GMCH_MEM_64M	0x1
 #define I830_GMCH_MEM_128M	0
 
-#define I830_GMCH_GMS_MASK			0x70
-#define I830_GMCH_GMS_DISABLED		0x00
+#define I830_GMCH_GMS_MASK			0xF0
+#define I830_GMCH_GMS_DISABLED			0x00
 #define I830_GMCH_GMS_LOCAL			0x10
-#define I830_GMCH_GMS_STOLEN_512	0x20
-#define I830_GMCH_GMS_STOLEN_1024	0x30
-#define I830_GMCH_GMS_STOLEN_8192	0x40
+#define I830_GMCH_GMS_STOLEN_512		0x20
+#define I830_GMCH_GMS_STOLEN_1024		0x30
+#define I830_GMCH_GMS_STOLEN_8192		0x40
 
 #define I830_RDRAM_CHANNEL_TYPE		0x03010
 #define I830_RDRAM_ND(x)			(((x) & 0x20) >> 5)
@@ -2096,6 +2128,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define I855_GMCH_GMS_STOLEN_32M		(0x5 << 4)
 #define I915G_GMCH_GMS_STOLEN_48M		(0x6 << 4)
 #define I915G_GMCH_GMS_STOLEN_64M		(0x7 << 4)
+#define G33_GMCH_GMS_STOLEN_128M		(0x8 << 4)
+#define G33_GMCH_GMS_STOLEN_256M		(0x9 << 4)
 
 #define I85X_CAPID			0x44
 #define I85X_VARIANT_MASK			0x7

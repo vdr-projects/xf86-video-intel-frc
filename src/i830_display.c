@@ -706,7 +706,7 @@ i830_get_core_clock_speed(ScrnInfoPtr pScrn)
     /* Core clock values taken from the published datasheets.
      * The 830 may go up to 166 Mhz, which we should check.
      */
-    if (IS_I945G(pI830))
+    if (IS_I945G(pI830) || IS_G33CLASS(pI830))
 	return 400000;
     else if (IS_I915G(pI830))
 	return 333000;
@@ -869,7 +869,7 @@ i830_crtc_mode_set(xf86CrtcPtr crtc, DisplayModePtr mode,
 	if (is_sdvo)
 	{
 	    dpll |= DPLL_DVO_HIGH_SPEED;
-	    if (IS_I945G(pI830) || IS_I945GM(pI830))
+	    if (IS_I945G(pI830) || IS_I945GM(pI830) || IS_G33CLASS(pI830))
 	    {
 		int sdvo_pixel_multiply = adjusted_mode->Clock / mode->Clock;
 		dpll |= (sdvo_pixel_multiply - 1) << SDVO_MULTIPLIER_SHIFT_HIRES;
@@ -958,11 +958,17 @@ i830_crtc_mode_set(xf86CrtcPtr crtc, DisplayModePtr mode,
 	else
 	    pipeconf &= ~PIPEACONF_DOUBLE_WIDE;
     }
-#if 1
-    dspcntr |= DISPLAY_PLANE_ENABLE;
-    pipeconf |= PIPEACONF_ENABLE;
-    dpll |= DPLL_VCO_ENABLE;
-#endif
+    /*
+     * This "shouldn't" be needed as the dpms on code
+     * will be run after the mode is set. On 9xx, it helps.
+     * On 855, it can lock up the chip (and the entire machine)
+     */
+    if (IS_I9XX (pI830))
+    {
+	dspcntr |= DISPLAY_PLANE_ENABLE;
+	pipeconf |= PIPEACONF_ENABLE;
+	dpll |= DPLL_VCO_ENABLE;
+    }
     
     /* Disable the panel fitter if it was on our pipe */
     if (i830_panel_fitter_pipe (pI830) == pipe)

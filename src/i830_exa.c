@@ -270,22 +270,6 @@ I830EXADoneCopy(PixmapPtr pDstPixmap)
 #endif
 }
 
-void
-i830_enter_render(ScrnInfoPtr pScrn)
-{
-    I830Ptr pI830 = I830PTR(pScrn);
-#ifdef XF86DRI
-    if (pI830->directRenderingEnabled) {
-        drmI830Sarea *pSAREAPriv = DRIGetSAREAPrivate(pScrn->pScreen);
-	pSAREAPriv->ctxOwner = DRIGetContext(pScrn->pScreen);
-    }
-#endif
-    if (pI830->last_3d != LAST_3D_RENDER) {
-	i830WaitSync(pScrn);
-	pI830->last_3d = LAST_3D_RENDER;
-    }
-}
-
 #define xFixedToFloat(val) \
 	((float)xFixedToInt(val) + ((float)xFixedFrac(val) / 65536.0))
 
@@ -509,7 +493,7 @@ I830EXAInit(ScreenPtr pScreen)
     	pI830->EXADriverPtr->Composite = i830_composite;
     	pI830->EXADriverPtr->DoneComposite = i830_done_composite;
     } else if (IS_I915G(pI830) || IS_I915GM(pI830) ||
-	       IS_I945G(pI830) || IS_I945GM(pI830))
+	       IS_I945G(pI830) || IS_I945GM(pI830) || IS_G33CLASS(pI830))
     {
 	pI830->EXADriverPtr->CheckComposite = i915_check_composite;
    	pI830->EXADriverPtr->PrepareComposite = i915_prepare_composite;

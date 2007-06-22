@@ -428,7 +428,10 @@ i830_overlay_on(ScrnInfoPtr pScrn)
     OUT_RING(MI_FLUSH | MI_WRITE_DIRTY_STATE);
     OUT_RING(MI_NOOP);
     OUT_RING(MI_OVERLAY_FLIP | MI_OVERLAY_FLIP_ON);
-    OUT_RING(pI830->overlay_regs->bus_addr | OFC_UPDATE);
+    if (OVERLAY_NOPHYSICAL(pI830))
+	OUT_RING(pI830->overlay_regs->offset | OFC_UPDATE);
+    else
+	OUT_RING(pI830->overlay_regs->bus_addr | OFC_UPDATE);
     /* Wait for the overlay to light up before attempting to use it */
     OUT_RING(MI_WAIT_FOR_EVENT | MI_WAIT_FOR_OVERLAY_FLIP);
     OUT_RING(MI_NOOP);
@@ -458,7 +461,10 @@ i830_overlay_continue(ScrnInfoPtr pScrn, Bool update_filter)
     if (!*pI830->overlayOn)
 	return;
 
-    flip_addr = pI830->overlay_regs->bus_addr;
+    if (OVERLAY_NOPHYSICAL(pI830))
+	flip_addr = pI830->overlay_regs->offset;
+    else
+	flip_addr = pI830->overlay_regs->bus_addr;
     if (update_filter)
 	flip_addr |= OFC_UPDATE;
     OVERLAY_DEBUG ("overlay_continue cmd 0x%08lx -> 0x%08lx sta 0x%08lx\n",
@@ -507,7 +513,10 @@ i830_overlay_off(ScrnInfoPtr pScrn)
 	OUT_RING(MI_FLUSH | MI_WRITE_DIRTY_STATE);
 	OUT_RING(MI_NOOP);
 	OUT_RING(MI_OVERLAY_FLIP | MI_OVERLAY_FLIP_CONTINUE);
-	OUT_RING(pI830->overlay_regs->bus_addr);
+	if (OVERLAY_NOPHYSICAL(pI830))
+	    OUT_RING(pI830->overlay_regs->offset);
+	else
+	    OUT_RING(pI830->overlay_regs->bus_addr);
 	OUT_RING(MI_WAIT_FOR_EVENT | MI_WAIT_FOR_OVERLAY_FLIP);
 	OUT_RING(MI_NOOP);
 	ADVANCE_LP_RING();
@@ -560,7 +569,9 @@ I830InitVideo(ScreenPtr pScreen)
     /* Set up textured video if we can do it at this depth and we are on
      * supported hardware.
      */
-    if (pScrn->bitsPerPixel >= 16 && (IS_I9XX(pI830) || IS_I965G(pI830))) {
+    if (pScrn->bitsPerPixel >= 16 && (IS_I9XX(pI830) || IS_I965G(pI830)) &&
+	!(!IS_I965G(pI830) && pScrn->displayWidth > 2048))
+    {
 	texturedAdaptor = I830SetupImageVideoTextured(pScreen);
 	if (texturedAdaptor != NULL) {
 	    adaptors[num_adaptors++] = texturedAdaptor;
@@ -1691,6 +1702,10 @@ i830_covering_crtc (ScrnInfoPtr pScrn,
 
     best_crtc = NULL;
     best_coverage = 0;
+    crtc_box_ret->x1 = 0;
+    crtc_box_ret->x2 = 0;
+    crtc_box_ret->y1 = 0;
+    crtc_box_ret->y2 = 0;
     for (c = 0; c < xf86_config->num_crtc; c++)
     {
 	crtc = xf86_config->crtc[c];
@@ -2338,9 +2353,8 @@ I830PutImage(ScrnInfoPtr pScrn,
     case FOURCC_I420:
 	srcPitch = (width + 3) & ~3;
 	srcPitch2 = ((width >> 1) + 3) & ~3;
-	if (pPriv->textured) {
+	if (pPriv->textured && IS_I965G(pI830))
 	    destId = FOURCC_YUY2;
-	}
 	break;
     case FOURCC_UYVY:
     case FOURCC_YUY2:
@@ -2441,7 +2455,7 @@ I830PutImage(ScrnInfoPtr pScrn,
     case FOURCC_I420:
 	top &= ~1;
 	nlines = ((((y2 + 0xffff) >> 16) + 1) & ~1) - top;
-	if (pPriv->textured) {
+	if (pPriv->textured && IS_I965G(pI830)) {
 	    I830CopyPlanarToPackedData(pScrn, pPriv, buf, srcPitch, srcPitch2,
 				       dstPitch, height, top, left, nlines,
 				       npixels, id);
