@@ -1,4 +1,4 @@
-xserver-xorg-video-intel (2:2.0.0-5) UNRELEASED; urgency=low
+xserver-xorg-video-intel (2:2.0.0-5) experimental; urgency=low
 
   [ Drew Parsons ]
   * The upstream README file looks interesting, include it with docs.
@@ -6,7 +6,7 @@ xserver-xorg-video-intel (2:2.0.0-5) UNRELEASED; urgency=low
   [ Julien Cristau ]
   * Pull in latest upstream git.
 
- -- Julien Cristau <jcristau@debian.org>  Fri, 22 Jun 2007 03:49:55 +0100
+ -- Julien Cristau <jcristau@debian.org>  Fri, 22 Jun 2007 03:58:48 +0100
 
 xserver-xorg-video-intel (2:2.0.0-4) experimental; urgency=low
 
