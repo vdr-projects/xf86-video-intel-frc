@@ -48,6 +48,7 @@ AM_MAINTAINER_MODE
 AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
 AC_PROG_CC
+AM_PROG_CC_C_O
 
 AC_CHECK_PROG(gen4asm, [intel-gen4asm], yes, no)
 AM_CONDITIONAL(HAVE_GEN4ASM, test x$gen4asm = xyes)
@@ -230,5 +231,6 @@ AC_OUTPUT([
 	src/ivch/Makefile
 	src/reg_dumper/Makefile
 	src/sil164/Makefile
+	src/tfp410/Makefile
 	man/Makefile
 ])

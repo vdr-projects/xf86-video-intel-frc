@@ -92,7 +92,7 @@ typedef struct {
 #define I8XX_P2_SLOW		      4
 #define I8XX_P2_FAST		      2
 #define I8XX_P2_LVDS_SLOW	      14
-#define I8XX_P2_LVDS_FAST	      14 /* No fast option */
+#define I8XX_P2_LVDS_FAST	      7
 #define I8XX_P2_SLOW_LIMIT	 165000
 
 #define I9XX_DOT_MIN		  20000
@@ -311,8 +311,7 @@ i830FindBestPLL(xf86CrtcPtr crtc, int target, int refclk, intel_clock_t *best_cl
     const intel_limit_t   *limit = intel_limit (crtc);
     int err = target;
 
-    if (IS_I9XX(pI830) && i830PipeHasType(crtc, I830_OUTPUT_LVDS) &&
-	(INREG(LVDS) & LVDS_PORT_EN) != 0)
+    if (i830PipeHasType(crtc, I830_OUTPUT_LVDS))
     {
 	/* For LVDS, if the panel is on, just rely on its current settings for
 	 * dual-channel.  We haven't figured out how to reliably set up
@@ -362,7 +361,7 @@ void
 i830WaitForVblank(ScrnInfoPtr pScreen)
 {
     /* Wait for 20ms, i.e. one cycle at 50hz. */
-    usleep(20000);
+    usleep(30000);
 }
 
 void
@@ -963,7 +962,7 @@ i830_crtc_mode_set(xf86CrtcPtr crtc, DisplayModePtr mode,
      * will be run after the mode is set. On 9xx, it helps.
      * On 855, it can lock up the chip (and the entire machine)
      */
-    if (IS_I9XX (pI830))
+    if (!IS_I85X (pI830))
     {
 	dspcntr |= DISPLAY_PLANE_ENABLE;
 	pipeconf |= PIPEACONF_ENABLE;
@@ -1006,7 +1005,7 @@ i830_crtc_mode_set(xf86CrtcPtr crtc, DisplayModePtr mode,
 	/* Set the B0-B3 data pairs corresponding to whether we're going to
 	 * set the DPLLs for dual-channel mode or not.
 	 */
-	if (clock.p2 == 7)
+	if (clock.p2 == I9XX_P2_LVDS_FAST)
 	    lvds |= LVDS_B0B3_POWER_UP | LVDS_CLKB_POWER_UP;
 	else
 	    lvds &= ~(LVDS_B0B3_POWER_UP | LVDS_CLKB_POWER_UP);
@@ -1055,6 +1054,14 @@ i830_crtc_mode_set(xf86CrtcPtr crtc, DisplayModePtr mode,
 	((adjusted_mode->CrtcHSyncEnd - 1) << 16));
     OUTREG(vtot_reg, (adjusted_mode->CrtcVDisplay - 1) |
 	((adjusted_mode->CrtcVTotal - 1) << 16));
+    
+    /*
+     * Give us some border at the bottom for load detection
+     */
+    adjusted_mode->CrtcVBlankStart = adjusted_mode->CrtcVSyncStart;
+    if (adjusted_mode->CrtcVBlankEnd - adjusted_mode->CrtcVBlankStart < 3)
+	adjusted_mode->CrtcVBlankStart = adjusted_mode->CrtcVBlankEnd - 3;
+    
     OUTREG(vblank_reg, (adjusted_mode->CrtcVBlankStart - 1) |
 	((adjusted_mode->CrtcVBlankEnd - 1) << 16));
     OUTREG(vsync_reg, (adjusted_mode->CrtcVSyncStart - 1) |
@@ -1323,7 +1330,7 @@ i830GetLoadDetectPipe(xf86OutputPtr output)
 	return output->crtc;
 
     for (i = 0; i < xf86_config->num_crtc; i++)
-	if (!xf86CrtcInUse (xf86_config->crtc[i]))
+	if (output->possible_crtcs & (1 << i))
 	    break;
 
     if (i == xf86_config->num_crtc)
@@ -1345,9 +1352,10 @@ i830ReleaseLoadDetectPipe(xf86OutputPtr output)
     
     if (intel_output->load_detect_temp) 
     {
-	output->crtc->enabled = FALSE;
+	xf86CrtcPtr crtc = output->crtc;
 	output->crtc = NULL;
 	intel_output->load_detect_temp = FALSE;
+	crtc->enabled = xf86CrtcInUse (crtc);
 	xf86DisableUnusedFunctions(pScrn);
     }
 }
