@@ -1,3 +1,9 @@
+xserver-xorg-video-intel (2:2.1.0-2) UNRELEASED; urgency=low
+
+  * Fix XvMC support for only i810 and i815 in the long description.
+
+ -- Brice Goglin <Brice.Goglin@ens-lyon.org>  Tue, 03 Jul 2007 22:19:50 +0200
+
 xserver-xorg-video-intel (2:2.1.0-1) unstable; urgency=low
 
   * New upstream release.

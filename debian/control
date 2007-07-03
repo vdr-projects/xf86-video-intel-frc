@@ -20,7 +20,7 @@ Description: X.Org X server -- Intel i8xx, i9xx display driver
  and i965 series chips.
  .
  This package also provides an XvMC (XVideo Motion Compensation) driver
- for the same chipsets.
+ for i810 and i815 chipsets.
  .
  More information about X.Org can be found at:
  <URL:http://www.X.org>
