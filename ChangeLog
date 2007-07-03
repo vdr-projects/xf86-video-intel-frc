@@ -1,3 +1,337 @@
+commit 3c552af65d28fafec1d09484a8914b690b961349
+Author: Eric Anholt <eric@anholt.net>
+Date:   Mon Jul 2 18:33:47 2007 -0700
+
+    Update documentation and bump driver version to 2.1.0.
+
+commit 2b9961eb9ce8734565ecdb01cb11610714d7f610
+Author: Eric Anholt <eric@anholt.net>
+Date:   Mon Jul 2 15:16:33 2007 -0700
+
+    Fix reversed LVDS dither enabling logic on GM965.
+
+commit 3d9ee8b2991ec0da8cc21b8455ff7f00fd0335b5
+Author: Eric Anholt <eric@anholt.net>
+Date:   Mon Jul 2 14:38:28 2007 -0700
+
+    Bug #11365: Disable the panel fitter unless it's needed for the chosen mode.
+    
+    The automatic panel scaling appears to choose bad sampling on some GM965
+    hardware for 1:1 mapping modes, and there's no real sense in having it on
+    if we just want 1:1.
+
+commit 1e2e301348b4168aeed38b3fdc6b0e43d5678a86
+Author: Keith Packard <keithp@dulcimer.keithp.com>
+Date:   Sat Jun 30 12:45:24 2007 -0700
+
+    Fix load detection to use border region instead of blanking.
+    
+    Make sure there is some border area to use by changing how the pipe is
+    configured, then pick a scanline in the middle of the border for load
+    detection. This lets the load detect code use an active pipe instead of
+    requiring an idle one.
+
+commit 11862c2e1f23b77b56d7bd8b384579b5e3ae377b
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Thu Jun 28 23:31:28 2007 -0700
+
+    Add *~ to .gitignore to skip emacs & patch backup files
+
+commit 6503eb45023d0db9a94cb9d1e14a26af07a6628d
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Thu Jun 28 23:30:35 2007 -0700
+
+    Add AM_PROG_CC_C_O to configure.ac
+    
+    Clears automake-1.10 warning: src/bios_reader/Makefile.am:8: compiling
+     `bios_dumper.c' with per-target flags requires `AM_PROG_CC_C_O' in
+     `configure.ac'
+
+commit 5257e36f502676fd6a44bbb8e747d9138ed3bc5c
+Author: Keith Packard <keithp@neko.keithp.com>
+Date:   Thu Jun 28 15:29:52 2007 -0700
+
+    Handle dual-channel LVDS on i855.
+    
+    Just as with i9xx LVDS, the i855 LVDS can operate in dual-channel mode with
+    a modified P2 divisor value (7 instead of 14). Just using the existing 9xx
+    code for 855 appears to work fine.
+
+commit 16bfcb8042519f24b4494fd621814f39949ceeb6
+Author: Keith Packard <keithp@neko.keithp.com>
+Date:   Thu Jun 28 15:27:56 2007 -0700
+
+    Decode PLL registers in LVDS mode a bit better in debug code.
+    
+    LVDS mode changes how the PLL works in fairly dramatic ways; the debug code
+    wasn't properly accounting for those differences resulting in fairly bogus
+    debug output.
+
+commit 9675ccb30818bf831ac4c634751ab4bfe35f7bfe
+Author: Wang Zhenyu <zhenyu.z.wang@intel.com>
+Date:   Wed Jun 27 09:23:33 2007 +0800
+
+    EXA: fallback mask transform on i965
+    
+    It needs to fix shader programs which hasn't been done yet.
+
+commit 7a2300c88ae59f5b7c3ce89d33147e3f0ca23c18
+Author: Wang Zhenyu <zhenyu.z.wang@intel.com>
+Date:   Wed Jun 27 09:19:22 2007 +0800
+
+    EXA: don't have to check offscreen size
+    
+    DDX will check it for EXA_OFFSCREEN_PIXMAPS flag
+
+commit fff4a3b58fa18ee2ad91f998d190e90b77c051ab
+Author: Carl Worth <cworth@cworth.org>
+Date:   Mon Jun 25 23:15:58 2007 -0700
+
+    Use local structures for vs_state, sf_state, and wm_state
+
+commit 0a8a4afd3c59011d6b1f5b39aedfb9bce0e55c48
+Author: Carl Worth <cworth@cworth.org>
+Date:   Mon Jun 25 23:12:23 2007 -0700
+
+    Use local structure for src_sampler_state and mask_sampler_state
+
+commit 499166a60fcbf16021bd9ec233790ba55803aa44
+Author: Carl Worth <cworth@cworth.org>
+Date:   Mon Jun 25 23:09:17 2007 -0700
+
+    Use local structure for mask_surf_state
+
+commit a418ef7316808b239884a90c3fe890220bcc0242
+Author: Carl Worth <cworth@cworth.org>
+Date:   Mon Jun 25 23:07:19 2007 -0700
+
+    Use local structure for src_surf_state
+
+commit 0e3c0b17826b7b5a21ee2c1d789b084fc167f1ed
+Author: Carl Worth <cworth@cworth.org>
+Date:   Mon Jun 25 23:05:50 2007 -0700
+
+    Use local structure for dest_surf_state
+
+commit 41a2c0f15446d59678461648f476fa71d40d44e0
+Author: Carl Worth <cworth@cworth.org>
+Date:   Mon Jun 25 23:03:47 2007 -0700
+
+    Use local structure for cc_state
+
+commit 59f2150caca7eb374a2db43a472ba85f50d23274
+Author: Carl Worth <cworth@cworth.org>
+Date:   Mon Jun 25 11:28:57 2007 -0700
+
+    Remove redundant i830WaitSync from i965_prepare_composite
+    
+    There were two calls to i830WaitSync, and between them no state was
+    being changed---just offsets were being computed.
+
+commit 66aa0e61e1e8d2216a9c0555be5be004ed0a3192
+Author: Dave Mueller <dave.mueller@gmx.ch>
+Date:   Fri Jun 22 16:45:27 2007 -0700
+
+    Bug #11171: Add support for the Ti TFP410 DVO TMDS transmitter.
+
+commit f8d7cbc6e1322acad3351591336cefcfba7d9aaf
+Author: Eric Anholt <eric@anholt.net>
+Date:   Fri Jun 22 16:29:21 2007 -0700
+
+    Move the ivch's fixed panel mode support to i830_dvo.c for other LVDS drivers.
+    
+    This also results in removal of the setup hook, which was being called
+    unconditionally and breaking non-ivch dvo drivers.
+
+commit ec236c76b93aea5f2ee1e8b8509cde4625974fcb
+Author: Keith Packard <keithp@neko.keithp.com>
+Date:   Fri Jun 22 16:32:46 2007 +0100
+
+    I830 needs to have plane/pipe/pll started in mode_set.
+    
+    The patch for the i855 to stop enabling plane/pipe/pll in mode_set broke the
+    i830. Revert that just for the i830, leaving it enabled for the i855.
+
+commit d957c6b8e1dde8e11c1db3431e0ff58c5d984880
+Author: Keith Packard <keithp@neko.keithp.com>
+Date:   Fri Jun 22 01:32:02 2007 +0100
+
+    Increase vblank wait timeout from 20ms to 30ms. 49.6Hz < 20ms.
+    
+    The x40 LVDS mode has a 49.6Hz vertical refresh. Waiting for only 20ms can
+    sometimes cause the driver to start programming the hardware before the
+    vblank has occurred, which will lock up the i855 chipset. Extend this to
+    30ms (the maximum timeout used by the BIOS) to ensure this doesn't happen.
+    
+    Detecting actual vblank occurance using the various status registers should
+    also be possible but isn't yet working.
+
+commit a67c2965385001bcb8987265f698ff0f5809cd11
+Author: Keith Packard <keithp@neko.keithp.com>
+Date:   Thu Jun 21 23:59:38 2007 +0100
+
+    Follow BIOS configuration for Legacy Backlight Brightness.
+    
+    The backlight control in the LVDS controller can either operate in 'normal'
+    mode or 'legacy' mode. In legacy mode, it uses the PCI config space register
+    0xf4 which can range from 0 to 0xff. In normal mode, it reads the range and
+    current value from the BLC_PWM_CTL register.
+
+commit d6e46f67ab3af1ad3bfa72acb0efd9fe79dbf1dc
+Author: Keith Packard <keithp@neko.keithp.com>
+Date:   Thu Jun 21 20:16:36 2007 +0100
+
+    Eliminate some uninitialized variable warnings
+
+commit 9d104634cf03bea82d1467f01e577cb8d2e4b554
+Author: Keith Packard <keithp@neko.keithp.com>
+Date:   Thu Jun 21 01:15:39 2007 +0100
+
+    Add 3DSTATE_CLEAR_PARAMETERS bits
+
+commit 3bbf313ba541526a893915f8b6c64b1eccf325e0
+Author: Wang Zhenyu <zhenyu.z.wang@intel.com>
+Date:   Tue Jun 19 09:33:50 2007 +0800
+
+    Fix left G33 issues
+    
+    Be sure to check G33 chip type in:
+    - sdvo output
+    - Y-major tile
+    - crt detect
+    - and xaa composite
+    Sorry for that I should have fixed them very earlier...
+
+commit acef342c870f3b5b781e48c8bf44739aa5ee8ffa
+Author: Eric Anholt <eric@anholt.net>
+Date:   Mon Jun 18 11:57:48 2007 -0700
+
+    Bug #11295: Disable textured video on i915 with framebuffer width too large.
+
+commit fbbb41bc5e03478cb46ee8f64ef68b23ff3fc14b
+Author: Keith Packard <keithp@neko.keithp.com>
+Date:   Sun Jun 17 14:59:24 2007 +0100
+
+    Let DPMS functions enable plane/pipe/output on 8xx hardware.
+    
+    On 855, letting crtc_mode_set enable the plane and pipe will occasionally
+    hang the chip. Instead, wait for crtc_enable to light things up. For 9xx,
+    leave things alone.
+
+commit d5ca000ece145a35fd6df0dcf3fb3460bd2d64e3
+Author: Rémi Cardona <remi@gentoo.org>
+Date:   Sat Jun 16 13:17:54 2007 +0100
+
+    Include stdint.h to get uint64_t
+
+commit 6b2ae93506d6795f87d6993bebfcb4e6632508ee
+Author: Dave Airlie <airlied@linux.ie>
+Date:   Fri Jun 15 23:30:04 2007 +1000
+
+    sdvo: add support for RGB outputs on SDVO
+    
+    This lights up my monitor VGA-1 - it doesn't look the best though
+
+commit 671ba03befebfdd7256855858987aabc28b2e8cd
+Author: Eric Anholt <eric@anholt.net>
+Date:   Wed Jun 13 16:30:26 2007 -0700
+
+    Fix and enable the 915-class planar textured video path.
+
+commit 6c29e0bae5f1e7cee02b678418394abb971594eb
+Author: Eric Anholt <eric@anholt.net>
+Date:   Wed Jun 13 13:40:39 2007 -0700
+
+    Improve the drm_i915_flip_t check.
+
+commit 420e41e7921d3cc07c784fd17936ec8a675f3b20
+Author: Eric Anholt <eric@anholt.net>
+Date:   Wed Jun 13 13:34:26 2007 -0700
+
+    Revert "Replace failure-prone configure test for fresh libdrm with a simple ifndef."
+    
+    This reverts commit c2b130354aecffbeb2a2d23c7371461feaf5766a.
+    
+    Sadly, a non-working DRM_IOCTL_I915_FLIP already existed.
+
+commit 51612e5ac3ddfb2bb172c58f2dfff9631093b69c
+Author: Eric Anholt <eric@anholt.net>
+Date:   Tue Jun 12 16:09:54 2007 -0700
+
+    On hang, dump up to the head pointer, not just up to the tail.
+
+commit ceb6dd72443c094212b0281c42cbe92e9a29f682
+Author: Eric Anholt <eric@anholt.net>
+Date:   Mon Jun 4 16:37:53 2007 -0700
+
+    Fix context switching between DRI and X.
+    
+    Now, all 3D pipeline consumers in the driver just call
+    IntelEmitInvariantState(), which handles basic state setup, the caching of that
+    state setup, and notifying DRI clients.  This also removes a mistaken idle
+    wait in the Render code which was papering over the brokenness in the context
+    switching.
+
+commit c2b130354aecffbeb2a2d23c7371461feaf5766a
+Author: Eric Anholt <eric@anholt.net>
+Date:   Tue Jun 12 08:49:21 2007 -0700
+
+    Replace failure-prone configure test for fresh libdrm with a simple ifndef.
+
+commit 0e1deb607f94e4aa3ec4b9df8ff7a07a1c95e31d
+Author: Eric Anholt <eric@anholt.net>
+Date:   Mon Jun 11 17:33:33 2007 -0700
+
+    Fix a typo in _3DSTATE_DEPTH_SUBRECT_DISABLE definition.
+    
+    This is already fixed in the definition in the 3d driver.
+
+commit 8d7a0ccd4f674659eb781def2cfdc3a6e5a219ce
+Author: Eric Anholt <eric@anholt.net>
+Date:   Mon Jun 11 17:33:07 2007 -0700
+
+    Clean up some nits in i915_video.c setup.
+    
+    - The screen dimensions were used for the clipping despite drawing being done
+      to any pixmap, not necessarily the screen.
+    - One piece of state setup was not documented anywhere, and isn't used in other
+      3d hardware paths that also work.
+    - A 3DSTATE_MODES_1 command (830-class only) was issued even though it no
+      longer exists.
+
+commit 15caa64a497dcc0eacb0f91166d9b70206a8db35
+Author: Keith Packard <keithp@neko.keithp.com>
+Date:   Fri Jun 8 18:44:28 2007 -0700
+
+    Add description for how to use the frame and pixel counter registers.
+    
+    The 24-bit frame and pixel counters were not described in detail and
+    will be useful for DRM.
+
+commit 404fd47573f855b0442d49a383542fc093825ad0
+Author: Wang Zhenyu <zhenyu.z.wang@intel.com>
+Date:   Wed Jun 6 11:01:48 2007 +0800
+
+    Enable overlay on G33 class chipsets
+    
+    Which have to use gfx vm offset fot setup overlay regs.
+
+commit f4c05973d391bdb0a9b0eadb155548310baa98fd
+Author: Wang Zhenyu <zhenyu.z.wang@intel.com>
+Date:   Tue Jun 5 11:07:41 2007 -0700
+
+    Add support for the G33, Q33, and Q35 chipsets.
+    
+    These chipsets require that the hardware status page be referenced by an offset
+    in the GTT rather than a physical memory address, so the X Server allocates it
+    rather than the DRM.
+
+commit 36fcaeb2ef94db5399071540bba106dec3db81d5
+Author: Eric Anholt <eric@anholt.net>
+Date:   Mon Jun 4 15:58:31 2007 -0700
+
+    Fix misplaced merge of 1280x768 panel fixup.
+
 commit 8a19e7d57bc23dd163b45e0ab7deca4f074c934d
 Author: Keith Packard <keithp@dulcimer.keithp.com>
 Date:   Tue Jun 5 00:09:57 2007 -0700
