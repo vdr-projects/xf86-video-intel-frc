@@ -534,6 +534,7 @@ typedef struct _I830Rec {
 
    /** Enables logging of debug output related to mode switching. */
    Bool debug_modes;
+   unsigned int quirk_flag;
 } I830Rec;
 
 #define I830PTR(p) ((I830Ptr)((p)->driverPrivate))
@@ -725,10 +726,10 @@ extern const int I830CopyROP[16];
 #define _845_DRAM_RW_CONTROL 0x90
 #define DRAM_WRITE    0x33330000
 
-/* 
- * Xserver MM compatibility. Remove code guarded by this when the
- * XServer contains the libdrm mm code
- */
-#undef XSERVER_LIBDRM_MM
+/* quirk flag definition */
+#define QUIRK_IGNORE_TV			0x00000001
+#define QUIRK_IGNORE_LVDS		0x00000002
+#define QUIRK_IGNORE_MACMINI_LVDS 	0x00000004
+extern void i830_fixup_devices(ScrnInfoPtr);
 
 #endif /* _I830_H_ */
