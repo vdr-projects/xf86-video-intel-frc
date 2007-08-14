@@ -1,3 +1,11 @@
+xserver-xorg-video-intel (2:2.1.1-1) UNRELEASED; urgency=low
+
+  * New upstream release.
+    + manpage typo fixed (closes: #432061).  Thanks, A Costa!
+    + adds quirk for TV output on some 965-based laptops (closes: #434297).
+
+ -- Julien Cristau <jcristau@debian.org>  Tue, 14 Aug 2007 12:25:47 +0200
+
 xserver-xorg-video-intel (2:2.1.0-2) unstable; urgency=low
 
   [ Brice Goglin ]

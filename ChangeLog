@@ -1,3 +1,179 @@
+commit 69ea37ebf72b92d842aa80dfa3578e328c7ceaa3
+Author: Kyle McMartin <kyle@phobos.i.cabal.ca>
+Date:   Tue Aug 14 01:28:30 2007 -0400
+
+    Bump driver version to 2.1.1
+
+commit 46ca27eb547ad225b306d7f0886232d408b98c7f
+Author: Keith Packard <keithp@koto.keithp.com>
+Date:   Fri Aug 10 14:31:16 2007 -0700
+
+    Clean up tv mode name allocation and copy.
+    
+    TV mode names used to contain the signalling standard along with the pixel
+    size. The signalling has been moved to the TV_FORMAT property, but the
+    allocation and initialization of the mode name was left a bit messy as a
+    result.
+    (cherry picked from commit ed1b106fabf3a18489bdb3083326f27387a9cb72)
+
+commit cd6807306009f57219d5863b9fba785c7bb4f79e
+Author: Dave Airlie <airlied@redhat.com>
+Date:   Thu Aug 9 12:14:44 2007 +1000
+
+    i965: increase composite vertex buffer size and alignment to be safe
+    (cherry picked from commit 7b143e5c8397da077c0e02455c21c5a99cf50942)
+
+commit ba59c2794b89cbd85a1fe743d4f8661edf08c03f
+Author: Dave Airlie <airlied@linux.ie>
+Date:   Thu Aug 9 09:41:32 2007 +1000
+
+    i965: fix memcpy of the sf_kernel when a mask is needed
+    (cherry picked from commit 14691b24da5aa29d8c41ac7b7c61828e3cd9eab7)
+
+commit 24708b9d3f99513c287df14859a7e34affd67fe1
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Aug 8 11:13:37 2007 -0700
+
+    Allow 965 composite acceleration to A8 destinations.
+    
+    Note that this is a slowdown in text rendering due to the high overhead of our
+    compositing setup, but appears to be correct according to rendercheck.
+    (cherry picked from commit 5e18c6af9051da654d2a6a97553ef4fe777bb61e)
+
+commit 77f55151708e6331107a7e25fbf5d23d87517869
+Author: Eric Anholt <eric@anholt.net>
+Date:   Wed Aug 8 11:03:51 2007 -0700
+
+    Bug #11593: Remove dead struct vch_bdb_20 which was angering the sun compiler.
+    (cherry picked from commit b0ec670cdb0b6ca6fc0f4f165fa3ee5a20d7c985)
+
+commit ff5c9436bb94e2093775b6c8678641eba7291857
+Author: Brice Goglin <bgoglin@debian.org>
+Date:   Tue Aug 7 09:13:00 2007 +0200
+
+    Define INTEL_VERSION_MAJOR/MINOR/PATCH using PACKAGE_VERSION_*
+    (cherry picked from commit 7431abee5fb971d1f8bc7ac4bea137f6ece9418b)
+
+commit ab950611401575145fa01084a85d817ea13bb9cf
+Author: Eric Anholt <eric@anholt.net>
+Date:   Fri Aug 3 16:46:09 2007 -0700
+
+    Add the file mode for bios_dumper output so it doesn't have 000 permissions.
+    (cherry picked from commit ba90d944329dd8c79a757c38128964fbbe4ab898)
+
+commit a85dd7adc35601a988b1001e8b3c8aa4d53de0c0
+Author: Jesse Barnes <jesse.barnes@intel.com>
+Date:   Wed Aug 8 15:29:52 2007 -0400
+
+    Legacy backlight changes: - add support for 965GM - make sure legacy enabled systems don't reduce the range of backlight values we can present to the user
+    
+    (cherry picked from commit 0da4f2b0cd7203377ad10407928a367b8c6d310e)
+    
+    Conflicts:
+    
+    	src/i830.h
+
+commit c989cb4897e2e2d395c52df4822290a767cdc866
+Author: Eric Anholt <eric@anholt.net>
+Date:   Fri Aug 3 10:46:39 2007 -0700
+
+    Quirk away the nonexistent TV connector on the Panasonic CF-Y4.
+    (cherry picked from commit 322a163cfbda885adc6bb09c1f976d36617ea83b)
+
+commit 010eda526fd42f1d42d2f82d0ba77e852f9a5349
+Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
+Date:   Sat Jul 28 17:43:29 2007 +0800
+
+    Update Lenovo TV quirk info
+    
+    (cherry picked from commit 15f71edba37738f8ba279fa07452fda10cc65298)
+
+commit c518635bdbb2b8e0a43b130ddcf95e9520315802
+Author: Wang Zhenyu <zhenyu.z.wang@intel.com>
+Date:   Fri Jul 27 09:24:24 2007 +0800
+
+    Add another Lenovo TV output quirk
+    
+    From issue report http://lists.freedesktop.org/archives/xorg/2007-July/026644.html
+    (cherry picked from commit f403a50afbcef1e54f554481c72037338bd5357c)
+
+commit 2fa82154066c9061f8503685bb520065deb496b7
+Author: Wang Zhenyu <zhenyu.z.wang@intel.com>
+Date:   Fri Jul 27 09:14:13 2007 +0800
+
+    Add quirk support
+    
+    This one trys to use a flag for possible quirks. It adds a quirk
+    for my Lenovo T61 TV output, and ports some origin LVDS quirks to it.
+    (cherry picked from commit 34c82ad7ce83394db47588693b578cf91991bf1c)
+
+commit 91d3c4702de892cf8445166e43efa4b94c973847
+Author: Eric Anholt <eric@anholt.net>
+Date:   Mon Jul 9 12:56:13 2007 -0700
+
+    Fix some physical address handling for >4GB addresses.
+    
+    The upper bits would have been inappropriately dropped on G33-class hardware,
+    and on G965-class hardware in a 32-bit environment.  The only use of physical
+    addresses on these should be for FBC, though, and FBC requires addresses
+    below 4GB.  This is unresolved.
+    (cherry picked from commit 88f8b688e2316ae4a1f7485f0010ce90de54783a)
+
+commit e64614e9374e54dfc6a2a5bac3d82218f793e400
+Author: Brice Goglin <Brice.Goglin@ens-lyon.org>
+Date:   Wed Jul 25 20:11:32 2007 +0200
+
+    Fix typo in intel.man
+    
+    Reported by A. Costa" <agcosta@gis.net> in
+    http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=432061
+    (cherry picked from commit 0fd3ba0518b3cde9ca0e4e2fc1854c00d8a43d5c)
+
+commit 3f5c3b63bf0672a3c092215c77838bb936900944
+Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
+Date:   Fri Jul 20 15:18:48 2007 +0800
+
+    Fix device id info for 945GME, 965GME
+    
+    which do have new host bridge ids
+    (cherry picked from commit b1af2c0e01c54ef1d40fd0ca1ede29a1dd7ed97b)
+
+commit b5b97f117d28202065018c167bad2c330bb6c25c
+Author: Keith Packard <keithp@neko.keithp.com>
+Date:   Fri Jul 13 12:47:18 2007 -0700
+
+    Remove hard-coded CRT blanking frobbing for load detection.
+    
+    CRT blanking needn't be adjusted to perform load detection on 9xx chips, and
+    the 8xx load detection path now adjusts blanking just during load detection.
+    Adjusting the blanking interval turned out to cause many monitors to fail to
+    sync.
+    (cherry picked from commit ff2be3995d33f9e4b7f63b380f166b6168c9b9c6)
+
+commit 760bd1bbeaa8daa3bf05267b34897e175058f4f0
+Author: Keith Packard <keithp@neko.keithp.com>
+Date:   Fri Jul 13 10:58:06 2007 -0700
+
+    Ensure pipe/output active before doing load detection.
+    
+    If the pipe or output have been set to DPMSOff, then load detection will not
+    work correctly. Also, share the load detection configuration code between
+    crt and tv outputs.
+    (cherry picked from commit 00f4587025a3879626623135b0a153fcdb906719)
+
+commit 9d6fca93760b7fba7dfb774171eca94ca52d0115
+Author: Keith Packard <keithp@neko.keithp.com>
+Date:   Mon Jul 9 21:29:55 2007 -0700
+
+    Eliminate bogus (and harmful) blanking adjustment for load detect.
+    
+    Instead of always adding blanking to mode lines, use the FORCE_BORDER option
+    on i9xx hardware where it works, and dynamically add a bit of border if
+    necessary on i8xx hardware to make load detection work. This may cause
+    flashing when a usable crtc is not otherwise idle when load detection is
+    requested.
+    (cherry picked from commit 6f18300aed1340348c6d395f326061b5315be643)
+
 commit 3c552af65d28fafec1d09484a8914b690b961349
 Author: Eric Anholt <eric@anholt.net>
 Date:   Mon Jul 2 18:33:47 2007 -0700
