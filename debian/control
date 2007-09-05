@@ -33,7 +33,7 @@ Package: xserver-xorg-video-intel-dbg
 Architecture: any
 Depends: xserver-xorg-video-intel (= ${binary:Version})
 Priority: extra
-Description: X.Org X server -- Intel i8xx, i9xx display driver (debugging symbols)
+Description: X.Org X server -- Intel i8xx, i9xx display driver (debug symbols)
  This driver provides support for the Intel i8xx and i9xx family of chipsets,
  including i810, i815, i830, i845, i855, i865, i915, and i945 series chips,
  and XvMC (XVideo Motion Compensation) support for the same chipsets.
