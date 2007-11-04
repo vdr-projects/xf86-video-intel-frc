@@ -41,7 +41,7 @@ Description: X.Org X server -- Intel i8xx, i9xx display driver (debug symbols)
  This package provides debugging symbols for this Xorg X driver.
 
 Package: xserver-xorg-video-i810
-Architecture: alpha amd64 arm armeb armel hppa hurd-i386 i386 ia64 kfreebsd-i386 m68k mips mipsel netbsd-i386 powerpc
+Architecture: all
 Section: oldlibs
 Depends: xserver-xorg-video-intel
 Description: X.Org X server -- Intel i8xx, i9xx display driver

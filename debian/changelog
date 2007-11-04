@@ -1,3 +1,9 @@
+xserver-xorg-video-intel (2:2.1.1-6) UNRELEASED; urgency=low
+
+  * Make -i810 arch: all again
+
+ -- David Nusinow <dnusinow@debian.org>  Sun, 04 Nov 2007 10:27:37 -0500
+
 xserver-xorg-video-intel (2:2.1.1-5) unstable; urgency=low
 
   * Use the same architectures for the -dbg and i810 packages as -intel.
