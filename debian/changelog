@@ -1,3 +1,10 @@
+xserver-xorg-video-intel (2:2.1.1-5) unstable; urgency=low
+
+  * Use the same architectures for the -dbg and i810 packages as -intel.
+    This should allow it to transition to testing. Closes: #449228
+
+ -- David Nusinow <dnusinow@debian.org>  Sun, 04 Nov 2007 09:10:31 -0500
+
 xserver-xorg-video-intel (2:2.1.1-4) unstable; urgency=low
 
   * Upload to unstable
