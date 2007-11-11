@@ -5,9 +5,10 @@ xserver-xorg-video-intel (2:2.1.99-1) UNRELEASED; urgency=low
 
   [ Julien Cristau ]
   * New upstream release candidate
-    + fixes VT switch issues (closes: #431373)
+    + fixes VT switch issues (closes: #431373, #436336)
     + fixes memory allocation issues (closes: #423416)
-    + adds support for ch701x LVDS controllers (closes: #438650)
+    + adds support for ch701x LVDS controllers (closes: #438650, #420350,
+      #424952)
 
  -- Julien Cristau <jcristau@debian.org>  Sat, 10 Nov 2007 23:47:11 +0100
 
