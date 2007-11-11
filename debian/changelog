@@ -1,4 +1,4 @@
-xserver-xorg-video-intel (2:2.1.99-1) UNRELEASED; urgency=low
+xserver-xorg-video-intel (2:2.1.99-1) experimental; urgency=low
 
   [ David Nusinow ]
   * Make -i810 arch: all again
@@ -10,7 +10,7 @@ xserver-xorg-video-intel (2:2.1.99-1) UNRELEASED; urgency=low
     + adds support for ch701x LVDS controllers (closes: #438650, #420350,
       #424952)
 
- -- Julien Cristau <jcristau@debian.org>  Sat, 10 Nov 2007 23:47:11 +0100
+ -- Julien Cristau <jcristau@debian.org>  Sun, 11 Nov 2007 11:16:03 +0100
 
 xserver-xorg-video-intel (2:2.1.1-5) unstable; urgency=low
 
