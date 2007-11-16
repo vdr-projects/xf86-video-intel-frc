@@ -1,10 +1,11 @@
-xserver-xorg-video-intel (2:2.2.0-1) UNRELEASED; urgency=low
+xserver-xorg-video-intel (2:2.2.0-1) unstable; urgency=low
 
   * New upstream release.
     + Also pull bugfix commit 4a2b0f340357c4ca58dc9586fad1337b83966362.
     + Fix backlight problems on various chipsets,
       closes: #443111, #438969, #439744.
     + Fix some issues with high resolution, closes: #420840.
+  * Add myself to Uploaders and remove Branden with his permission.
 
  -- Brice Goglin <bgoglin@debian.org>  Fri, 16 Nov 2007 09:30:26 +0100
 
