@@ -1,3 +1,10 @@
+xserver-xorg-video-intel (2:2.2.0-2) UNRELEASED; urgency=low
+
+  * Conflict with 915resolution. This driver now handles all of this itself
+    and better. Closes: #452803
+
+ -- David Nusinow <dnusinow@debian.org>  Mon, 03 Dec 2007 21:35:07 -0500
+
 xserver-xorg-video-intel (2:2.2.0-1) unstable; urgency=low
 
   * New upstream release.
