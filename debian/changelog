@@ -1,7 +1,7 @@
-xserver-xorg-video-intel (2:2.2.0+git20080107-1) UNRELEASED; urgency=low
+xserver-xorg-video-intel (2:2.2.0+git20080107-1) experimental; urgency=low
 
-  * New upstream snapshot 
-    + Clarifies backlight abilities in the manpage. Closes: #451847 
+  * New upstream snapshot
+    + Clarifies backlight abilities in the manpage. Closes: #451847
     + Will use a functional backlight on older chips now. Newer chips may
       benefit from configured to use something other than the legacy setting
       though. Closes: #451848
@@ -9,7 +9,7 @@ xserver-xorg-video-intel (2:2.2.0+git20080107-1) UNRELEASED; urgency=low
     + Xv window hidden for a little while no longer causes segfaults.
       Closes: #457587
 
- -- David Nusinow <dnusinow@debian.org>  Mon, 07 Jan 2008 21:21:20 -0500
+ -- David Nusinow <dnusinow@debian.org>  Mon, 07 Jan 2008 22:41:51 -0500
 
 xserver-xorg-video-intel (2:2.2.0-2) UNRELEASED; urgency=low
 
