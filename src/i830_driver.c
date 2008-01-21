@@ -236,7 +236,7 @@ static SymTabRec I830Chipsets[] = {
    {PCI_CHIP_I945_GM,		"945GM"},
    {PCI_CHIP_I945_GME,		"945GME"},
    {PCI_CHIP_I965_G,		"965G"},
-   {PCI_CHIP_I965_G_1,		"965G"},
+   {PCI_CHIP_G35_G,		"G35"},
    {PCI_CHIP_I965_Q,		"965Q"},
    {PCI_CHIP_I946_GZ,		"946GZ"},
    {PCI_CHIP_I965_GM,		"965GM"},
@@ -244,6 +244,7 @@ static SymTabRec I830Chipsets[] = {
    {PCI_CHIP_G33_G,		"G33"},
    {PCI_CHIP_Q35_G,		"Q35"},
    {PCI_CHIP_Q33_G,		"Q33"},
+   {PCI_CHIP_IGD_GM,		"Intel Integrated Graphics Device"},
    {-1,				NULL}
 };
 
@@ -259,7 +260,7 @@ static PciChipsets I830PciChipsets[] = {
    {PCI_CHIP_I945_GM,		PCI_CHIP_I945_GM,	RES_SHARED_VGA},
    {PCI_CHIP_I945_GME,		PCI_CHIP_I945_GME,	RES_SHARED_VGA},
    {PCI_CHIP_I965_G,		PCI_CHIP_I965_G,	RES_SHARED_VGA},
-   {PCI_CHIP_I965_G_1,		PCI_CHIP_I965_G_1,	RES_SHARED_VGA},
+   {PCI_CHIP_G35_G,		PCI_CHIP_G35_G,		RES_SHARED_VGA},
    {PCI_CHIP_I965_Q,		PCI_CHIP_I965_Q,	RES_SHARED_VGA},
    {PCI_CHIP_I946_GZ,		PCI_CHIP_I946_GZ,	RES_SHARED_VGA},
    {PCI_CHIP_I965_GM,		PCI_CHIP_I965_GM,	RES_SHARED_VGA},
@@ -267,6 +268,7 @@ static PciChipsets I830PciChipsets[] = {
    {PCI_CHIP_G33_G,		PCI_CHIP_G33_G,		RES_SHARED_VGA},
    {PCI_CHIP_Q35_G,		PCI_CHIP_Q35_G,		RES_SHARED_VGA},
    {PCI_CHIP_Q33_G,		PCI_CHIP_Q33_G,		RES_SHARED_VGA},
+   {PCI_CHIP_IGD_GM,		PCI_CHIP_IGD_GM,	RES_SHARED_VGA},
    {-1,				-1,			RES_UNDEFINED}
 };
 
@@ -455,6 +457,15 @@ I830DetectMemory(ScrnInfoPtr pScrn)
       case PGETBL_SIZE_128KB:
 	 gtt_size = 128;
 	 break;
+      case PGETBL_SIZE_1MB:
+	 gtt_size = 1024;
+	 break;
+      case PGETBL_SIZE_2MB:
+	 gtt_size = 2048;
+	 break;
+      case PGETBL_SIZE_1_5MB:
+	 gtt_size = 1024 + 512;
+	 break;
       default:
 	 FatalError("Unknown GTT size value: %08x\n", (int)INREG(PGETBL_CTL));
       }
@@ -509,11 +520,11 @@ I830DetectMemory(ScrnInfoPtr pScrn)
 	    memsize = MB(64) - KB(range);
 	 break;
       case G33_GMCH_GMS_STOLEN_128M:
-	 if (IS_G33CLASS(pI830))
+	 if (IS_I9XX(pI830))
 	     memsize = MB(128) - KB(range);
 	 break;
       case G33_GMCH_GMS_STOLEN_256M:
-	 if (IS_G33CLASS(pI830))
+	 if (IS_I9XX(pI830))
 	     memsize = MB(256) - KB(range);
 	 break;
       }
@@ -599,8 +610,13 @@ I830MapMMIO(ScrnInfoPtr pScrn)
       
       if (IS_I965G(pI830)) 
       {
-	 gttaddr = pI830->MMIOAddr + (512 * 1024);
-	 pI830->GTTMapSize = 512 * 1024;
+	 if (IS_IGD_GM(pI830)) {
+	     gttaddr = pI830->MMIOAddr + MB(2);
+	     pI830->GTTMapSize = MB(2);
+	 } else {
+	     gttaddr = pI830->MMIOAddr + KB(512);
+	     pI830->GTTMapSize = KB(512);
+	 }
       }
       else
       {
@@ -1242,8 +1258,10 @@ I830PreInit(ScrnInfoPtr pScrn, int flags)
       chipname = "945GME";
       break;
    case PCI_CHIP_I965_G:
-   case PCI_CHIP_I965_G_1:
       chipname = "965G";
+      break;
+   case PCI_CHIP_G35_G:
+      chipname = "G35";
       break;
    case PCI_CHIP_I965_Q:
       chipname = "965Q";
@@ -1265,6 +1283,9 @@ I830PreInit(ScrnInfoPtr pScrn, int flags)
       break;
    case PCI_CHIP_Q33_G:
       chipname = "Q33";
+      break;
+   case PCI_CHIP_IGD_GM:
+      chipname = "Intel Integrated Graphics Device";
       break;
    default:
       chipname = "unknown chipset";
@@ -2494,7 +2515,8 @@ I830ScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
    }
 
    /* Enable FB compression if possible */
-   if (i830_fb_compression_supported(pI830) && !IS_I965GM(pI830))
+   if (i830_fb_compression_supported(pI830) && !IS_I965GM(pI830)
+	   && !IS_IGD_GM(pI830))
        pI830->fb_compression = TRUE;
    else
        pI830->fb_compression = FALSE;
@@ -2786,7 +2808,7 @@ I830ScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
     *       alone in that case.
     * Also make sure the DRM can handle the swap.
     */
-   if (I830LVDSPresent(pScrn) && !IS_I965GM(pI830) &&
+   if (I830LVDSPresent(pScrn) && !IS_I965GM(pI830) && !IS_IGD_GM(pI830) &&
        (!pI830->directRenderingEnabled ||
 	(pI830->directRenderingEnabled && pI830->drmMinor >= 10))) {
        xf86DrvMsg(pScrn->scrnIndex, X_INFO, "adjusting plane->pipe mappings "
