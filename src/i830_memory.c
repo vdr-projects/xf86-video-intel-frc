@@ -1929,7 +1929,8 @@ i830_bind_all_memory(ScrnInfoPtr pScrn)
 	}
 #endif
     }
-    i830_update_cursor_offsets(pScrn);
+    if (!pI830->SWCursor)
+	i830_update_cursor_offsets(pScrn);
 
     return TRUE;
 }
