@@ -663,7 +663,6 @@ i830_use_fb_compression(xf86CrtcPtr crtc)
     return TRUE;
 }
 
->>>>>>> abf4b0c... Only enable FBC if one pipe is active:src/i830_display.c
 /**
  * Sets the power management mode of the pipe and plane.
  *
