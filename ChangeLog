@@ -1,3 +1,12 @@
+commit 2c8f87be99957e0e18d8bcda46bd8706ab374253
+Author: Jesse Barnes <jbarnes@hobbes.virtuousgeek.org>
+Date:   Wed Feb 6 09:35:43 2008 -0800
+
+    Only disable FBC if registers are available
+    
+    The call to disable FBC should only occur if the FBC feature is actually
+    present or we may end up hanging on a read from a non-existent register.
+
 commit 0516e708abf01d1f83e2e8af9abe4c835ed79444
 Author: Jesse Barnes <jbarnes@hobbes.virtuousgeek.org>
 Date:   Tue Feb 5 17:39:26 2008 -0800

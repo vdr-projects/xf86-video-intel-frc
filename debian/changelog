@@ -1,3 +1,10 @@
+xserver-xorg-video-intel (2:2.2.0.90-3) unstable; urgency=low
+
+  * Grab upstream commit 2c8f87be99957e0e18d8bcda46bd8706ab374253
+    to unbreak FramebufferCompression on i965.
+
+ -- Brice Goglin <bgoglin@debian.org>  Wed, 06 Feb 2008 21:29:44 +0100
+
 xserver-xorg-video-intel (2:2.2.0.90-2) unstable; urgency=low
 
   * Actually pull the new upstream release candidate.
