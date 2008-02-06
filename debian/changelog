@@ -1,3 +1,15 @@
+xserver-xorg-video-intel (2:2.2.0.90-1) unstable; urgency=low
+
+  * New upstream stable branch release candidate. Fixes the following bugs:
+    + server leaves pipe disabled at shutdown / vt switch ; closes: #453374
+    + [855GM] need to use BIOS for mode information ; closes: #437066
+    + Intel 2.2 crashes if playing a video then switching to another desktop;
+      closes: #452372
+    + [G33] 2.2.0 locks up X with error "First SDVO output reported failure to
+      sync" ; closes: #451917
+
+ -- David Nusinow <dnusinow@debian.org>  Tue, 05 Feb 2008 21:41:13 -0500
+
 xserver-xorg-video-intel (2:2.2.0+git20080107-1) experimental; urgency=low
 
   * New upstream snapshot
