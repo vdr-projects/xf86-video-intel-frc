@@ -1,3 +1,10 @@
+xserver-xorg-video-intel (2:2.2.0.90-4) UNRELEASED; urgency=low
+
+  * Build the intel_reg_dumper tool, and install it in the -dbg package.
+    Add build-dependency on libpciaccess-dev.
+
+ -- Julien Cristau <jcristau@debian.org>  Tue, 19 Feb 2008 16:31:43 +0100
+
 xserver-xorg-video-intel (2:2.2.0.90-3) unstable; urgency=low
 
   * Grab upstream commit 2c8f87be99957e0e18d8bcda46bd8706ab374253
