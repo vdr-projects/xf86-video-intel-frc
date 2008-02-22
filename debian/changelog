@@ -1,9 +1,16 @@
-xserver-xorg-video-intel (2:2.2.0.90-4) UNRELEASED; urgency=low
+xserver-xorg-video-intel (2:2.2.1-1) unstable; urgency=low
 
+  [ Brice Goglin ]
+  * New upstream release.
+    + Fix some blinking pixels and unreadable text, closes: #465921.
+    + Fix i830 stolen memory mask, closes: #464661.
+    + Fix flickering on i855, closes: #443809, #435621.
+
+  [ Julien Cristau ]
   * Build the intel_reg_dumper tool, and install it in the -dbg package.
     Add build-dependency on libpciaccess-dev.
 
- -- Julien Cristau <jcristau@debian.org>  Tue, 19 Feb 2008 16:31:43 +0100
+ -- Brice Goglin <bgoglin@debian.org>  Sat, 23 Feb 2008 00:52:39 +0100
 
 xserver-xorg-video-intel (2:2.2.0.90-3) unstable; urgency=low
 
