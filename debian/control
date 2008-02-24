@@ -31,7 +31,7 @@ Description: X.Org X server -- Intel i8xx, i9xx display driver
 
 Package: xserver-xorg-video-intel-dbg
 Architecture: alpha amd64 arm armeb armel hppa hurd-i386 i386 ia64 kfreebsd-i386 m68k mips mipsel netbsd-i386 powerpc
-Depends: xserver-xorg-video-intel (= ${binary:Version})
+Depends: xserver-xorg-video-intel (= ${binary:Version}), ${shlibs:Depends}
 Priority: extra
 Description: X.Org X server -- Intel i8xx, i9xx display driver (debug symbols)
  This driver provides support for the Intel i8xx and i9xx family of chipsets,

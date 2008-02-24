@@ -1,3 +1,10 @@
+xserver-xorg-video-intel (2:2.2.1-2) UNRELEASED; urgency=low
+
+  * Add the ${shlibs:Depends} substvar to the -dbg package's dependencies, to
+    bring in libpciaccess0 (closes: #467215).
+
+ -- Julien Cristau <jcristau@debian.org>  Sun, 24 Feb 2008 10:29:49 +0100
+
 xserver-xorg-video-intel (2:2.2.1-1) unstable; urgency=low
 
   [ Brice Goglin ]
