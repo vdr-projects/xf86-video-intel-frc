@@ -4,6 +4,10 @@ xserver-xorg-video-intel (2:2.2.1-2) UNRELEASED; urgency=low
     bring in libpciaccess0 (closes: #467215).
   * Only build on x86, this package doesn't make sense anywhere else.
   * The Vcs-* fields are now recognized by dpkg, so drop the XS- prefix.
+  * Build against xserver 1.5 rc1 (1.4.99.901).
+  * configure: change the pciaccess version check to 0.10 instead of 0.10.0.
+  * Bump Standards-Version to 3.7.3 (no changes).
+  * DRI is disabled for now, don't try to install the xvmc lib.
 
  -- Julien Cristau <jcristau@debian.org>  Sun, 24 Feb 2008 10:29:49 +0100
 
