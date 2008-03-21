@@ -22,7 +22,7 @@
 
 AC_PREREQ(2.57)
 AC_INIT([xf86-video-intel],
-        2.2.1,
+        2.2.99.901,
         [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg],
         xf86-video-intel)
 
@@ -66,6 +66,10 @@ AC_ARG_WITH(xserver-source,AC_HELP_STRING([--with-xserver-source=XSERVER_SOURCE]
 			   [ XSERVER_SOURCE="$withval" ],
 			   [ XSERVER_SOURCE="" ])
 
+AC_ARG_ENABLE(xvmc, AC_HELP_STRING([--disable-xvmc],
+                                  [Disable XvMC support [[default=yes]]]),
+              [XVMC="$enableval"],
+              [XVMC=yes])
 
 # Checks for extensions
 XORG_DRIVER_CHECK_EXT(XINERAMA, xineramaproto)
@@ -140,16 +144,16 @@ if test -d "$XSERVER_SOURCE"; then
 		XSERVER_SOURCE="`cd $XSERVER_SOURCE && pwd`"
 		;;
 	esac
-	if test -f src/modes/xf86Modes.h; then
+	if test -f $srcdir/src/modes/xf86Modes.h; then
 		:
 	else
-		ln -sf $XSERVER_SOURCE/hw/xfree86/modes src/modes
+		ln -sf $XSERVER_SOURCE/hw/xfree86/modes $srcdir/src/modes
 	fi
 	
-	if test -f src/parser/xf86Parser.h; then
+	if test -f $srcdir/src/parser/xf86Parser.h; then
 		:
 	else
-		ln -sf $XSERVER_SOURCE/hw/xfree86/parser src/parser
+		ln -sf $XSERVER_SOURCE/hw/xfree86/parser $srcdir/src/parser
 	fi
 fi
 
@@ -158,7 +162,7 @@ if test "x$XMODES" = xyes; then
 	AC_DEFINE(XMODES, 1,[X server has built-in mode code])
 	XMODES_CFLAGS=
 else
-	if test -f src/modes/xf86Modes.h -a -f src/parser/xf86Parser.h; then
+	if test -f $srcdir/src/modes/xf86Modes.h -a -f $srcdir/src/parser/xf86Parser.h; then
 		AC_MSG_NOTICE([X server is missing new mode code, using local copy])
 	else
 		AC_MSG_ERROR([Must have X server >= 1.3 source tree for mode setting code. Please specify --with-xserver-source])
@@ -207,6 +211,14 @@ AM_CONDITIONAL(VIDEO_DEBUG, test x$VIDEO_DEBUG = xyes)
 if test "$VIDEO_DEBUG" = yes; then
 	AC_DEFINE(VIDEO_DEBUG,1,[Enable debug support])
 fi
+
+AC_MSG_CHECKING([whether to include XvMC support])
+AC_MSG_RESULT([$XVMC])
+AM_CONDITIONAL(XVMC, test x$XVMC = xyes)
+if test "$XVMC" = yes; then
+	AC_DEFINE(ENABLE_XVMC,1,[Enable XvMC support])
+fi
+
 
 AC_SUBST([DRI_CFLAGS])
 AC_SUBST([XORG_CFLAGS])
