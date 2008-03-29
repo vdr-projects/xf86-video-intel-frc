@@ -1,3 +1,9 @@
+xserver-xorg-video-intel (2:2.2.99.901-2) experimental; urgency=low
+
+  * Install libIntelXvMC.so.
+
+ -- Brice Goglin <bgoglin@debian.org>  Sat, 29 Mar 2008 12:15:14 +0100
+
 xserver-xorg-video-intel (2:2.2.99.901-1) experimental; urgency=low
 
   [ Julien Cristau ]
