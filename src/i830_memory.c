@@ -101,7 +101,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <string.h>
 #include <errno.h>
 #include <sys/types.h>
-#include <sys/mman.h>
 
 #include "xf86.h"
 #include "xf86_OSproc.h"
@@ -204,30 +203,14 @@ i830_bind_memory(ScrnInfoPtr pScrn, i830_memory *mem)
 					mem->allocated_size, mem->tiling);
     }
 
-    /* Mark the pages accessible now that they're bound. */
-    if (mprotect(pI830->FbBase + mem->offset, ALIGN(mem->size, GTT_PAGE_SIZE),
-		 PROT_READ | PROT_WRITE) != 0) {
-	xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
-		   "Failed to mprotect %s: %s\n", mem->name, strerror(errno));
-    }
-
     return TRUE;
 }
 
 static Bool
 i830_unbind_memory(ScrnInfoPtr pScrn, i830_memory *mem)
 {
-    I830Ptr pI830 = I830PTR(pScrn);
-
     if (mem == NULL || !mem->bound)
 	return TRUE;
-
-    /* Mark the pages accessible now that they're bound. */
-    if (mprotect(pI830->FbBase + mem->offset, ALIGN(mem->size, GTT_PAGE_SIZE),
-		 PROT_NONE) != 0) {
-	xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
-		   "Failed to mprotect %s: %s\n", mem->name, strerror(errno));
-    }
 
     if (mem->tiling != TILE_NONE)
 	i830_clear_tiling(pScrn, mem->fence_nr);
@@ -462,7 +445,7 @@ i830_allocator_init(ScrnInfoPtr pScrn, unsigned long offset, unsigned long size)
 	/* Overlay and cursors, if physical, need to be allocated outside
 	 * of the kernel memory manager.
 	 */
-	if (!OVERLAY_NOPHYSICAL(pI830) && !IS_I965G(pI830)) {
+	if (!OVERLAY_NOPHYSICAL(pI830) && !IS_IGD_GM(pI830)) {
 	    mmsize -= ROUND_TO(OVERLAY_SIZE, GTT_PAGE_SIZE);
 	}
 	if (pI830->CursorNeedsPhysical) {
@@ -1040,6 +1023,9 @@ i830_allocate_overlay(ScrnInfoPtr pScrn)
 
     /* Only allocate if overlay is going to be enabled. */
     if (!pI830->XvEnabled)
+	return TRUE;
+
+    if (IS_IGD_GM(pI830))
 	return TRUE;
 
     if (!OVERLAY_NOPHYSICAL(pI830))

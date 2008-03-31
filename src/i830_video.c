@@ -385,11 +385,13 @@ i830_overlay_switch_to_crtc (ScrnInfoPtr pScrn, xf86CrtcPtr crtc)
     I830CrtcPrivatePtr  intel_crtc = crtc->driver_private;
     int			pipeconf_reg = intel_crtc->pipe == 0 ? PIPEACONF : PIPEBCONF;
 
-    if (!IS_I965G(pI830) && (INREG(pipeconf_reg) & PIPEACONF_DOUBLE_WIDE))
+    /* overlay can't be used on pipe with double wide, and pipe must be enabled. */
+    if ((!IS_I965G(pI830) && (INREG(pipeconf_reg) & PIPEACONF_DOUBLE_WIDE))
+	    || (intel_crtc->dpms_mode == DPMSModeOff))
 	pPriv->overlayOK = FALSE;
     else
 	pPriv->overlayOK = TRUE;
-    
+
     if (!pPriv->overlayOK)
 	return;
 
@@ -563,6 +565,9 @@ I830InitVideo(ScreenPtr pScreen)
     XF86VideoAdaptorPtr *adaptors, *newAdaptors = NULL;
     XF86VideoAdaptorPtr overlayAdaptor = NULL, texturedAdaptor = NULL;
     int num_adaptors;
+#ifdef INTEL_XVMC
+    Bool xvmc_status = FALSE;
+#endif
 
 #if 0
     {
@@ -612,7 +617,8 @@ I830InitVideo(ScreenPtr pScreen)
     }
 
     /* Set up overlay video if we can do it at this depth. */
-    if (pScrn->bitsPerPixel != 8 && pI830->overlay_regs != NULL)
+    if (!IS_IGD_GM(pI830) && pScrn->bitsPerPixel != 8 &&
+	    pI830->overlay_regs != NULL)
     {
 	overlayAdaptor = I830SetupImageVideoOverlay(pScreen);
 	if (overlayAdaptor != NULL) {
@@ -625,10 +631,9 @@ I830InitVideo(ScreenPtr pScreen)
 	I830InitOffscreenImages(pScreen);
     }
 #ifdef INTEL_XVMC
-    Bool ret = FALSE;
     if (intel_xvmc_probe(pScrn)) {
 	if (texturedAdaptor)
-	    ret = intel_xvmc_driver_init(pScreen, texturedAdaptor);
+	    xvmc_status = intel_xvmc_driver_init(pScreen, texturedAdaptor);
     }
 #endif
 
@@ -636,7 +641,7 @@ I830InitVideo(ScreenPtr pScreen)
 	xf86XVScreenInit(pScreen, adaptors, num_adaptors);
 
 #ifdef INTEL_XVMC
-    if (ret)
+    if (xvmc_status)
 	intel_xvmc_screen_init(pScreen);
 #endif
     xfree(adaptors);
@@ -1829,10 +1834,11 @@ i830_display_video(ScrnInfoPtr pScrn, xf86CrtcPtr crtc,
     
     if (crtc != pPriv->current_crtc)
     {
-        pPriv->current_crtc = crtc;
 	i830_overlay_switch_to_crtc (pScrn, crtc);
-	if (pPriv->overlayOK)
+	if (pPriv->overlayOK) {
+	    pPriv->current_crtc = crtc;
 	    I830ResetVideo (pScrn);
+	}
     }
 
     if (!pPriv->overlayOK)
@@ -2629,6 +2635,7 @@ I830VideoBlockHandler(int i, pointer blockData, pointer pTimeout,
     I830Ptr pI830 = I830PTR(pScrn);
     I830PortPrivPtr pPriv;
 
+    /* no overlay */
     if (pI830->adaptor == NULL)
         return;
 
@@ -2908,6 +2915,7 @@ i830_crtc_dpms_video(xf86CrtcPtr crtc, Bool on)
     I830Ptr pI830 = I830PTR(pScrn);
     I830PortPrivPtr pPriv;
 
+    /* no overlay */
     if (pI830->adaptor == NULL)
 	return;
 

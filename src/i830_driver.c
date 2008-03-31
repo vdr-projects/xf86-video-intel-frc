@@ -171,7 +171,6 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <sys/mman.h>
 #include <errno.h>
 
 #include "xf86.h"
@@ -695,15 +694,6 @@ I830MapMem(ScrnInfoPtr pScrn)
    if (I830IsPrimary(pScrn) && pI830->LpRing->mem != NULL) {
       pI830->LpRing->virtual_start =
 	 pI830->FbBase + pI830->LpRing->mem->offset;
-   }
-
-   /* Mark the pages we haven't yet bound into AGP as inaccessible. */
-   if (pI830->FbMapSize > pI830->stolen_size) {
-      if (mprotect(pI830->FbBase + pI830->stolen_size,
-		   pI830->FbMapSize - pI830->stolen_size, PROT_NONE) != 0) {
-	 xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
-		    "Failed to mprotect unbound AGP: %s\n", strerror(errno));
-      }
    }
 
    return TRUE;
@@ -2393,6 +2383,15 @@ I830BlockHandler(int i,
     pI830->BlockHandler = pScreen->BlockHandler;
     pScreen->BlockHandler = I830BlockHandler;
 
+    /* Emit a flush of the rendering cache, or on the 965 and beyond
+     * rendering results may not hit the framebuffer until significantly
+     * later.  In the direct rendering case this is already done just
+     * after the page flipping updates, so there's no need to duplicate
+     * the effort here.
+     */
+    if (!pI830->noAccel && !pI830->directRenderingEnabled)
+	I830EmitFlush(pScrn);
+
     I830VideoBlockHandler(i, blockData, pTimeout, pReadmask);
 }
 
@@ -2682,6 +2681,12 @@ I830ScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
       pScrn->videoRam &= ~3;
    }
 
+   if (!IS_I965G(pI830) && pScrn->displayWidth > 2048) {
+      xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
+		 "Cannot support DRI with frame buffer width > 2048.\n");
+      pI830->directRenderingDisabled = TRUE;
+   }
+
 #ifdef XF86DRI
    /* If DRI hasn't been explicitly disabled, try to initialize it.
     * It will be used by the memory allocator.
@@ -2759,12 +2764,6 @@ I830ScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
     pI830->XvEnabled = !pI830->XvDisabled;
 #endif
 
-   if (!IS_I965G(pI830) && pScrn->displayWidth > 2048) {
-      xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
-		 "Cannot support DRI with frame buffer width > 2048.\n");
-      pI830->tiling = FALSE;
-      pI830->directRenderingEnabled = FALSE;
-   }
 
    /* Need MMIO mapped to do GTT lookups during memory allocation. */
    I830MapMMIO(pScrn);
@@ -2824,7 +2823,7 @@ I830ScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 		    "needs 2D acceleration.\n");
 	 pI830->XvEnabled = FALSE;
       }
-      if (!IS_I9XX(pI830) && pI830->overlay_regs == NULL) {
+      if (!IS_IGD_GM(pI830) && pI830->overlay_regs == NULL) {
 	  xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
 		     "Disabling Xv because the overlay register buffer "
 		      "allocation failed.\n");

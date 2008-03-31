@@ -22,7 +22,7 @@
 
 AC_PREREQ(2.57)
 AC_INIT([xf86-video-intel],
-        2.2.99.901,
+        2.2.99.902,
         [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg],
         xf86-video-intel)
 
@@ -67,9 +67,9 @@ AC_ARG_WITH(xserver-source,AC_HELP_STRING([--with-xserver-source=XSERVER_SOURCE]
 			   [ XSERVER_SOURCE="" ])
 
 AC_ARG_ENABLE(xvmc, AC_HELP_STRING([--disable-xvmc],
-                                  [Disable XvMC support [[default=yes]]]),
+                                  [Disable XvMC support [[default=auto]]]),
               [XVMC="$enableval"],
-              [XVMC=yes])
+              [XVMC=auto])
 
 # Checks for extensions
 XORG_DRIVER_CHECK_EXT(XINERAMA, xineramaproto)
@@ -87,7 +87,8 @@ sdkdir=$(pkg-config --variable=sdkdir xorg-server)
 # Checks for header files.
 AC_HEADER_STDC
 
-if test "$DRI" != no; then
+AC_MSG_CHECKING([whether to include DRI support])
+if test x$DRI = xauto; then
         AC_CHECK_FILE([${sdkdir}/dri.h],
                       [have_dri_h="yes"], [have_dri_h="no"])
         AC_CHECK_FILE([${sdkdir}/sarea.h],
@@ -96,10 +97,7 @@ if test "$DRI" != no; then
                       [have_dristruct_h="yes"], [have_dristruct_h="no"])
 	AC_CHECK_FILE([${sdkdir}/damage.h],
                       [have_damage_h="yes"], [have_damage_h="no"])
-fi
 
-AC_MSG_CHECKING([whether to include DRI support])
-if test x$DRI = xauto; then
         if test "$have_dri_h" = yes -a \
                 "$have_sarea_h" = yes -a \
                 "$have_dristruct_h" = yes; then
@@ -213,6 +211,12 @@ if test "$VIDEO_DEBUG" = yes; then
 fi
 
 AC_MSG_CHECKING([whether to include XvMC support])
+if test "$XVMC" = auto; then
+	XVMC="$DRI"
+fi
+if test "$XVMC" = yes && test "$DRI" = no; then
+	AC_MSG_ERROR([XvMC can't be enabled without DRI])
+fi
 AC_MSG_RESULT([$XVMC])
 AM_CONDITIONAL(XVMC, test x$XVMC = xyes)
 if test "$XVMC" = yes; then
