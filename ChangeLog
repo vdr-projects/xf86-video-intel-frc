@@ -1,3 +1,191 @@
+commit 21783ec9dfad9aae0837fd2d8eb313a77f031046
+Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
+Date:   Mon Mar 31 10:03:24 2008 +0800
+
+    Bump version 2.2.99.902
+    
+    2.3-rc2
+
+commit ead2e3ff2b3f3c961d4d7a5b4c64ccd2f754d275
+Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
+Date:   Mon Mar 31 10:02:52 2008 +0800
+
+    Use xfree() for bios memory
+
+commit 9835c2e987f4544206591f2f9c43e5a08e2e51bf
+Author: Keith Packard <keithp@keithp.com>
+Date:   Sat Mar 29 14:27:35 2008 -0700
+
+    Disable cursors while switching modes
+    (cherry picked from commit 7dcb6e627449c80cea9812462ce6a3e125bd1240)
+
+commit 46b771b2530f80218bc1ac8df10685ac13350c0f
+Author: Eric Anholt <eric@anholt.net>
+Date:   Fri Mar 28 15:15:26 2008 -0700
+
+    Add a "total" field to intel_idle output (set when any unit is busy).
+    (cherry picked from commit d50264fc7c4e0f80d9cc68dfdf322f68520a0f1e)
+
+commit ca694544247695864493ce67613f07bb19d272fd
+Author: Jesse Barnes <jbarnes@hobbes.virtuousgeek.org>
+Date:   Fri Mar 28 13:23:02 2008 -0700
+
+    Use combo backlight control rather than pure legacy
+    
+    If the legacy bit is set, use both the BLC_PWM_CTL and LBB regs to control the
+    backlight, rather than just LBB.  Looks like more platforms want that than what
+    the current code does.  Note that kernel provided interfaces will always be
+    used if available, so this shouldn't affect users with /sys/class/backlight
+    interfaces at all.
+    
+    Fixes #14721.
+    (cherry picked from commit 1450acd046d47e1739a3ffbd146c73ad2974a935)
+
+commit dafda8b4582c218782da59d5ac3c82a70a91762f
+Author: Matthias Hopf <mhopf@suse.de>
+Date:   Wed Jan 9 16:08:57 2008 +0100
+
+    Fix obviously wrong verification of DRI_SUPPORTS_CLIP_NOTIFY.
+    (cherry picked from commit 3414313ac9d0faa95797ee18cc33afa231ec7581)
+
+commit 6e8c89452ff9a9fe9a99734706e68b89ad8768fe
+Author: Matthias Hopf <mhopf@suse.de>
+Date:   Wed Jan 9 14:40:49 2008 +0100
+
+    Fix obviously stray '(' in non-I830_USE_EXA case.
+    (cherry picked from commit c40f195f2dc3467259b4588e087aac9741003ebf)
+
+commit 5ddebfd1e603ca515b0e74fd78f3c8b1f395bafe
+Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
+Date:   Fri Mar 28 11:41:24 2008 +0800
+
+    Disable DRI earlier if fb width > 2048
+    (cherry picked from commit 7bba2c13310ed5ac22a355a3cc0ec8b7afaa79cf)
+
+commit 6477799cb1c98f8b0105be37a96194f27de388ae
+Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
+Date:   Fri Mar 28 11:29:40 2008 +0800
+
+    Disable overlay on new mobile chipset
+    
+    It's gone, really.
+    (cherry picked from commit b1f358ba97473b792ec2b7ed5170152faebe7262)
+
+commit 687b0567533ac085f545430a3762dd980049116e
+Author: Jesse Barnes <jbarnes@hobbes.virtuousgeek.org>
+Date:   Wed Mar 19 11:59:15 2008 -0700
+
+    Fixup backlight control and panel fitting property names
+    
+    They should be listed as lower case, since that's what you'd pass to xrandr.
+    (cherry picked from commit 52d6ced652059989e6d9780a149488ccd16e3a22)
+
+commit 5a06388bf83c97f49565ad482161645f996492c7
+Author: Jesse Barnes <jbarnes@nietzche.virtuousgeek.org>
+Date:   Thu Mar 13 18:12:00 2008 -0700
+
+    Initial panel fitting changes
+    
+    Basic support for panel fitting.
+    (cherry picked from commit 05cf07071e25f84dec3476a9bed7235ed50cd249)
+
+commit 249d16a81b405d76706f2de203a775766b708303
+Author: Paulo Cesar Pereira de Andrade <pcpa@mandriva.com.br>
+Date:   Wed Mar 26 10:11:36 2008 +0800
+
+    More compile warning fixes.
+    
+    o Check for RANDR_GET_CRTC_INTERFACE before defining functions that
+      are used only if it is defined.
+    o Declare a variable before code, and rename it from ret to xvmc_status
+      to better describe it.
+    o if 0 some static functions not used.
+    o Don't declare some unused variables.
+    o Declare as static some functions that are used only in the file defining it.
+    o Add a default/fallback return True to the Bool function
+      src/xvmc/intel_batchbuffer.c:intelInitBatchBuffer().
+    o Ansify src/xvmc/xf86dri.c.
+    o Add missing prototype to src/xvmc/xf86dri.h and follow pattern of other
+      headers by adding "extern" before function prototype.
+    (cherry picked from commit c13efdd3d6d3846078766814b57306a7519bce18)
+
+commit b1ac8483ba6e8ddc935a0ab6e8e1728f1e810f6a
+Author: Eric Anholt <eric@anholt.net>
+Date:   Tue Mar 25 10:06:14 2008 -0700
+
+    Fix 965+ rendering issues with DRI disabled.
+    
+    The new chips no longer automatically flush the rendering cache, so if we
+    don't flush the RC at blockhandler, the last rendering done may not
+    appear on the screen.  This was particularly noticable with a bare Xorg with
+    some missing root weave, and terminals where the last character wouldn't
+    appear until the cursor blinked.  A flush in the DRI blockhandler path had
+    hidden this issue for most people.
+    (cherry picked from commit 8cdbd55f8075cd18b563badde35815665d7d053e)
+
+commit 0af692e9ee5857e41ffdbaf760752a37737b21b7
+Author: Eric Anholt <eric@anholt.net>
+Date:   Mon Mar 24 13:48:20 2008 -0700
+
+    Revert "Use mprotect on unbound AGP memory to attempt to catch use while unbound."
+    
+    While I still like the idea, the mprotect calls themselves are failing on
+    Linux and causing more trouble than they're worth.
+    
+    This reverts commit a1612b7728d4153499fe86b6713a13c8702cc7d9.
+    
+    Conflicts:
+    
+    	src/i830_driver.c
+    	src/i830_memory.c
+    (cherry picked from commit c02ab432dd7058c700c35eecf6215daf5f262c51)
+
+commit 996dc7fd8b5d0aaaa1cda339c2a069893d2d1a43
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Mon Mar 24 13:29:24 2008 +0800
+
+    Don't try to build XvMC if DRI is disabled
+    
+    Instead of failing the build, don't even try unless --enable-xvmc was used.
+
+commit 40744d88b477a27772c541d73311208f47ba562e
+Author: Maxim Levitsky <maximlevitsky@gmail.com>
+Date:   Mon Mar 24 13:24:12 2008 +0800
+
+    Fix crash triggered by dpms low power mode with hardware overlay running
+    
+    When overlay switch crtc, it ignores current crtc dpms mode which
+    might lead to hang.
+
+commit 78d260fe9af068ed0445d28f8458850020bc2a8f
+Author: Keith Packard <keithp@keithp.com>
+Date:   Fri Mar 21 03:08:24 2008 -0700
+
+    Transformed coord computed using floats. Don't move bilinear composite dst.
+    
+    The homogeneous coordinate computation in the core server cannot be used for
+    many legal matrices as it overflows. Just use floats in the driver; faster
+    and avoids troubles.
+    
+    When compositing with bilinear filter, don't push the dst coordinates around
+    as that makes the output blurry when pixels are aligned.
+
+commit 120a502f0ecdb835dc2cf8d295461d9b27e3ab4c
+Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
+Date:   Fri Mar 21 11:50:27 2008 +0800
+
+    xvmc: fix distcheck
+    
+    Add i915 headers in Makefile.am
+
+commit 027a6d5f1b9c7b8c176b3a48ea969f7f0dab51a9
+Author: Joerg Sonnenberger <joerg@britannica.bec.de>
+Date:   Fri Mar 21 11:41:49 2008 +0800
+
+    Fix DRI config for NetBSD
+    
+    Reported by Joerg. This does a little more clearn up.
+
 commit 8a733ccbe054d9f7c731d9a6e1121e65ba367171
 Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
 Date:   Thu Mar 20 10:33:03 2008 +0800

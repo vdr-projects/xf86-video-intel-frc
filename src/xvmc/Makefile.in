@@ -60,9 +60,9 @@ libI810XvMC_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 @XVMC_TRUE@am_libI810XvMC_la_rpath = -rpath $(libdir)
 libIntelXvMC_la_DEPENDENCIES =
 am__libIntelXvMC_la_SOURCES_DIST = intel_xvmc.c intel_xvmc.h \
-	i915_xvmc.c i915_xvmc.h intel_batchbuffer.c \
-	intel_batchbuffer.h xf86dri.c xf86dri.h xf86dristr.h \
-	driDrawable.c driDrawable.h
+	i915_structs.h i915_program.h i915_xvmc.c i915_xvmc.h \
+	intel_batchbuffer.c intel_batchbuffer.h xf86dri.c xf86dri.h \
+	xf86dristr.h driDrawable.c driDrawable.h
 @XVMC_TRUE@am_libIntelXvMC_la_OBJECTS = libIntelXvMC_la-intel_xvmc.lo \
 @XVMC_TRUE@	libIntelXvMC_la-i915_xvmc.lo \
 @XVMC_TRUE@	libIntelXvMC_la-intel_batchbuffer.lo \
@@ -243,6 +243,8 @@ top_srcdir = @top_srcdir@
 @XVMC_TRUE@libI810XvMC_la_LIBADD = @DRI_LIBS@ 
 @XVMC_TRUE@libIntelXvMC_la_SOURCES = intel_xvmc.c \
 @XVMC_TRUE@			 intel_xvmc.h \
+@XVMC_TRUE@			 i915_structs.h \
+@XVMC_TRUE@			 i915_program.h \
 @XVMC_TRUE@			 i915_xvmc.c \
 @XVMC_TRUE@                         i915_xvmc.h \
 @XVMC_TRUE@                         intel_batchbuffer.c \
