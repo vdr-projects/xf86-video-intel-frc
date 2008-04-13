@@ -5,6 +5,9 @@ xserver-xorg-video-intel (2:2.2.1-2) UNRELEASED; urgency=low
   * Only build on x86, this package doesn't make sense anywhere else.
   * The Vcs-* fields are now recognized by dpkg, so drop the XS- prefix.
   * configure: check for pciaccess 0.10 instead of 0.10.0 (closes: #470266).
+  * Run dpkg-shlibdeps with --warnings=6.  Drivers reference symbols from
+    /usr/bin/Xorg and other modules, and that's not a bug, so we want
+    dpkg-shlibdeps to shut up about symbols it can't find.
 
  -- Julien Cristau <jcristau@debian.org>  Sun, 24 Feb 2008 10:29:49 +0100
 
