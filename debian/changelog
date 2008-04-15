@@ -1,3 +1,11 @@
+xserver-xorg-video-intel (2:2.2.99.903-1) UNRELEASED; urgency=low
+
+  * New upstream release candidate.
+    + Fix LVDS regression: disable panel fitting on 855GM,
+      and fix dither setting, closes: #473838.
+
+ -- Brice Goglin <bgoglin@debian.org>  Tue, 15 Apr 2008 15:04:07 +0200
+
 xserver-xorg-video-intel (2:2.2.99.902-1) experimental; urgency=low
 
   * New upstream release candidate.

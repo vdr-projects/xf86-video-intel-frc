@@ -1,3 +1,279 @@
+commit 768fa9437c6f96405aa827701135712670e09ab3
+Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
+Date:   Mon Apr 14 10:02:54 2008 +0800
+
+    Bump version 2.2.99.903
+    
+    2.3-rc3
+
+commit 1d8383923bebf38ab8ada6a262cb4fc8c30e074a
+Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
+Date:   Mon Apr 14 10:02:00 2008 +0800
+
+    Remove old sf/wm program from Makefile
+    
+    Fix distcheck
+
+commit 2d0b74d0bafbd1b668f7e4a1b4ce3237e182a42f
+Author: Keith Packard <keithp@keithp.com>
+Date:   Fri Apr 11 11:22:29 2008 -0700
+
+    Revert "remove '#line NUM ...' in macro process"
+    
+    This reverts commit f47486fab3dffcbb03e7ad89f777abba1e887299.
+    
+    Sorry for failing to push the #line processing changes to intel-gen4asm;
+    those are now pushed, so this change should no longer be necessary. Having
+    correct file name and line numbers in the error messages is awfully nice
+    though.
+    (cherry picked from commit da85d1b822dcb31698e9c5ab85a7bb27ad745eee)
+
+commit 709e1e955c9b011cf547c5d2df7062c27e921d8e
+Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
+Date:   Fri Apr 11 10:12:40 2008 +0800
+
+    remove '#line NUM ...' in macro process
+    
+    intel-gen4asm doesn't allow '#' line
+    (cherry picked from commit f47486fab3dffcbb03e7ad89f777abba1e887299)
+
+commit e17168f29953ac276d5ecc2d8f459f2e513c8d1b
+Author: Hong Liu <hong.liu@intel.com>
+Date:   Fri Apr 11 09:54:34 2008 +0800
+
+    Bug #14935: Fix i9xx reference clock for spread spectrum.
+    (cherry picked from commit 5c9cde37e769287fb7bf4e08c3600a33c2e92dce)
+
+commit 8c23ab274a502bb1a1face5b17776e577a8f35ef
+Author: Eric Anholt <eric@anholt.net>
+Date:   Thu Apr 10 16:06:41 2008 -0700
+
+    Fix compiler warning from 24-bit lvds change.
+    (cherry picked from commit 152a50703aa5e9ebaa9abbe448518742734a5eb7)
+
+commit 23dc90f35c6e5da33c09ebdfc53cc7837d93c886
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Apr 9 16:27:40 2008 -0500
+
+    Single memcpy when pitches align on planar image transfer
+    (cherry picked from commit d5a80e1e3ab5724d34b20f9ee6f830efd0f5b076)
+
+commit 7af82ca69fab431c744a8ca36a282d071ceb83c1
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Apr 9 10:00:08 2008 -0500
+
+    Remove .g4b files on clean
+    (cherry picked from commit f270456e5612cb88933e6aabcd9a816c5c292229)
+
+commit 601f9d3310653552a1d38acc7d5818c24bbaf53b
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Apr 9 02:02:56 2008 -0500
+
+    Remove sync after 965 video put.
+    
+    The hardware has been marked as needing a sync, so the next video put will
+    block waiting for the previous one to complete. Adding a sync here just
+    stalls the video playback for no good reason.
+    (cherry picked from commit 3fc3d1a701bae257b70aa7b7654c722f30e71399)
+
+commit 42559c54ad0f436e749edfe75172522a5baa3b97
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue Apr 8 16:09:00 2008 -0500
+
+    Use symbolic names for channels in YUV code
+    (cherry picked from commit b68d9f4245d0ebe3371c179401ff145f1a4d101b)
+
+commit bddd411cf99c4c6b8a914589828ba09cc4cb6f0b
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue Apr 8 16:08:20 2008 -0500
+
+    Rename src/mask/data registers to indicate channel
+    (cherry picked from commit 781be9d47289713b0a8fcd95c769a9c6241d62e9)
+
+commit 592c5faf031253a8b3274f811a136fd9e42c1a18
+Author: Mike Isely <isely@pobox.com>
+Date:   Wed Apr 9 14:15:03 2008 +0800
+
+    Implement support for 24 bit pixel format
+    
+    The Intel driver appears to be coded to only work with displays
+    expecting 18 bit pixels.  However I have an application using a LCD
+    display that expects pixel data in 24 bit format.  The difference is
+    only 2 bits in a single GPU register.  This patch implements that
+    change, controlled by a new driver option, "LVDS24Bit".  The default
+    value is false, which is the previous behavior.  When set to true,
+    then 24 bit panels should work (at least the one I'm testing here
+    does).
+    
+    Fd.o bug #15201
+    
+    Signed-off-by: Mike Isely <isely@pobox.com>
+    (cherry picked from commit e031cc02e65acfbafb48136dad414751e04425c5)
+
+commit a83e55e1131025dc049ae219d5e2d3861066f4b7
+Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
+Date:   Wed Apr 9 14:03:45 2008 +0800
+
+    Include <stdint.h> in i810.h for integer types definition
+    (cherry picked from commit 79b18980ac9f60b1978abe421352df965aed1681)
+
+commit 55223b00df78404d6a5bbc5d67a232db1baf1a35
+Author: Jesse Barnes <jbarnes@virtuousgeek.org>
+Date:   Wed Apr 9 17:34:17 2008 +0800
+
+    Fix LVDS regression
+    
+    Disable panel fitting on 855GM, and fix dither setting.
+    (cherry picked from commit 2b720262e1235f1c9da860ba3e9181f0c377aa5e)
+
+commit b0f1fc70ff72413a5c591fa77144eae0df0735c6
+Author: David Schleef <ds@schleef.org>
+Date:   Tue Apr 8 12:43:20 2008 -0700
+
+    Bug #15219: Fix default overlay CSC factors, and use BT709 if available.
+    
+    Using the updated factors even when BT709 conversion isn't available
+    (non-965) should still give us better color reproduction.  Tested on a
+    945GM, examining the +/-5% of black bars of videotestsrc.
+    (cherry picked from commit af92f4f885c8eae2211d09080b2289aa5bab9ec1)
+
+commit 24248097988775d62f6c416f2988e74d31c91cd0
+Author: Bryce Harrington <bryce@bryceharrington.org>
+Date:   Mon Apr 7 17:26:49 2008 +0800
+
+    Quirks from Ubuntu/Dell
+    
+    FD bug #15353. Launchpad bug ID is available for reference.
+
+commit 19320b33f06ca07a89f58d689a101f44ecfcd03b
+Author: Keith Packard <keithp@keithp.com>
+Date:   Fri Apr 4 19:17:55 2008 -0700
+
+    Forgot to build exa_wm_src_sample_argb.g4b
+    (cherry picked from commit 0147c1c84872f7a109721a53d88a539932d9be81)
+
+commit 1b9cd443941ea80507df78520be8798871c11647
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue Apr 1 00:54:13 2008 -0700
+
+    Remove extra flushing
+    (cherry picked from commit 90886f9a602d58b754e9a8d0f1a9c40803d34fa2)
+
+commit 6809ac3f309364778fcdd46629a16b7b92e0b953
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue Apr 1 00:16:05 2008 -0700
+
+    Add projective versions of the PS kernels
+    (cherry picked from commit 0836373dc6e2f8612f120074980561f7ac11f6f7)
+
+commit a5264efc7f36971aa06869feed9980a154cdddbe
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue Apr 1 00:06:08 2008 -0700
+
+    Shrink WM thread to 32 registers and 1024 scratch space.
+    
+    Saving registers means we can run more in parallel.
+    (cherry picked from commit bfd803e085e938866efb45c67a79facef78ec399)
+
+commit 09c65c29335ab5192f7398cb2c46c91d3fee2a60
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon Mar 31 23:50:20 2008 -0700
+
+    Fix composite with mask using new compositing thread code
+    
+    Clean up register allocation to never overlap
+    Always write 4 values for each texture vertex.
+    (cherry picked from commit a6492661ae07310128eb73c3ef037c42ce7ab184)
+
+commit ff643d5b490095a202963fa799ba1ee657cf07ed
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon Mar 31 12:06:37 2008 -0700
+
+    remove old shader source files
+    (cherry picked from commit f8081178eb6fda0e405967cbacad532561619262)
+
+commit 55110c54c7d40413121484995117b921eb7cab42
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon Mar 31 12:05:56 2008 -0700
+
+    remove old monolithic shaders
+    (cherry picked from commit 879f8717b09f79156b218ee9cc2107700190d586)
+
+commit bfd67e6ff556050684a3093381d383ef22c35ae1
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon Mar 31 12:04:00 2008 -0700
+
+    remove old monolithic shaders
+    (cherry picked from commit 6db8faeb754897b21af045d00f50db9640b080bb)
+
+commit ae8a5ef1a223edfc7e586a77d0ca2cfc69d116b2
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon Mar 31 11:59:14 2008 -0700
+
+    Back to new shaders, fix urb read length
+    (cherry picked from commit 6bb92213374f278387c539bbe05b773e87e11b90)
+
+commit 5becbf9cd88c11941a5ae588da6a4a65711dfad3
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon Mar 31 11:31:31 2008 -0700
+
+    Dont set the compr bit on 8-unit sends
+    (cherry picked from commit 05710145b6fc4ed2c528128b2e6022591a53d050)
+
+commit a7b21a94574d403fd3d526db4e69e69c46cf09a0
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon Mar 31 02:20:43 2008 -0700
+
+    Use m4 to clean up gen4 asm progs. Start adding projective transform support.
+    
+    Use macros for register names, modularize functions into separate files.
+    (cherry picked from commit 08500507284f13ad7084eb231b43e117e9728129)
+
+commit a696a0faab13c11e4ed4ff2d66430f41bb107443
+Author: Keith Packard <keithp@keithp.com>
+Date:   Sun Mar 30 19:19:46 2008 -0700
+
+    Remove rotation sf and wm progs
+    (cherry picked from commit 949d73271d7100c1f028fd60f185f4929461304e)
+
+commit b19cf5e23f014ec65629dd1b0703bca54b973e0c
+Author: Keith Packard <keithp@keithp.com>
+Date:   Sun Mar 30 19:14:18 2008 -0700
+
+    Fix the sf_mask program to compute and pass corrected uvw cooefficients
+    
+    sf_mask is the same as sf except that it must compute both src and mask uvw
+    cooefficients, which are conveniently adjacent in the same registers, and so
+    need only an extended execution width
+    (cherry picked from commit 492ff1494f782240e6ca68919b2d0b9aa400fc53)
+
+commit b6d54fffbd44b6cc516b49d4fc41b01483663a33
+Author: Keith Packard <keithp@keithp.com>
+Date:   Sun Mar 30 00:54:51 2008 -0700
+
+    Reimplement wm program for nomask case to handle affine transforms
+    
+    This involves correctly computing u/v locations based on x/y vectors and
+    line constants computed in new sf program.
+    
+    Also, use fewer instructions to make this go a bit faster (2X for 500x500
+    composite).
+    (cherry picked from commit 6304b38423f99190a5e54f1a7dcaa75adfad4f2a)
+
+commit 90dd1058b29a33d234ee56b3f21716a6f4b2302e
+Author: Keith Packard <keithp@keithp.com>
+Date:   Sun Mar 30 00:54:07 2008 -0700
+
+    Clarify comment in exa_sf program
+    (cherry picked from commit 771a56b1ed0df69345c723cb62a73b6842cd8227)
+
+commit 278b0aeb84b5e69142fa3a2c093db4c4642f32ad
+Author: Keith Packard <keithp@keithp.com>
+Date:   Sat Mar 29 14:28:05 2008 -0700
+
+    Compute du/dv/dw in no-mask SF prog
+    (cherry picked from commit 4f469189fed541549e5d470b2529275a29cc2f20)
+
 commit 21783ec9dfad9aae0837fd2d8eb313a77f031046
 Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
 Date:   Mon Mar 31 10:03:24 2008 +0800
