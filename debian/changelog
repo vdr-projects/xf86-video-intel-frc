@@ -28,6 +28,19 @@ xserver-xorg-video-intel (2:2.2.99.901-1) experimental; urgency=low
 
  -- Brice Goglin <bgoglin@debian.org>  Fri, 21 Mar 2008 21:50:59 +0100
 
+xserver-xorg-video-intel (2:2.2.1-2) unstable; urgency=low
+
+  * Add the ${shlibs:Depends} substvar to the -dbg package's dependencies, to
+    bring in libpciaccess0 (closes: #467215).
+  * Only build on x86, this package doesn't make sense anywhere else.
+  * The Vcs-* fields are now recognized by dpkg, so drop the XS- prefix.
+  * configure: check for pciaccess 0.10 instead of 0.10.0 (closes: #470266).
+  * Run dpkg-shlibdeps with --warnings=6.  Drivers reference symbols from
+    /usr/bin/Xorg and other modules, and that's not a bug, so we want
+    dpkg-shlibdeps to shut up about symbols it can't find.
+
+ -- Julien Cristau <jcristau@debian.org>  Sun, 13 Apr 2008 02:10:18 +0200
+
 xserver-xorg-video-intel (2:2.2.1-1) unstable; urgency=low
 
   [ Brice Goglin ]
