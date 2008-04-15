@@ -288,6 +288,7 @@ typedef struct _I830OutputPrivateRec {
    I2CBusPtr		    pDDCBus;
    struct _I830DVODriver    *i2c_drv;
    Bool			    load_detect_temp;
+   uint32_t		    lvds_bits;
    int                      pipe_mask;
    int			    clone_mask;
    /** Output-private structure.  Should replace i2c_drv */
@@ -546,6 +547,8 @@ typedef struct _I830Rec {
 
    /* Broken-out options. */
    OptionInfoPtr Options;
+
+   Bool lvds_24_bit_mode;
 
    Bool StolenOnly;
 

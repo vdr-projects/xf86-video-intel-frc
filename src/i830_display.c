@@ -1059,6 +1059,7 @@ i830_crtc_mode_set(xf86CrtcPtr crtc, DisplayModePtr mode,
     xf86CrtcConfigPtr   xf86_config = XF86_CRTC_CONFIG_PTR(pScrn);
     I830Ptr pI830 = I830PTR(pScrn);
     I830CrtcPrivatePtr intel_crtc = crtc->driver_private;
+    I830OutputPrivatePtr intel_output;
     int pipe = intel_crtc->pipe;
     int plane = intel_crtc->plane;
     int fp_reg = (pipe == 0) ? FPA0 : FPB0;
@@ -1079,7 +1080,7 @@ i830_crtc_mode_set(xf86CrtcPtr crtc, DisplayModePtr mode,
     int i;
     int refclk;
     intel_clock_t clock;
-    uint32_t dpll = 0, fp = 0, dspcntr, pipeconf;
+    uint32_t dpll = 0, fp = 0, dspcntr, pipeconf, lvds_bits = 0;
     Bool ok, is_sdvo = FALSE, is_dvo = FALSE;
     Bool is_crt = FALSE, is_lvds = FALSE, is_tv = FALSE;
 
@@ -1088,7 +1089,7 @@ i830_crtc_mode_set(xf86CrtcPtr crtc, DisplayModePtr mode,
      */
     for (i = 0; i < xf86_config->num_output; i++) {
 	xf86OutputPtr  output = xf86_config->output[i];
-	I830OutputPrivatePtr intel_output = output->driver_private;
+	intel_output = output->driver_private;
 
 	if (output->crtc != crtc)
 	    continue;
@@ -1096,6 +1097,7 @@ i830_crtc_mode_set(xf86CrtcPtr crtc, DisplayModePtr mode,
 	switch (intel_output->type) {
 	case I830_OUTPUT_LVDS:
 	    is_lvds = TRUE;
+	    lvds_bits = intel_output->lvds_bits;
 	    break;
 	case I830_OUTPUT_SDVO:
 	    is_sdvo = TRUE;
@@ -1288,10 +1290,21 @@ i830_crtc_mode_set(xf86CrtcPtr crtc, DisplayModePtr mode,
 	else
 	    lvds &= ~(LVDS_B0B3_POWER_UP | LVDS_CLKB_POWER_UP);
 
-	/* It would be nice to set 24 vs 18-bit mode (LVDS_A3_POWER_UP)
-	 * appropriately here, but we need to look more thoroughly into how
-	 * panels behave in the two modes.
-	 */
+	if (pI830->lvds_24_bit_mode) {
+	    /* Option set which requests 24-bit mode
+	     * (LVDS_A3_POWER_UP, as opposed to 18-bit mode) here; we
+	     * still need to look more thoroughly into how panels
+	     * behave in the two modes.  This option enables that
+	     * experimentation.
+	     */
+	    xf86DrvMsg(pScrn->scrnIndex, X_INFO,
+		       "Selecting less common 24 bit TMDS pixel format.\n");
+	    lvds |= LVDS_A3_POWER_UP;
+	    lvds |= LVDS_DATA_FORMAT_DOT_ONE;
+	} else {
+	    xf86DrvMsg(pScrn->scrnIndex, X_INFO,
+		       "Selecting standard 18 bit TMDS pixel format.\n");
+	}
 
 	/* Enable dithering if we're in 18-bit mode. */
 	if (IS_I965G(pI830))
@@ -1301,6 +1314,8 @@ i830_crtc_mode_set(xf86CrtcPtr crtc, DisplayModePtr mode,
 	    else
 		lvds |= LVDS_DITHER_ENABLE;
 	}
+
+	lvds |= lvds_bits;
 
 	OUTREG(LVDS, lvds);
 	POSTING_READ(LVDS);
@@ -1698,8 +1713,10 @@ i830_crtc_clock_get(ScrnInfoPtr pScrn, xf86CrtcPtr crtc)
 	    return 0;
 	}
 
-	/* XXX: Handle the 100Mhz refclk */
-	i9xx_clock(96000, &clock);
+	if ((dpll & PLL_REF_INPUT_MASK) == PLLB_REF_INPUT_SPREADSPECTRUMIN)
+	    i9xx_clock(100000, &clock);
+	else
+	    i9xx_clock(96000, &clock);
     } else {
 	Bool is_lvds = (pipe == 1) && (INREG(LVDS) & LVDS_PORT_EN);
 
