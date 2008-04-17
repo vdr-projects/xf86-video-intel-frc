@@ -510,11 +510,17 @@ I830EXAInit(ScreenPtr pScreen)
 	pI830->EXADriverPtr->pixmapPitchAlign = 16;
 	pI830->EXADriverPtr->maxX = 8192;
 	pI830->EXADriverPtr->maxY = 8192;
+	/* maxPitch setting not necessary on 965, as hw support
+	 * exa max pitch 128KB. */
     } else {
 	pI830->EXADriverPtr->pixmapOffsetAlign = 4;
 	pI830->EXADriverPtr->pixmapPitchAlign = 16;
 	pI830->EXADriverPtr->maxX = 2048;
 	pI830->EXADriverPtr->maxY = 2048;
+#if EXA_VERSION_MINOR >= 3
+	pI830->EXADriverPtr->maxPitchPixels = pI830->EXADriverPtr->maxX;
+	pI830->EXADriverPtr->maxPitchBytes = KB(8);
+#endif
     }
 
     /* Sync */
