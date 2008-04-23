@@ -1,3 +1,74 @@
+commit 259ad818f2b7ac63fb84516e8a49e264840af107
+Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
+Date:   Wed Apr 23 13:42:24 2008 +0800
+
+    Bump version 2.3.0
+
+commit 5214139e30bb51bea8c18f270e060339678c8715
+Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
+Date:   Wed Apr 23 13:39:49 2008 +0800
+
+    Fix warning with i830_exa_pixmap_is_offscreen() for exa minor >=2
+
+commit f08aa4c291e4f5491372434e3ee08dfb15d5aa94
+Author: Keith Packard <keithp@keithp.com>
+Date:   Thu Apr 17 10:04:55 2008 -0700
+
+    Add a kludge-around to fix cd/wt bits in fb ptes on linux.
+    
+    Mmap from /sys/devices/pci* on linux forces the cache-disable and
+    write-through bits, which turns our write-combining map into an
+    uncached-map, seriously impacting performance. It turns out that a bug in
+    mprotect allows us to fix this by disabling access to those pages and then
+    immediately re-enabling them.
+    (cherry picked from commit c3fb62df4e60b63295f94c99b3c5de70dbf94e1c)
+
+commit 8187a5a16f8bd8f0ba5e7f5357f355928b3b8f07
+Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
+Date:   Sat Apr 19 08:54:38 2008 +0800
+
+    Check pitch for EXA operation
+    
+    2D pitch limit applys to all chips. Pre-965 chip has
+    8KB pitch limit for 3D. 965 supports max pitch by current
+    exa (128KB).
+
+commit bfcc83ad1a3eb7b2acc44223c86fa007cd34a27c
+Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
+Date:   Fri Apr 18 16:48:38 2008 +0800
+
+    Revert "Set EXA pitch limit for pre-965 chipset"
+    
+    This reverts commit 602613e397bdf0cf701a6a7748f9343875864466.
+    
+    Pre-965 chipset actually have different pitch limit for 2d and 3d
+    engine. For 2D blit, it's 32KB max. For 3D, it's 8KB max. Don't
+    limit it to minimal which fallback 2D operations (noteable copy
+    slow).
+
+commit 602613e397bdf0cf701a6a7748f9343875864466
+Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
+Date:   Thu Apr 17 16:55:47 2008 +0800
+
+    Set EXA pitch limit for pre-965 chipset
+
+commit 5a1f7351c5bfa9f12cf718036ccc43f66787ce11
+Author: Hong Liu <hong.liu@intel.com>
+Date:   Thu Apr 17 10:57:34 2008 +0800
+
+    fix possible segfault in I830FreeScreen
+    
+    pI830 may point to NULL if I830PreInit fails
+    (cherry picked from commit 0ae283582d21776d3317d5fc1c25751d50d562c7)
+
+commit 33ffd781bbca3d0dee8c1b47e7b90be5824b9a4f
+Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
+Date:   Mon Apr 14 16:31:03 2008 +0800
+
+    Change default panel fitting mode to origin
+    
+    i8xx currently only works in FULL mode.
+
 commit 768fa9437c6f96405aa827701135712670e09ab3
 Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
 Date:   Mon Apr 14 10:02:54 2008 +0800
