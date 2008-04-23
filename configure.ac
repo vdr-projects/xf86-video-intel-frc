@@ -22,7 +22,7 @@
 
 AC_PREREQ(2.57)
 AC_INIT([xf86-video-intel],
-        2.2.99.903,
+        2.3.0,
         [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg],
         xf86-video-intel)
 
@@ -42,6 +42,9 @@ AM_PROG_CC_C_O
 
 AC_CHECK_PROG(gen4asm, [intel-gen4asm], yes, no)
 AM_CONDITIONAL(HAVE_GEN4ASM, test x$gen4asm = xyes)
+
+AC_CHECK_HEADERS(sys/mman.h)
+AC_CHECK_FUNCS(mprotect)
 
 AH_TOP([#include "xorg-server.h"])
 

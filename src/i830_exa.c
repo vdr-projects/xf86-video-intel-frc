@@ -121,6 +121,7 @@ i830_pixmap_tiled(PixmapPtr pPixmap)
     return FALSE;
 }
 
+#if EXA_VERSION_MINOR >= 2
 static Bool
 i830_exa_pixmap_is_offscreen(PixmapPtr pPixmap)
 {
@@ -136,6 +137,7 @@ i830_exa_pixmap_is_offscreen(PixmapPtr pPixmap)
 	return FALSE;
     }
 }
+#endif
 
 /**
  * I830EXASync - wait for a command to finish
@@ -169,6 +171,8 @@ I830EXAPrepareSolid(PixmapPtr pPixmap, int alu, Pixel planemask, Pixel fg)
 
     if (pPixmap->drawable.bitsPerPixel == 24)
 	I830FALLBACK("solid 24bpp unsupported!\n");
+
+    i830_exa_check_pitch_2d(pPixmap);
 
     offset = exaGetPixmapOffset(pPixmap);
     pitch = exaGetPixmapPitch(pPixmap);
@@ -254,6 +258,9 @@ I830EXAPrepareCopy(PixmapPtr pSrcPixmap, PixmapPtr pDstPixmap, int xdir,
 
     if (!EXA_PM_IS_SOLID(&pSrcPixmap->drawable, planemask))
 	I830FALLBACK("planemask is not solid");
+
+    i830_exa_check_pitch_2d(pSrcPixmap);
+    i830_exa_check_pitch_2d(pDstPixmap);
 
     pI830->pSrcPixmap = pSrcPixmap;
 
