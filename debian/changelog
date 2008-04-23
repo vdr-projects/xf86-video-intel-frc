@@ -1,9 +1,9 @@
-xserver-xorg-video-intel (2:2.3.0-1) UNRELEASED; urgency=low
+xserver-xorg-video-intel (2:2.3.0-1) experimental; urgency=low
 
   * Build-depend on dpkg-dev >= 1.14.17 for dpkg-shlibdeps --warnings.
   * New upstream release.
 
- -- Julien Cristau <jcristau@debian.org>  Tue, 22 Apr 2008 19:42:07 +0200
+ -- Julien Cristau <jcristau@debian.org>  Wed, 23 Apr 2008 17:53:26 +0200
 
 xserver-xorg-video-intel (2:2.2.99.903-1) experimental; urgency=low
 
