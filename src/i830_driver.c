@@ -3132,7 +3132,9 @@ I830LeaveVT(int scrnIndex, int flags)
    ScrnInfoPtr pScrn = xf86Screens[scrnIndex];
    I830Ptr pI830 = I830PTR(pScrn);
    xf86CrtcConfigPtr config = XF86_CRTC_CONFIG_PTR(pScrn);
+#ifndef HAVE_FREE_SHADOW
    int o;
+#endif
 
    DPRINTF(PFX, "Leave VT\n");
 
@@ -3160,6 +3162,7 @@ I830LeaveVT(int scrnIndex, int flags)
    }
 #endif
 
+#ifndef HAVE_FREE_SHADOW
    for (o = 0; o < config->num_crtc; o++) {
        xf86CrtcPtr crtc = config->crtc[o];
 
@@ -3170,6 +3173,9 @@ I830LeaveVT(int scrnIndex, int flags)
 	   crtc->rotatedData = NULL;
        }
    }
+#else
+   xf86RotateFreeShadow(pScrn);
+#endif
 
    xf86_hide_cursors (pScrn);
 
