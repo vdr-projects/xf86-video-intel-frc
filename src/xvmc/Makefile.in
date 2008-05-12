@@ -179,6 +179,8 @@ WARN_CFLAGS = @WARN_CFLAGS@
 XMODES_CFLAGS = @XMODES_CFLAGS@
 XORG_CFLAGS = @XORG_CFLAGS@
 XORG_LIBS = @XORG_LIBS@
+XVMCLIB_CFLAGS = @XVMCLIB_CFLAGS@
+XVMCLIB_LIBS = @XVMCLIB_LIBS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -255,7 +257,7 @@ top_srcdir = @top_srcdir@
 @XVMC_TRUE@                         driDrawable.c \
 @XVMC_TRUE@                         driDrawable.h
 
-@XVMC_TRUE@libIntelXvMC_la_CFLAGS = @XORG_CFLAGS@ @DRI_CFLAGS@ -I$(top_srcdir)/src -DTRUE=1 -DFALSE=0
+@XVMC_TRUE@libIntelXvMC_la_CFLAGS = @XORG_CFLAGS@ @DRI_CFLAGS@ @XVMCLIB_CFLAGS@ -I$(top_srcdir)/src -DTRUE=1 -DFALSE=0
 @XVMC_TRUE@libIntelXvMC_la_LDFLAGS = -version-number 1:0:0
 @XVMC_TRUE@libIntelXvMC_la_LIBADD = @DRI_LIBS@
 all: all-am

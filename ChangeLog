@@ -1,3 +1,159 @@
+commit f5ad42f0ceef78f6fac490bcc40d56d0ce8c9e2e
+Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
+Date:   Mon May 12 09:01:21 2008 +0800
+
+    Bump version 2.3.1
+
+commit 6fd31f94a481c3193a04d9714dfde030a00f1dcc
+Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
+Date:   Mon May 12 08:57:56 2008 +0800
+
+    Revert last HP 965GM pipe A quirk
+    
+    Seems not resolve the issue (fdo bug #15885).
+    (cherry picked from commit f280c50dd5d29c5717adc6da2368363cb3d0adbb)
+
+commit 89dc0d922d6ec0035632a70647981636ab6c8d57
+Author: Bryce Harrington <bryce@bryceharrington.org>
+Date:   Sat May 10 07:58:59 2008 +0800
+
+    More Pipe A force quirks
+    (cherry picked from commit d91d9e6a2f2ba18b35cb6fd7bc3fe8bc617eb44f)
+
+commit 7fb914a529b16759f082f068cd0f15099d10167c
+Author: Mike Isely <isely@pobox.com>
+Date:   Thu May 8 10:00:17 2008 +0800
+
+    Implement option to ignore external fixed mode settings
+    
+    The Intel xorg driver tries mightily to determine the native fixed
+    panel mode settings for the LVDS output.  It does this through various
+    means, including scanning video BIOS tables, and noticing if the pipe
+    in question has already been set up by somebody else (and adopting
+    those timings).  This strategy works well for say a laptop where the
+    LCD panel is an integral part of the machine.  But for other
+    applications where the display is unrelated to the system's BIOS or
+    other software, then the BIOS will likely have no clue how to
+    configure the LVDS output.  Worse still, the BIOS can simply "get it
+    wrong", leaving the pipe misconfigured.  Unfortunately the Intel
+    driver can potentially notice this, adopt the same settings, leaving a
+    messed up display.
+    
+    All of this complexity normally happens independently, behind the
+    scenes, from the mode timings that might otherwise be specified by the
+    user.  This driver has a concept of fixed, i.e. "native" mode, and
+    then user-specified mode.  If the corresponding resolutions between
+    those concepts don't match, then the driver in theory will arrange for
+    scaling to take place while adhering to the actual native mode of the
+    panel.  Said another way, if the user says 800x600 but the driver
+    mistakenly (see above) thinks the native mode is 640x480, then 640x480
+    is the mode set with scaling to an 800x600 frame buffer.  If the
+    driver gets the wrong native mode, then the result is a miserable mess
+    with no way for the user to override what the driver thinks is right.
+    
+    This patch provides a means to override the driver.  This implements a
+    new driver option, "LVDSFixedMode" which defaults to true (the normal,
+    probe-what-I-need behavior).  However when set to false, then all the
+    guessing is skipped and the driver will assume no fixed, i.e. "native"
+    mode for the display device.  Instead with this option set to false,
+    the driver will directly set the timings specified by the user,
+    providing an escape hatch for situations where the driver can't
+    correctly figure out the right mode.
+    
+    Under most scenarios of course, this option should not be needed.  But
+    in situations where the Intel video BIOS is hopelessly fouled up
+    related to the LVDS output, this option provides the escape hatch for
+    the user to get a working display in spite of the BIOS situation.
+    
+    Signed-off-by: Mike Isely <isely@pobox.com>
+    (cherry picked from commit 9f324860431ff8199a78d19bbaa74046e1476b89)
+
+commit 3b8804d82266ffc01ac1573624387b0d1f9dfb94
+Author: Jesse Barnes <jbarnes@hobbes.lan>
+Date:   Wed May 7 14:46:52 2008 -0700
+
+    Save/restore cursor registers
+    
+    There are lots of good reasons for doing this, one of them is fdo bug #11305.
+    (cherry picked from commit 33f033cbf346c13a687e469e8879579fcd5bb2fb)
+
+commit 0ab5cbc5310c2a60c10fd611fcf9a4791379f42b
+Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
+Date:   Wed May 7 14:21:59 2008 +0800
+
+    Use I830FALLBACK when check pitch for debug
+    (cherry picked from commit a7188b1f2dd9a69fa7daefe478d283735226f9f3)
+
+commit 5749983fc6bae0a845bff0dbdd79c87420dffcf4
+Author: Eric Anholt <eric@anholt.net>
+Date:   Tue May 6 18:48:20 2008 -0700
+
+    Bug #15807: Fix use of the ring while VT-switched, hit by fast user switching.
+    
+    The fix for flushing at blockhandler with no DRI on 965 was broken and would
+    try to flush the chip even when the driver wasn't in control of the VT.
+    Hilarity ensued.
+    (cherry picked from commit 36ec93300926084fb2951d69b001e4c67bc6ff79)
+
+commit ab0aa8e16c6bec2785006cee09dc1ae93a1988da
+Author: Jesse Barnes <jbarnes@nietzche.virtuousgeek.org>
+Date:   Tue May 6 14:38:48 2008 -0700
+
+    Add FIFO watermark regs to register dumper
+    (cherry picked from commit 0c00a638ef57aa9d6a3047176b0bfad733f781f0)
+
+commit ad02b795f5aa01d1e5b85f3661ae574e898fe41e
+Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
+Date:   Tue May 6 13:52:22 2008 +0800
+
+    Only check xvmc lib when xvmc is enabled.
+    
+    Don't check xvmc lib if user has already wanted to disable it.
+    Fix fdo bug #15762.
+    (cherry picked from commit c81a4687fca80bf7367d7f0e9a00a6a09737c5bb)
+
+commit 8103c3c404500fa21079bd04530fd8ee836474f4
+Author: Bryce Harrington <bryce@bryceharrington.org>
+Date:   Tue May 6 13:51:46 2008 +0800
+
+    More quirks from ubuntu/dell
+    (cherry picked from commit be746a90a87d7a9807fa4243493e7e4d48f7f1c0)
+
+commit 9c5785c2f4faaac4a0d7dab774123389ed595fc0
+Author: Jesse Barnes <jbarnes@hobbes.lan>
+Date:   Tue Apr 29 13:19:02 2008 -0700
+
+    Add a new quirk for BIOSes that reprogram regs at lid close/open time
+    
+    Dell Latitude D500s seem to have this problem.  At lid close/open, the DSPABASE
+    reg gets reset to 0, so we either need to keep the framebuffer at offset 0 or
+    make sure we reprogram the CRTCs after the lid opens again.  Since we can't
+    make sure the former is always true (buffer resize, etc.), this patch adds a
+    quirk to reset the modes at lid open time.
+    
+    Fixes FDO bug #14890.
+    (cherry picked from commit a0ced923bb793aa22e6bfbeeec0888d3b42ce176)
+
+commit f83960f3edb8a8be12ce9dc46a9b9a292de816d6
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue Apr 29 10:32:14 2008 -0700
+
+    Use new xf86RotateFreeShadow function to clean up shadow buffers.
+    
+    This simply moves code from the driver up into the X server; use it where
+    available.
+    (cherry picked from commit fff17b9d1b58cb53032d153094826dd306836d59)
+
+commit 1df4fd9f1e7f1c6abea4ea134fbc1b3755988817
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Apr 23 11:08:38 2008 -0700
+
+    Overlay video doesn't require that the target pixmap be in video memory.
+    
+    I830PutImage was checking to make sure the target pixmap resided in video
+    memory, but this isn't necessary when using the overlay. Test
+    (cherry picked from commit 1d467a8038946a37844795e8860be113d43219ac)
+
 commit 259ad818f2b7ac63fb84516e8a49e264840af107
 Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
 Date:   Wed Apr 23 13:42:24 2008 +0800

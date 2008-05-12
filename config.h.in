@@ -11,6 +11,9 @@
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
 
+/* have new FreeShadow API */
+#undef HAVE_FREE_SHADOW
+
 /* Have drm_i915_flip_t and related definitions */
 #undef HAVE_I915_FLIP
 
