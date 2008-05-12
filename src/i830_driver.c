@@ -305,6 +305,7 @@ typedef enum {
 #ifdef XF86DRI_MM
    OPTION_INTELTEXPOOL,
 #endif
+   OPTION_LVDSFIXEDMODE,
    OPTION_TRIPLEBUFFER,
    OPTION_FORCEENABLEPIPEA,
 #ifdef INTEL_XVMC
@@ -332,6 +333,7 @@ static OptionInfoRec I830Options[] = {
 #ifdef XF86DRI_MM
    {OPTION_INTELTEXPOOL,"Legacy3D",     OPTV_BOOLEAN,	{0},	FALSE},
 #endif
+   {OPTION_LVDSFIXEDMODE, "LVDSFixedMode", OPTV_BOOLEAN,	{0},	FALSE},
    {OPTION_TRIPLEBUFFER, "TripleBuffer", OPTV_BOOLEAN,	{0},	FALSE},
    {OPTION_FORCEENABLEPIPEA, "ForceEnablePipeA", OPTV_BOOLEAN,	{0},	FALSE},
 #ifdef INTEL_XVMC
@@ -1416,6 +1418,12 @@ I830PreInit(ScrnInfoPtr pScrn, int flags)
       pI830->lvds_24_bit_mode = FALSE;
    }
 
+   if (xf86ReturnOptValBool(pI830->Options, OPTION_LVDSFIXEDMODE, TRUE)) {
+      pI830->lvds_fixed_mode = TRUE;
+   } else {
+      pI830->lvds_fixed_mode = FALSE;
+   }
+
    if (xf86ReturnOptValBool(pI830->Options, OPTION_FORCEENABLEPIPEA, FALSE))
        pI830->quirk_flag |= QUIRK_PIPEA_FORCE;
 
@@ -2033,6 +2041,13 @@ SaveHWState(ScrnInfoPtr pScrn)
    pI830->saveVCLK_POST_DIV = INREG(VCLK_POST_DIV);
    pI830->saveVGACNTRL = INREG(VGACNTRL);
 
+   pI830->saveCURSOR_A_CONTROL = INREG(CURSOR_A_CONTROL);
+   pI830->saveCURSOR_A_POSITION = INREG(CURSOR_A_POSITION);
+   pI830->saveCURSOR_A_BASE = INREG(CURSOR_A_BASE);
+   pI830->saveCURSOR_B_CONTROL = INREG(CURSOR_B_CONTROL);
+   pI830->saveCURSOR_B_POSITION = INREG(CURSOR_B_POSITION);
+   pI830->saveCURSOR_B_BASE = INREG(CURSOR_B_BASE);
+
    for(i = 0; i < 7; i++) {
       pI830->saveSWF[i] = INREG(SWF0 + (i << 2));
       pI830->saveSWF[i+7] = INREG(SWF00 + (i << 2));
@@ -2234,6 +2249,20 @@ RestoreHWState(ScrnInfoPtr pScrn)
 
    OUTREG(VGACNTRL, pI830->saveVGACNTRL);
 
+   /*
+    * Restore cursors
+    * Even though the X cursor is hidden before we restore the hw state,
+    * we probably only disabled one cursor plane.  If we're going from
+    * e.g. plane b to plane a here in RestoreHWState, we need to restore
+    * both cursor plane settings.
+    */
+   OUTREG(CURSOR_A_POSITION, pI830->saveCURSOR_A_POSITION);
+   OUTREG(CURSOR_A_BASE, pI830->saveCURSOR_A_BASE);
+   OUTREG(CURSOR_A_CONTROL, pI830->saveCURSOR_A_CONTROL);
+   OUTREG(CURSOR_B_POSITION, pI830->saveCURSOR_B_POSITION);
+   OUTREG(CURSOR_B_BASE, pI830->saveCURSOR_B_BASE);
+   OUTREG(CURSOR_B_CONTROL, pI830->saveCURSOR_B_CONTROL);
+
    /* Restore outputs */
    for (i = 0; i < xf86_config->num_output; i++) {
       xf86OutputPtr   output = xf86_config->output[i];
@@ -2407,7 +2436,7 @@ I830BlockHandler(int i,
      * after the page flipping updates, so there's no need to duplicate
      * the effort here.
      */
-    if (!pI830->noAccel && !pI830->directRenderingEnabled)
+    if (pScrn->vtSema && !pI830->noAccel && !pI830->directRenderingEnabled)
 	I830EmitFlush(pScrn);
 
     I830VideoBlockHandler(i, blockData, pTimeout, pReadmask);
@@ -3132,7 +3161,9 @@ I830LeaveVT(int scrnIndex, int flags)
    ScrnInfoPtr pScrn = xf86Screens[scrnIndex];
    I830Ptr pI830 = I830PTR(pScrn);
    xf86CrtcConfigPtr config = XF86_CRTC_CONFIG_PTR(pScrn);
+#ifndef HAVE_FREE_SHADOW
    int o;
+#endif
 
    DPRINTF(PFX, "Leave VT\n");
 
@@ -3160,6 +3191,7 @@ I830LeaveVT(int scrnIndex, int flags)
    }
 #endif
 
+#ifndef HAVE_FREE_SHADOW
    for (o = 0; o < config->num_crtc; o++) {
        xf86CrtcPtr crtc = config->crtc[o];
 
@@ -3170,6 +3202,9 @@ I830LeaveVT(int scrnIndex, int flags)
 	   crtc->rotatedData = NULL;
        }
    }
+#else
+   xf86RotateFreeShadow(pScrn);
+#endif
 
    xf86_hide_cursors (pScrn);
 
@@ -3512,6 +3547,9 @@ I830PMEvent(int scrnIndex, pmEvent event, Bool undo)
 
       I830CheckDevicesTimer(NULL, 0, pScrn);
       SaveScreens(SCREEN_SAVER_FORCER, ScreenSaverReset);
+      if (pI830->quirk_flag & QUIRK_RESET_MODES)
+	 xf86SetDesiredModes(pScrn);
+
       break;
    default:
       ErrorF("I830PMEvent: received APM event %d\n", event);

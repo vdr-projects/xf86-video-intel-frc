@@ -22,7 +22,7 @@
 
 AC_PREREQ(2.57)
 AC_INIT([xf86-video-intel],
-        2.3.0,
+        2.3.1,
         [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg],
         xf86-video-intel)
 
@@ -82,7 +82,7 @@ XORG_DRIVER_CHECK_EXT(XF86DRI, xextproto x11)
 XORG_DRIVER_CHECK_EXT(DPMSExtension, xextproto)
 
 # Checks for pkg-config packages
-PKG_CHECK_MODULES(XORG, [xorg-server xproto xvmc fontsproto $REQUIRED_MODULES])
+PKG_CHECK_MODULES(XORG, [xorg-server xproto fontsproto $REQUIRED_MODULES])
 sdkdir=$(pkg-config --variable=sdkdir xorg-server)
 
 # Checks for libraries.
@@ -173,6 +173,18 @@ fi
 
 AC_SUBST([XMODES_CFLAGS])
 
+SAVE_CPPFLAGS="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $XORG_CFLAGS"
+
+AC_CHECK_DECL(xf86RotateFreeShadow,
+	      [AC_DEFINE(HAVE_FREE_SHADOW, 1, [have new FreeShadow API])],
+	      [],
+	      [#include <xorg-server.h>
+	       #include <windowstr.h>
+	       #include <xf86Crtc.h>])
+	     
+CPPFLAGS="$SAVE_CPPFLAGS"
+
 dnl Use lots of warning flags with GCC
 
 WARN_CFLAGS=""
@@ -213,17 +225,21 @@ if test "$VIDEO_DEBUG" = yes; then
 	AC_DEFINE(VIDEO_DEBUG,1,[Enable debug support])
 fi
 
-AC_MSG_CHECKING([whether to include XvMC support])
 if test "$XVMC" = auto; then
 	XVMC="$DRI"
 fi
 if test "$XVMC" = yes && test "$DRI" = no; then
 	AC_MSG_ERROR([XvMC can't be enabled without DRI])
 fi
+if test "$XVMC" = yes; then
+	PKG_CHECK_MODULES(XVMCLIB, [xvmc], [XVMC=yes], [XVMC=no])
+fi
+AC_MSG_CHECKING([whether to include XvMC support])
 AC_MSG_RESULT([$XVMC])
 AM_CONDITIONAL(XVMC, test x$XVMC = xyes)
 if test "$XVMC" = yes; then
 	AC_DEFINE(ENABLE_XVMC,1,[Enable XvMC support])
+    	AC_SUBST([XVMCLIB_CFLAGS])
 fi
 
 
