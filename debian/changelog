@@ -1,4 +1,4 @@
-xserver-xorg-video-intel (2:2.3.2-1) UNRELEASED; urgency=low
+xserver-xorg-video-intel (2:2.3.2-1) unstable; urgency=low
 
   * New upstream release.
     + Revert "Add FIFO watermark regs to register dumper",
@@ -6,7 +6,7 @@ xserver-xorg-video-intel (2:2.3.2-1) UNRELEASED; urgency=low
     + Fix TV programming:  add vblank wait after TV_CTL writes,
       closes: #485616.
 
- -- Brice Goglin <bgoglin@debian.org>  Wed, 18 Jun 2008 07:11:44 +0200
+ -- Brice Goglin <bgoglin@debian.org>  Wed, 18 Jun 2008 07:16:05 +0200
 
 xserver-xorg-video-intel (2:2.3.1-1) unstable; urgency=low
 
