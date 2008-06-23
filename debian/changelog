@@ -1,3 +1,10 @@
+xserver-xorg-video-intel (2:2.3.2-2) UNRELEASED; urgency=low
+
+  * Update debian/copyright, thanks to Thomas Viehmann for reporting, and
+    Moritz Muehlenhoff for the thorough analysis (closes: #486340).
+
+ -- Julien Cristau <jcristau@debian.org>  Mon, 23 Jun 2008 15:22:00 +0200
+
 xserver-xorg-video-intel (2:2.3.2-1) unstable; urgency=low
 
   * New upstream release.
