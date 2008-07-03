@@ -2,6 +2,8 @@ xserver-xorg-video-intel (2:2.3.2-2) UNRELEASED; urgency=low
 
   * Update debian/copyright, thanks to Thomas Viehmann for reporting, and
     Moritz Muehlenhoff for the thorough analysis (closes: #486340).
+  * Change the libdrm memory manager check in configure to look for 2.4.0
+    instead of 2.3.1, as libdrm 2.3.1 was released without it.
 
  -- Julien Cristau <jcristau@debian.org>  Mon, 23 Jun 2008 15:22:00 +0200
 
