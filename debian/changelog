@@ -1,11 +1,12 @@
-xserver-xorg-video-intel (2:2.3.2-2) UNRELEASED; urgency=low
+xserver-xorg-video-intel (2:2.3.2-2) unstable; urgency=high
 
+  * High urgency upload for RC bug fix.
   * Update debian/copyright, thanks to Thomas Viehmann for reporting, and
     Moritz Muehlenhoff for the thorough analysis (closes: #486340).
   * Change the libdrm memory manager check in configure to look for 2.4.0
     instead of 2.3.1, as libdrm 2.3.1 was released without it.
 
- -- Julien Cristau <jcristau@debian.org>  Mon, 23 Jun 2008 15:22:00 +0200
+ -- Julien Cristau <jcristau@debian.org>  Thu, 03 Jul 2008 16:55:05 +0200
 
 xserver-xorg-video-intel (2:2.3.2-1) unstable; urgency=low
 
