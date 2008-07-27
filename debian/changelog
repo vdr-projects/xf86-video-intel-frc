@@ -1,4 +1,4 @@
-xserver-xorg-video-intel (2:2.4.0-1) UNRELEASED; urgency=low
+xserver-xorg-video-intel (2:2.4.0-1) experimental; urgency=low
 
   * New upstream release.
   * Refresh patch 01_gen_pci_ids.diff.
@@ -8,7 +8,7 @@ xserver-xorg-video-intel (2:2.4.0-1) UNRELEASED; urgency=low
     xutils-dev.
   * Drop the debian revision from the libxvmc-dev build-dep.
 
- -- Julien Cristau <jcristau@debian.org>  Sun, 27 Jul 2008 03:31:06 +0200
+ -- Julien Cristau <jcristau@debian.org>  Sun, 27 Jul 2008 13:18:42 +0200
 
 xserver-xorg-video-intel (2:2.3.2-3) experimental; urgency=low
 
