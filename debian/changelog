@@ -2,8 +2,8 @@ xserver-xorg-video-intel (2:2.3.2-2+lenny1) UNRELEASED; urgency=low
 
   * Cherry-pick patches from the 2.4.0 release:
     - Add support for Intel 4 series chipsets
-    - add some quirks to force enable pipe A on some machines (in particular,
-      all 855GM)
+    - add some quirks to force enable pipe A on some machines: in particular,
+      all 855GM (closes: #482819), and Lenovo T60 (closes: #487672)
     - i810: Remove an effectively unused variable (only used in an incorrect
       free())
     - Give asus and eeepc backlight method higher priority
