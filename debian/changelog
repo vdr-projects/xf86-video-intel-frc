@@ -1,3 +1,11 @@
+xserver-xorg-video-intel (2:2.4.1-1) UNRELEASED; urgency=low
+
+  * New upstream release.
+  * Cherry-picked d5fd845aab407 from 2.4-branch:
+    "Fix reverted LVDS bios capability dword definition"
+
+ -- Timo Aaltonen <tepsipakki@ubuntu.com>  Wed, 20 Aug 2008 13:03:29 +0300
+
 xserver-xorg-video-intel (2:2.4.0-1) experimental; urgency=low
 
   * New upstream release.
