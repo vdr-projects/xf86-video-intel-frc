@@ -1,0 +1,18 @@
+Default to XAA on i965 for now since many people have
+rendering problems with fonts or so.
+
+See bug #451791
+
+diff --git a/src/i830_driver.c b/src/i830_driver.c
+index 6121b42..36dcbb5 100644
+--- a/src/i830_driver.c
++++ b/src/i830_driver.c
+@@ -1561,7 +1561,7 @@ I830PreInit(ScrnInfoPtr pScrn, int flags)
+     */
+    if (!pI830->noAccel) {
+ #ifdef I830_USE_EXA
+-       pI830->useEXA = TRUE;
++       pI830->useEXA = IS_I965G(pI830) ? FALSE : TRUE;
+ #else
+        pI830->useEXA = FALSE;
+ #endif
