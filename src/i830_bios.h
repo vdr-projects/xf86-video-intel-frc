@@ -138,15 +138,7 @@ struct bdb_general_definitions {
 	unsigned char dev3[33];
 	unsigned char dev4[33];
 	/* may be another device block here on some platforms */
-};
-
-#define LVDS_CAP_EDID			(1 << 6)
-#define LVDS_CAP_DITHER			(1 << 5)
-#define LVDS_CAP_PFIT_AUTO_RATIO	(1 << 4)
-#define LVDS_CAP_PFIT_GRAPHICS_MODE	(1 << 3)
-#define LVDS_CAP_PFIT_TEXT_MODE		(1 << 2)
-#define LVDS_CAP_PFIT_GRAPHICS		(1 << 1)
-#define LVDS_CAP_PFIT_TEXT		(1 << 0)
+} __attribute__((packed));
 
 struct bdb_lvds_options {
     uint8_t panel_type;
@@ -196,8 +188,6 @@ struct lvds_dvo_timing {
     uint8_t h_border;
     uint8_t v_border;
     uint8_t flags;
-#define FP_EDID_FLAG_VSYNC_POSITIVE	(1 << 2)
-#define FP_EDID_FLAG_HSYNC_POSITIVE	(1 << 1)
 } __attribute__((packed));
 
 struct lvds_pnp_id {
