@@ -1,3 +1,5 @@
+Drop G45 pci.ids for now.
+
 Index: xserver-xorg-video-intel/src/Makefile.am
 ===================================================================
 --- xserver-xorg-video-intel.orig/src/Makefile.am
@@ -11,4 +13,4 @@ Index: xserver-xorg-video-intel/src/Makefile.am
 +pcidata_DATA = intel.ids
 +
 +intel.ids : common.h
-+	awk '/^#define PCI_CHIP/ {print $$3 }' $(srcdir)/common.h | sed 's/^0x/8086/' > intel.ids
++	awk '/^#define PCI_CHIP/ {print $$3 }' $(srcdir)/common.h | grep -vE '0x2A42|0x2E02|0x2E22|0x2E12' | sed 's/^0x/8086/' > intel.ids

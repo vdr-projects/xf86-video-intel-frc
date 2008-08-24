@@ -931,7 +931,7 @@ uninstall-local:
 	(cd $(DESTDIR)$(intel_drv_ladir) && rm -f i810_drv.so)
 
 intel.ids : common.h
-	awk '/^#define PCI_CHIP/ {print $$3 }' $(srcdir)/common.h | sed 's/^0x/8086/' > intel.ids
+	awk '/^#define PCI_CHIP/ {print $$3 }' $(srcdir)/common.h | grep -vE '0x2A42|0x2E02|0x2E22|0x2E12' | sed 's/^0x/8086/' > intel.ids
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

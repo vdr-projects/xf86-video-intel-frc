@@ -2,8 +2,10 @@ xserver-xorg-video-intel (2:2.3.2-2+lenny3) UNRELEASED; urgency=low
 
   * Add 02_xaa_by_default_on_i965.diff to switch back to XAA on
     i965 by default to avoid many rendering problems, closes: #451791.
+  * Drop G45 PCI ids from intel.ids so that vesa is autoloaded by
+    default for these new boards for now.
 
- -- Brice Goglin <bgoglin@debian.org>  Sun, 24 Aug 2008 17:03:42 +0200
+ -- Brice Goglin <bgoglin@debian.org>  Sun, 24 Aug 2008 18:14:11 +0200
 
 xserver-xorg-video-intel (2:2.3.2-2+lenny2) unstable; urgency=low
 
