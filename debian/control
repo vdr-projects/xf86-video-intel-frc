@@ -39,11 +39,3 @@ Description: X.Org X server -- Intel i8xx, i9xx display driver (debug symbols)
  and XvMC (XVideo Motion Compensation) support for the same chipsets.
  .
  This package provides debugging symbols for this Xorg X driver.
-
-Package: xserver-xorg-video-i810
-Architecture: all
-Section: oldlibs
-Depends: xserver-xorg-video-intel
-Description: X.Org X server -- Intel i8xx, i9xx display driver
- This is a transitional package providing the Xorg video driver for the
- Intel i8xx and i9xx family of chipsets, and can be safely removed.
