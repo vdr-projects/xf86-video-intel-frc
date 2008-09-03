@@ -1,3 +1,14 @@
+xserver-xorg-video-intel (2:2.3.2-2+lenny4) UNRELEASED; urgency=low
+
+  * Kill 02_xaa_by_default_on_i965.diff.  Switching to XAA breaks Xvideo,
+    which is Not Good™.
+  * New patch 02_965_no_exa_composite.diff: add a "RenderAccel" option, to
+    control whether EXA composite acceleration is enabled.  Default to off on
+    i965+ to hopefully avoid the font rendering issues reported in #451791 and
+    friends.
+
+ -- Julien Cristau <jcristau@debian.org>  Wed, 03 Sep 2008 19:21:44 +0200
+
 xserver-xorg-video-intel (2:2.3.2-2+lenny3) unstable; urgency=low
 
   [ Brice Goglin ]
