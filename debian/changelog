@@ -1,6 +1,7 @@
 xserver-xorg-video-intel (2:2.4.1-2) UNRELEASED; urgency=low
 
   * Drop the xserver-xorg-video-i810 transitional package.
+  * Build against xorg-server 1.5.
 
  -- Julien Cristau <jcristau@debian.org>  Tue, 26 Aug 2008 17:04:37 +0200
 
