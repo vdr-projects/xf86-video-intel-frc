@@ -1,3 +1,9 @@
+commit 2f6466a234dd696e1206085579d92807dbd3d3ef
+Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
+Date:   Tue Aug 26 09:28:35 2008 +0800
+
+    Bump version 2.4.2
+
 commit 48d4b0ae50affd7fa442271046eefba74de7ff2c
 Author: Jesse Barnes <jbarnes@virtuousgeek.org>
 Date:   Wed Aug 20 15:06:36 2008 -0700
