@@ -48,7 +48,7 @@ Index: xserver-xorg-video-intel/src/i830_driver.c
 +       if (xf86GetOptValBool(pI830->Options, OPTION_RENDERACCEL,
 +			     &pI830->render_accel))
 +	   from = X_CONFIG;
-+       xf86DrvMsg(pScrn->scrn_index, from, "%sabling EXA render acceleration\n"
++       xf86DrvMsg(pScrn->scrnIndex, from, "%sabling EXA render acceleration\n",
 +		  pI830->render_accel ? "En" : "Dis");
 +   }
 +
