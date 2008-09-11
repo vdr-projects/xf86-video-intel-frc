@@ -2744,4 +2744,7 @@ typedef enum {
 #define DPFC_STATUS2		0x3214
 #define DPFC_FENCE_YOFF		0x3218
 
+#define MCHBAR_RENDER_STANDBY	0x111B8
+#define RENDER_STANDBY_ENABLE	(1 << 30)
+
 #endif /* _I810_REG_H */
