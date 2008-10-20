@@ -306,9 +306,7 @@ typedef enum {
    OPTION_LVDS24BITMODE,
    OPTION_FBC,
    OPTION_TILING,
-#ifdef XF86DRI
-   OPTION_INTELTEXPOOL,
-#endif
+   OPTION_LEGACY3D,
    OPTION_LVDSFIXEDMODE,
    OPTION_TRIPLEBUFFER,
    OPTION_FORCEENABLEPIPEA,
@@ -334,7 +332,7 @@ static OptionInfoRec I830Options[] = {
    {OPTION_FBC,		"FramebufferCompression", OPTV_BOOLEAN, {0}, TRUE},
    {OPTION_TILING,	"Tiling",	OPTV_BOOLEAN,	{0},	TRUE},
 #ifdef XF86DRI
-   {OPTION_INTELTEXPOOL,"Legacy3D",     OPTV_BOOLEAN,	{0},	FALSE},
+   {OPTION_LEGACY3D,	"Legacy3D",     OPTV_BOOLEAN,	{0},	FALSE},
 #endif
    {OPTION_LVDSFIXEDMODE, "LVDSFixedMode", OPTV_BOOLEAN,	{0},	FALSE},
    {OPTION_TRIPLEBUFFER, "TripleBuffer", OPTV_BOOLEAN,	{0},	FALSE},
@@ -1567,22 +1565,8 @@ I830AccelMethodInit(ScrnInfoPtr pScrn)
 	}
 
 	if (!pI830->directRenderingDisabled) {
-	    pI830->allocate_classic_textures = TRUE;
-
-	    from = X_PROBED;
-
-#ifdef XF86DRI_MM
-	    if (!IS_I965G(pI830)) {
-		Bool tmp;
-
-		if (xf86GetOptValBool(pI830->Options,
-				      OPTION_INTELTEXPOOL, &tmp)) {
-		    from = X_CONFIG;
-		    if (!tmp)
-			pI830->allocate_classic_textures = FALSE;
-		}
-	    }
-#endif /* XF86DRI_MM */
+	   pI830->allocate_classic_textures =
+	      xf86ReturnOptValBool(pI830->Options, OPTION_LEGACY3D, TRUE);
 	}
     }
 #endif /* XF86DRI */
@@ -2674,17 +2658,21 @@ I830BlockHandler(int i,
     pScreen->BlockHandler = I830BlockHandler;
 
     if (pScrn->vtSema && pI830->accel != ACCEL_NONE) {
+       Bool flushed = FALSE;
        /* Emit a flush of the rendering cache, or on the 965 and beyond
 	* rendering results may not hit the framebuffer until significantly
 	* later.
 	*/
        if (pI830->accel != ACCEL_NONE && (pI830->need_mi_flush || pI830->batch_used))
+       {
+	  flushed = TRUE;
 	  I830EmitFlush(pScrn);
+       }
 
        /* Flush the batch, so that any rendering is executed in a timely
 	* fashion.
 	*/
-       intel_batch_flush(pScrn);
+       intel_batch_flush(pScrn, flushed);
 #ifdef XF86DRI
        if (pI830->memory_manager)
 	 drmCommandNone(pI830->drmSubFD, DRM_I915_GEM_THROTTLE);
