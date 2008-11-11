@@ -303,6 +303,7 @@ typedef enum {
    OPTION_COLOR_KEY,
    OPTION_CHECKDEVICES,
    OPTION_MODEDEBUG,
+   OPTION_FALLBACKDEBUG,
    OPTION_LVDS24BITMODE,
    OPTION_FBC,
    OPTION_TILING,
@@ -329,6 +330,7 @@ static OptionInfoRec I830Options[] = {
    {OPTION_VIDEO_KEY,	"VideoKey",	OPTV_INTEGER,	{0},	FALSE},
    {OPTION_CHECKDEVICES, "CheckDevices",OPTV_BOOLEAN,	{0},	FALSE},
    {OPTION_MODEDEBUG,	"ModeDebug",	OPTV_BOOLEAN,	{0},	FALSE},
+   {OPTION_FALLBACKDEBUG, "FallbackDebug", OPTV_BOOLEAN, {0},	FALSE},
    {OPTION_LVDS24BITMODE, "LVDS24Bit",	OPTV_BOOLEAN,	{0},	FALSE},
    {OPTION_FBC,		"FramebufferCompression", OPTV_BOOLEAN, {0}, TRUE},
    {OPTION_TILING,	"Tiling",	OPTV_BOOLEAN,	{0},	TRUE},
@@ -1435,6 +1437,9 @@ I830GetEarlyOptions(ScrnInfoPtr pScrn)
 	return FALSE;
     memcpy(pI830->Options, I830Options, sizeof(I830Options));
     xf86ProcessOptions(pScrn->scrnIndex, pScrn->options, pI830->Options);
+
+    pI830->fallback_debug = xf86ReturnOptValBool(pI830->Options,
+						 OPTION_FALLBACKDEBUG, FALSE);
 
     if (xf86ReturnOptValBool(pI830->Options, OPTION_MODEDEBUG, FALSE)) {
 	pI830->debug_modes = TRUE;
