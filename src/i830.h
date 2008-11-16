@@ -554,6 +554,7 @@ typedef struct _I830Rec {
 
    Bool XvDisabled;			/* Xv disabled in PreInit. */
    Bool XvEnabled;			/* Xv enabled for this generation. */
+   Bool XvPreferOverlay;
 
 #ifdef I830_XV
    int colorKey;
@@ -716,6 +717,8 @@ typedef struct _I830Rec {
    /* User option to ignore SDVO detect bit status, in case some outputs
       not detected on SDVO, so let driver try its best. */
    Bool force_sdvo_detect;
+    /** User option to print acceleration fallback info to the server log. */
+   Bool fallback_debug;
 } I830Rec;
 
 #define I830PTR(p) ((I830Ptr)((p)->driverPrivate))
@@ -959,6 +962,15 @@ static inline int i830_fb_compression_supported(I830Ptr pI830)
 	return FALSE;
     return TRUE;
 }
+
+#define I830FALLBACK(s, arg...)				\
+do {							\
+    if (I830PTR(pScrn)->fallback_debug) {		\
+	xf86DrvMsg(pScrn->scrnIndex, X_INFO,		\
+		   "EXA fallback: " s "\n", ##arg);	\
+    }							\
+    return FALSE;					\
+} while(0)
 
 Bool i830_pixmap_tiled(PixmapPtr p);
 

@@ -303,12 +303,11 @@ typedef enum {
    OPTION_COLOR_KEY,
    OPTION_CHECKDEVICES,
    OPTION_MODEDEBUG,
+   OPTION_FALLBACKDEBUG,
    OPTION_LVDS24BITMODE,
    OPTION_FBC,
    OPTION_TILING,
-#ifdef XF86DRI
-   OPTION_INTELTEXPOOL,
-#endif
+   OPTION_LEGACY3D,
    OPTION_LVDSFIXEDMODE,
    OPTION_TRIPLEBUFFER,
    OPTION_FORCEENABLEPIPEA,
@@ -316,6 +315,7 @@ typedef enum {
    OPTION_XVMC,
 #endif
    OPTION_FORCE_SDVO_DETECT,
+   OPTION_PREFER_OVERLAY,
 } I830Opts;
 
 static OptionInfoRec I830Options[] = {
@@ -330,11 +330,12 @@ static OptionInfoRec I830Options[] = {
    {OPTION_VIDEO_KEY,	"VideoKey",	OPTV_INTEGER,	{0},	FALSE},
    {OPTION_CHECKDEVICES, "CheckDevices",OPTV_BOOLEAN,	{0},	FALSE},
    {OPTION_MODEDEBUG,	"ModeDebug",	OPTV_BOOLEAN,	{0},	FALSE},
+   {OPTION_FALLBACKDEBUG, "FallbackDebug", OPTV_BOOLEAN, {0},	FALSE},
    {OPTION_LVDS24BITMODE, "LVDS24Bit",	OPTV_BOOLEAN,	{0},	FALSE},
    {OPTION_FBC,		"FramebufferCompression", OPTV_BOOLEAN, {0}, TRUE},
    {OPTION_TILING,	"Tiling",	OPTV_BOOLEAN,	{0},	TRUE},
 #ifdef XF86DRI
-   {OPTION_INTELTEXPOOL,"Legacy3D",     OPTV_BOOLEAN,	{0},	FALSE},
+   {OPTION_LEGACY3D,	"Legacy3D",     OPTV_BOOLEAN,	{0},	FALSE},
 #endif
    {OPTION_LVDSFIXEDMODE, "LVDSFixedMode", OPTV_BOOLEAN,	{0},	FALSE},
    {OPTION_TRIPLEBUFFER, "TripleBuffer", OPTV_BOOLEAN,	{0},	FALSE},
@@ -343,6 +344,7 @@ static OptionInfoRec I830Options[] = {
    {OPTION_XVMC,	"XvMC",		OPTV_BOOLEAN,	{0},	TRUE},
 #endif
    {OPTION_FORCE_SDVO_DETECT, "ForceSDVODetect", OPTV_BOOLEAN,  {0},	FALSE},
+   {OPTION_PREFER_OVERLAY, "XvPreferOverlay", OPTV_BOOLEAN, {0}, FALSE},
    {-1,			NULL,		OPTV_NONE,	{0},	FALSE}
 };
 /* *INDENT-ON* */
@@ -502,7 +504,7 @@ I830DetectMemory(ScrnInfoPtr pScrn)
    range = gtt_size + 4;
 
    /* new 4 series hardware has seperate GTT stolen with GFX stolen */
-   if (IS_G4X(pI830) || IS_GM45(pI830))
+   if (IS_G4X(pI830))
        range = 4;
 
    if (IS_I85X(pI830) || IS_I865G(pI830) || IS_I9XX(pI830)) {
@@ -637,7 +639,7 @@ I830MapMMIO(ScrnInfoPtr pScrn)
 
       if (IS_I965G(pI830)) 
       {
-	 if (IS_GM45(pI830) || IS_G4X(pI830)) {
+	 if (IS_G4X(pI830)) {
 	     gttaddr = pI830->MMIOAddr + MB(2);
 	     pI830->GTTMapSize = MB(2);
 	 } else {
@@ -962,7 +964,7 @@ i830_init_clock_gating(ScrnInfoPtr pScrn)
 
     /* Disable clock gating reported to work incorrectly according to the specs.
      */
-    if (IS_GM45(pI830) || IS_G4X(pI830)) {
+    if (IS_G4X(pI830)) {
 	uint32_t dspclk_gate;
 	OUTREG(RENCLK_GATE_D1, 0);
 	OUTREG(RENCLK_GATE_D2, VF_UNIT_CLOCK_GATE_DISABLE |
@@ -1436,6 +1438,9 @@ I830GetEarlyOptions(ScrnInfoPtr pScrn)
     memcpy(pI830->Options, I830Options, sizeof(I830Options));
     xf86ProcessOptions(pScrn->scrnIndex, pScrn->options, pI830->Options);
 
+    pI830->fallback_debug = xf86ReturnOptValBool(pI830->Options,
+						 OPTION_FALLBACKDEBUG, FALSE);
+
     if (xf86ReturnOptValBool(pI830->Options, OPTION_MODEDEBUG, FALSE)) {
 	pI830->debug_modes = TRUE;
     } else {
@@ -1567,22 +1572,8 @@ I830AccelMethodInit(ScrnInfoPtr pScrn)
 	}
 
 	if (!pI830->directRenderingDisabled) {
-	    pI830->allocate_classic_textures = TRUE;
-
-	    from = X_PROBED;
-
-#ifdef XF86DRI_MM
-	    if (!IS_I965G(pI830)) {
-		Bool tmp;
-
-		if (xf86GetOptValBool(pI830->Options,
-				      OPTION_INTELTEXPOOL, &tmp)) {
-		    from = X_CONFIG;
-		    if (!tmp)
-			pI830->allocate_classic_textures = FALSE;
-		}
-	    }
-#endif /* XF86DRI_MM */
+	   pI830->allocate_classic_textures =
+	      xf86ReturnOptValBool(pI830->Options, OPTION_LEGACY3D, TRUE);
 	}
     }
 #endif /* XF86DRI */
@@ -1704,6 +1695,8 @@ I830XvInit(ScrnInfoPtr pScrn)
 
     pI830->XvDisabled =
 	!xf86ReturnOptValBool(pI830->Options, OPTION_XVIDEO, TRUE);
+
+   pI830->XvPreferOverlay = xf86ReturnOptValBool(pI830->Options, OPTION_PREFER_OVERLAY, FALSE);
 
 #ifdef I830_XV
     if (xf86GetOptValInteger(pI830->Options, OPTION_VIDEO_KEY,
@@ -2674,17 +2667,21 @@ I830BlockHandler(int i,
     pScreen->BlockHandler = I830BlockHandler;
 
     if (pScrn->vtSema && pI830->accel != ACCEL_NONE) {
+       Bool flushed = FALSE;
        /* Emit a flush of the rendering cache, or on the 965 and beyond
 	* rendering results may not hit the framebuffer until significantly
 	* later.
 	*/
        if (pI830->accel != ACCEL_NONE && (pI830->need_mi_flush || pI830->batch_used))
+       {
+	  flushed = TRUE;
 	  I830EmitFlush(pScrn);
+       }
 
        /* Flush the batch, so that any rendering is executed in a timely
 	* fashion.
 	*/
-       intel_batch_flush(pScrn);
+       intel_batch_flush(pScrn, flushed);
 #ifdef XF86DRI
        if (pI830->memory_manager)
 	 drmCommandNone(pI830->drmSubFD, DRM_I915_GEM_THROTTLE);
@@ -3325,7 +3322,8 @@ I830ScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 	   return FALSE;
    }
 
-   i830_disable_render_standby(pScrn);
+   if (!pI830->use_drm_mode)
+       i830_disable_render_standby(pScrn);
 
    DPRINTF(PFX, "assert( if(!I830EnterVT(scrnIndex, 0)) )\n");
 
