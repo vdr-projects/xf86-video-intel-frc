@@ -1,3 +1,9 @@
+xserver-xorg-video-intel (2:2.5.1-1) UNRELEASED; urgency=low
+
+  * New upstream release.
+
+ -- Julien Cristau <jcristau@debian.org>  Sun, 16 Nov 2008 22:41:24 +0100
+
 xserver-xorg-video-intel (2:2.4.2-1) experimental; urgency=low
 
   * Drop the xserver-xorg-video-i810 transitional package.
