@@ -1,11 +1,11 @@
-xserver-xorg-video-intel (2:2.5.1-1) UNRELEASED; urgency=low
+xserver-xorg-video-intel (2:2.5.1-1) experimental; urgency=low
 
   * New upstream release.
   * Wrap build-deps in debian/control.
   * Build depend on libdrm-dev on all archs, since it's now required, and bump
     the build dep to 2.4.1.
 
- -- Julien Cristau <jcristau@debian.org>  Sun, 16 Nov 2008 22:41:24 +0100
+ -- Julien Cristau <jcristau@debian.org>  Sun, 23 Nov 2008 17:02:31 +0100
 
 xserver-xorg-video-intel (2:2.4.2-1) experimental; urgency=low
 
