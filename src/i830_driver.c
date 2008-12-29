@@ -2575,7 +2575,6 @@ void
 IntelEmitInvarientState(ScrnInfoPtr pScrn)
 {
    I830Ptr pI830 = I830PTR(pScrn);
-   uint32_t ctx_addr;
 
    if (pI830->accel == ACCEL_NONE)
       return;
