@@ -107,12 +107,6 @@ typedef struct _I830OutputRec I830OutputRec, *I830OutputPtr;
 #include "i830_sdvo.h"
 #include "i2c_vid.h"
 
-/* I830 Video support */
-#define NEED_REPLIES				/* ? */
-#define EXTENSION_PROC_ARGS void *
-#include "extnsionst.h" 			/* required */
-#include <X11/extensions/panoramiXproto.h> 	/* required */
-
 /*
  * The mode handling is based upon the VESA driver written by
  * Paulo César Pereira de Andrade <pcpa@conectiva.com.br>.
@@ -371,6 +365,13 @@ typedef enum accel_method {
     ACCEL_UXA
 } accel_method_t;
 
+enum dri_type {
+    DRI_DISABLED,
+    DRI_NONE,
+    DRI_XF86DRI,
+    DRI_DRI2
+};
+
 typedef struct _I830Rec {
    unsigned char *MMIOBase;
    unsigned char *GTTBase;
@@ -531,6 +532,8 @@ typedef struct _I830Rec {
 #endif
    CloseScreenProcPtr CloseScreen;
 
+   void (*batch_flush_notify)(ScrnInfoPtr pScrn);
+
 #ifdef I830_USE_EXA
    ExaDriverPtr	EXADriverPtr;
 #endif
@@ -561,6 +564,17 @@ typedef struct _I830Rec {
    XF86VideoAdaptorPtr adaptor;
    ScreenBlockHandlerProcPtr BlockHandler;
    Bool *overlayOn;
+
+   struct {
+      drm_intel_bo *gen4_vs_bo;
+      drm_intel_bo *gen4_sf_bo;
+      drm_intel_bo *gen4_wm_packed_bo;
+      drm_intel_bo *gen4_wm_planar_bo;
+      drm_intel_bo *gen4_cc_bo;
+      drm_intel_bo *gen4_cc_vp_bo;
+      drm_intel_bo *gen4_sampler_bo;
+      drm_intel_bo *gen4_sip_kernel_bo;
+   } video;
 #endif
 
    /* EXA render state */
@@ -575,8 +589,7 @@ typedef struct _I830Rec {
    /* 965 render acceleration state */
    struct gen4_render_state *gen4_render_state;
 
-   Bool directRenderingDisabled;	/* DRI disabled in PreInit. */
-   Bool directRenderingEnabled;		/* DRI enabled this generation. */
+   enum dri_type directRenderingType;	/* DRI enabled this generation. */
 
 #ifdef XF86DRI
    Bool directRenderingOpen;
@@ -588,6 +601,7 @@ typedef struct _I830Rec {
    I830ConfigPrivPtr pVisualConfigsPriv;
    drm_handle_t buffer_map;
    drm_handle_t ring_map;
+   char deviceName[64];
 #endif
 
    /* Broken-out options. */
@@ -603,8 +617,6 @@ typedef struct _I830Rec {
    Bool tv_present; /* TV connector present (from VBIOS) */
 
    Bool StolenOnly;
-
-   Bool checkDevices;
 
    /* Driver phase/state information */
    Bool preinit;
@@ -811,6 +823,11 @@ extern Bool I830DRISetHWS(ScrnInfoPtr pScrn);
 extern Bool I830DRIInstIrqHandler(ScrnInfoPtr pScrn);
 #endif
 
+#ifdef DRI2
+Bool I830DRI2ScreenInit(ScreenPtr pScreen);
+void I830DRI2CloseScreen(ScreenPtr pScreen);
+#endif
+
 extern Bool I830AccelInit(ScreenPtr pScreen);
 extern void I830SetupForScreenToScreenCopy(ScrnInfoPtr pScrn, int xdir,
 					   int ydir, int rop,
@@ -923,6 +940,9 @@ Bool i965_prepare_composite(int op, PicturePtr pSrc, PicturePtr pMask,
 void i965_composite(PixmapPtr pDst, int srcX, int srcY,
 		    int maskX, int maskY, int dstX, int dstY, int w, int h);
 
+void
+i965_batch_flush_notify(ScrnInfoPtr pScrn);
+
 Bool
 i830_get_transformed_coordinates(int x, int y, PictTransformPtr transform,
 				 float *x_out, float *y_out);
@@ -1008,6 +1028,7 @@ extern const int I830CopyROP[16];
 #define QUIRK_IVCH_NEED_DVOB		0x00000010
 #define QUIRK_RESET_MODES		0x00000020
 #define QUIRK_PFIT_SAFE			0x00000040
+#define QUIRK_IGNORE_CRT		0x00000080
 extern void i830_fixup_devices(ScrnInfoPtr);
 
 #endif /* _I830_H_ */

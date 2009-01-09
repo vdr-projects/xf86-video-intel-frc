@@ -400,7 +400,8 @@ i830SetLVDSPanelPower(xf86OutputPtr output, Bool on)
 	 * they'll always re-maximize the brightness.
 	 */
 	if (!(INREG(PP_CONTROL) & POWER_TARGET_ON) &&
-	    dev_priv->backlight_duty_cycle == 0)
+	    dev_priv->backlight_duty_cycle == 0 &&
+	    pI830->backlight_control_method < BCM_KERNEL)
 	    dev_priv->backlight_duty_cycle = dev_priv->backlight_max;
 
 	OUTREG(PP_CONTROL, INREG(PP_CONTROL) | POWER_TARGET_ON);
@@ -1377,11 +1378,9 @@ found_mode:
     dev_priv->backlight_duty_cycle = dev_priv->get_backlight(output);
 
     /*
-     * Default to filling the whole screen if the mode is less than the
-     * native size. (Change default to origin FULL mode, i8xx can only work
-     * in that mode for now.)
+     * Avoid munging the aspect ratio by default.
      */
-    dev_priv->fitting_mode = FULL;
+    dev_priv->fitting_mode = FULL_ASPECT;
 
     return;
 
