@@ -1131,7 +1131,9 @@ i830SetHotkeyControl(ScrnInfoPtr pScrn, int mode)
  * DRM mode setting Linux only at this point... later on we could
  * add a wrapper here.
  */
+#ifdef __linux__
 #include <linux/kd.h>
+#endif
 
 static Bool i830_kernel_mode_enabled(ScrnInfoPtr pScrn)
 {
@@ -1157,7 +1159,9 @@ static Bool i830_kernel_mode_enabled(ScrnInfoPtr pScrn)
     if (ret)
 	return FALSE;
 
+#ifdef __linux__
     ioctl(xf86Info.consoleFd, KDSETMODE, KD_TEXT);
+#endif
 
     return TRUE;
 }
