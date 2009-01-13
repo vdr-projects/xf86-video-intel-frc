@@ -340,7 +340,6 @@ static OptionInfoRec I830Options[] = {
    {OPTION_LEGACY3D,	"Legacy3D",     OPTV_BOOLEAN,	{0},	FALSE},
 #endif
    {OPTION_LVDSFIXEDMODE, "LVDSFixedMode", OPTV_BOOLEAN,	{0},	FALSE},
-   {OPTION_TRIPLEBUFFER, "TripleBuffer", OPTV_BOOLEAN,	{0},	FALSE},
    {OPTION_FORCEENABLEPIPEA, "ForceEnablePipeA", OPTV_BOOLEAN,	{0},	FALSE},
 #ifdef INTEL_XVMC
    {OPTION_XVMC,	"XvMC",		OPTV_BOOLEAN,	{0},	TRUE},
@@ -1826,13 +1825,6 @@ I830DriOptsInit(ScrnInfoPtr pScrn)
     xf86DrvMsg(pScrn->scrnIndex, from, "Will%s try to enable page flipping\n",
 	       pI830->allowPageFlip ? "" : " not");
 
-    pI830->TripleBuffer = FALSE;
-    from =  (pI830->directRenderingType != DRI_DISABLED &&
-	     xf86GetOptValBool(pI830->Options, OPTION_TRIPLEBUFFER,
-			       &pI830->TripleBuffer)) ? X_CONFIG : X_DEFAULT;
-
-    xf86DrvMsg(pScrn->scrnIndex, from, "Triple buffering %sabled\n",
-	       pI830->TripleBuffer ? "en" : "dis");
 #endif /* XF86DRI */
 }
 
