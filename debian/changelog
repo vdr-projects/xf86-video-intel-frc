@@ -1,6 +1,7 @@
 xserver-xorg-video-intel (2:2.5.99.2-1) UNRELEASED; urgency=low
 
   * New upstream release.
+    + doesn't crash on EnterVT with libdrm 2.4.3 (closes: #511263)
   * Update libdrm-dev build-dep to 2.4.3.
 
  -- Julien Cristau <jcristau@debian.org>  Fri, 09 Jan 2009 02:56:44 +0100
