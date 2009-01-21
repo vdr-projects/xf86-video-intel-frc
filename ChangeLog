@@ -1,3 +1,189 @@
+commit 08683d1d053875bcacd7c358d66ef2bfad458a56
+Author: Eric Anholt <eric@anholt.net>
+Date:   Wed Jan 21 14:10:04 2009 -0800
+
+    Bump version to 2.6.1.
+
+commit 52d3c64f2b896966b934d647765674303a8dfa29
+Author: Jesse Barnes <jbarnes@virtuousgeek.org>
+Date:   Wed Jan 21 09:02:13 2009 -0800
+
+    Don't run in KD_TEXT mode even with KMS
+    
+    Leaving the VT in KD_TEXT mode keeps the kernel's blanking code active,
+    so when a DPMS event happens, the fb console is restored rather than X's
+    configuration.  On the downside it means the kernel won't print messages
+    in the background, which would be visible if a panic or emergency switch
+    occurred.  The proper fix here is a new kernel mode, which we can move
+    to when ready.
+    (cherry picked from commit 253b8db298f38676e47dc902534465054f7b58b8)
+
+commit 11c23dd22a737aaa52ef18cd65164da9c5115d3f
+Author: Jesse Barnes <jbarnes@virtuousgeek.org>
+Date:   Wed Jan 21 09:01:05 2009 -0800
+
+    Tear down batchbuffers unconditionally on LeaveVT
+    
+    Even if KMS is enabled we should do this, to avoid running batches that
+    depend on other state we tear down in LeaveVT.
+    (cherry picked from commit 131b414feb2ecabe31b538d65725ac4427a4387a)
+
+commit f519da8ba21ef27b4a2ed4516336b25c6feb824e
+Author: Kshitij Kulshreshtha <kkhere.geo@gmail.com>
+Date:   Tue Jan 20 11:35:36 2009 +0800
+
+    Support sysfs backlight control for Sony laptops in xf86-video-intel
+    
+    The sony_laptop kernel module (since v2.6.23) supports backlight control
+    via the sysfs interface:
+    /sys/class/backlight/sony
+    
+    This patch will enable xf86-video-intel to use this backlight control method
+    for Sony VAIO Laptops with Intel integrated video.
+    (cherry picked from commit ada44c1c0edcd3ea9e41ed6b6fdb2bf0e87c9c67)
+
+commit e1c2f5d7afbd29dfb6f1e24589e13729ac71a2a7
+Author: Eric Anholt <eric@anholt.net>
+Date:   Thu Jan 15 09:31:55 2009 -0800
+
+    Fix invarient state emits for DRI2 (do it per batch, since there's no lock).
+    (cherry picked from commit cab5b7a7b0e17414f98b2363b0961c87f32f9c05)
+
+commit 12ad7f650a01916fd05e0aee9a72f70b112e50a0
+Author: Eric Anholt <eric@anholt.net>
+Date:   Fri Jan 16 16:59:17 2009 -0800
+
+    Protect i915 textured video against batchbuffer wrapping.
+    (cherry picked from commit d89de6d60a86105a198d904821853e6ed7de3305)
+
+commit 6b299ffac73e7f2069f8207bda677a82e6a60c81
+Author: Eric Anholt <eric@anholt.net>
+Date:   Thu Jan 15 19:05:52 2009 -0800
+
+    Re-emit i915 composite setup when the batchbuffer wraps.
+    
+    This also introduces tests to make sure that we asked for enough reserved space
+    and that we don't allow wrapping at the wrong time.
+    
+    This fixes a hang during text rendering with DRI2 and a GL client running,
+    but could potentially affect text rendering with GEM in general with an
+    exceptional batchbuffer setup.
+    (cherry picked from commit db43b7870a37ea273941302096a6f00120dfae71)
+    (cherry picked from commit 15780c53f5717936ea10ac87aff8a881c172f1dc)
+
+commit 5cd65d965c8ed388275fe2084553302aad601d4a
+Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
+Date:   Thu Jan 15 13:45:14 2009 +0800
+
+    Bump version 2.6.0
+
+commit ff67517db91a572a640e7a0ba247b8b71bfa2335
+Author: Owain G. Ainsworth <oga@openbsd.org>
+Date:   Tue Jan 13 18:42:44 2009 +0000
+
+    Fix ioctl type.
+    
+    I915_EMIT_IRQ is a read/write ioctl, not a write only. Found by OpenBSd's
+    kernel code which checks these things a long more strongly than Linux.
+    (cherry picked from commit 9f306193c4b128ec72c5b4db16d07302cee50ab5)
+
+commit e84f21db824b2e9e7fe660927ecfbbf04b068f7a
+Author: Owain G. Ainsworth <oga@openbsd.org>
+Date:   Tue Jan 13 17:02:59 2009 +0000
+
+    use ifdef __linux__ where needed.
+    
+    since modesetting is compiled by default now, ifdef __linux__ the linux
+    only includes and ioctls.
+    (cherry picked from commit 1e8588ad5087c69eb77399cfaab8e4ec15eb4da9)
+
+commit 70ba6d45c9a00756e0ad36a58136281adba138f9
+Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
+Date:   Wed Jan 14 16:39:08 2009 +0800
+
+    Revert "Assign rotation memory dri_bo to rotation pixmap."
+    
+    This reverts commit d994978488648a68ade0d518e5dd40d100e953ed.
+    This requires i830_set_pixmap_bo() on master that is not in
+    2.6 branch.
+
+commit 3743747dbcf538ddd6db882bde7243656d0c5596
+Author: Ma Ling <ling.ma@intel.com>
+Date:   Wed Jan 14 14:46:52 2009 +0800
+
+    Disable VGA plane reliably
+    
+    This fixes #17235, VGA random hang on recent G45/43 board.
+    From spec, SR01 bit 5 should be set before VGA plane disable through
+    control register, otherwise we might get random crash and lockups.
+    (cherry picked from commit db9f5915ce812144ffd9d2aa42e8ba856129c35e)
+
+commit d994978488648a68ade0d518e5dd40d100e953ed
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue Jan 13 20:01:49 2009 -0800
+
+    Assign rotation memory dri_bo to rotation pixmap.
+    
+    As the rotation memory and rotation pixmap are allocated separately (to make
+    rotation at startup work), the allocate dri_bo needs to be set in the pixmap
+    for acceleration to work. This restores the performance in rotated modes.
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit a4b023c17b9c3bd65fb9466ddb8a953f60244402)
+
+commit 7c5afbbd3e7570224ceb4fa793fe230fd3a383fe
+Author: Bernhard Rosenkraenzer <bero@arklinux.org>
+Date:   Tue Jan 13 10:35:19 2009 -0800
+
+    UXA: Declare glyph cache picture as component-alpha when necessary.
+    
+    Without this, rendering component-alpha glyphs may break without a mask.
+    
+    Bug #19534.  Ported from fix by Michel Dänzer <daenzer@vmware.com> in
+    xserver commit 639f289dcdbe00a516820f573c01a8339e120ed4
+    (cherry picked from commit c80f1a9c5131721eaf87d12a7a67e603cdfed63b)
+
+commit c0bc3cf128d8e9e1ed643be1586593d42c8f5b49
+Author: Ma Ling <ling.ma@intel.com>
+Date:   Tue Jan 13 10:26:40 2009 +0800
+
+    set continuous-frequency flag in get modes function
+    
+    http://bugs.freedesktop.org/show_bug.cgi?id=19247
+    Because latest xorg will check whether the display is continuous frequency through one flag in monitor info structure,
+    if not it doesn't touch default modes. When laptop failed to fetch edid, We don't set the flag. In i830_lvds.c,
+    so currently we can not get default modes except only one mode line from bios.
+    In order to achieve default modes from xserver successfully,I set the flag and other EDID features.
+    (cherry picked from commit 3d206f9e46b5237bda7ca3c0f92d64c45ee8bdf5)
+
+commit 335d6bbdfd882eb98dc6ebd785ad2963abc6566d
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Nov 26 16:32:12 2008 +0800
+
+    Fix LVDS EDID to match all possible default modes
+    
+    If the EDID data from the LVDS doesn't indicate support for a wide range of
+    continuous frequencies, it will not match any of the default modes although
+    our LVDS scaler logic ignores refresh rates when programming LVDS modes. Fix
+    this by smashing the compute EDID data to open up the sync rates.
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 3354e660b0744976871683ce226f17e873f26b50)
+
+commit 28a44ad59eec9a6421f4ed0de5614599ac17b0d6
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Fri Jan 9 16:30:15 2009 -0800
+
+    Remove xorgconfig & xorgcfg from See Also list in man page
+    (cherry picked from commit f1e9ca4e4fb3ddb083252aea79c67c5e5e71f29c)
+
+commit f42015d570733aaa0eb56da5ca63d72a5b2772f7
+Author: Ian Romanick <ian.d.romanick@intel.com>
+Date:   Wed Jan 7 21:45:54 2009 -0800
+
+    Prevent redefinitions of CARD8 and friends.  Fixes build.
+    (cherry picked from commit 91c49067abab262edce54d33af8bfc03eee20f2e)
+
 commit 4447973345a2a7af20ba1d6cb18c5f1ed8949d00
 Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
 Date:   Thu Jan 8 14:34:11 2009 +0800

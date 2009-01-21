@@ -1,3 +1,9 @@
+xserver-xorg-video-intel (2:2.6.1-1) UNRELEASED; urgency=low
+
+  * New upstream release.
+
+ -- Julien Cristau <jcristau@debian.org>  Thu, 22 Jan 2009 00:16:57 +0100
+
 xserver-xorg-video-intel (2:2.6.0-1) experimental; urgency=low
 
   * New upstream release.
