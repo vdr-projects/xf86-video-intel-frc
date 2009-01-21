@@ -1131,10 +1131,6 @@ i830SetHotkeyControl(ScrnInfoPtr pScrn, int mode)
  * DRM mode setting Linux only at this point... later on we could
  * add a wrapper here.
  */
-#ifdef __linux__
-#include <linux/kd.h>
-#endif
-
 static Bool i830_kernel_mode_enabled(ScrnInfoPtr pScrn)
 {
 #if XSERVER_LIBPCIACCESS
@@ -1158,10 +1154,6 @@ static Bool i830_kernel_mode_enabled(ScrnInfoPtr pScrn)
     xfree(busIdString);
     if (ret)
 	return FALSE;
-
-#ifdef __linux__
-    ioctl(xf86Info.consoleFd, KDSETMODE, KD_TEXT);
-#endif
 
     return TRUE;
 }
@@ -3345,6 +3337,8 @@ I830ScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 
    if (IS_I965G(pI830))
        pI830->batch_flush_notify = i965_batch_flush_notify;
+   else if (IS_I9XX(pI830))
+       pI830->batch_flush_notify = i915_batch_flush_notify;
    else
        pI830->batch_flush_notify = NULL;
 
@@ -3557,7 +3551,6 @@ I830LeaveVT(int scrnIndex, int flags)
 	*/
        if (!pI830->memory_manager)
 	   intel_bufmgr_fake_evict_all(pI830->bufmgr);
-       intel_batch_teardown(pScrn);
 
        if (!pI830->memory_manager)
 	   i830_stop_ring(pScrn, TRUE);
@@ -3567,6 +3560,8 @@ I830LeaveVT(int scrnIndex, int flags)
 	   i830DumpRegs (pScrn);
        }
    }
+
+   intel_batch_teardown(pScrn);
 
    if (I830IsPrimary(pScrn))
       i830_unbind_all_memory(pScrn);
