@@ -1,6 +1,7 @@
 xserver-xorg-video-intel (2:2.6.1-1) UNRELEASED; urgency=low
 
   * New upstream release.
+  * Build against xserver 1.6 rc1.
 
  -- Julien Cristau <jcristau@debian.org>  Thu, 22 Jan 2009 00:16:57 +0100
 
