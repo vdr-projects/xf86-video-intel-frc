@@ -75,7 +75,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifdef DAMAGE
 #include "damage.h"
 #endif
-#include "drmmode_display.h"
 #endif
 #include "intel_bufmgr.h"
 #include "i915_drm.h"
@@ -735,10 +734,6 @@ typedef struct _I830Rec {
 
    Bool use_drm_mode;
    Bool kernel_exec_fencing;
-#ifdef XF86DRM_MODE
-   drmmode_rec drmmode;
-   int drm_mm_init;
-#endif
 
    /** Enables logging of debug output related to mode switching. */
    Bool debug_modes;
@@ -844,6 +839,12 @@ extern Bool I830DRIInstIrqHandler(ScrnInfoPtr pScrn);
 #ifdef DRI2
 Bool I830DRI2ScreenInit(ScreenPtr pScreen);
 void I830DRI2CloseScreen(ScreenPtr pScreen);
+#endif
+
+#ifdef XF86DRM_MODE
+extern Bool drmmode_pre_init(ScrnInfoPtr pScrn, int fd, int cpp);
+extern Bool drmmode_is_rotate_pixmap(ScrnInfoPtr pScrn, pointer pPixData,
+				     dri_bo **bo);
 #endif
 
 extern Bool I830AccelInit(ScreenPtr pScreen);
