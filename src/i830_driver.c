@@ -317,6 +317,10 @@ typedef enum {
    OPTION_XVMC,
 #endif
    OPTION_PREFER_OVERLAY,
+   OPTION_SYNC_FIELDS,
+   OPTION_YSCALE_FTUNE,
+   OPTION_YRGB_VPHASE,
+   OPTION_UV_VPHASE,
 } I830Opts;
 
 static OptionInfoRec I830Options[] = {
@@ -337,6 +341,10 @@ static OptionInfoRec I830Options[] = {
    {OPTION_XVMC,	"XvMC",		OPTV_BOOLEAN,	{0},	TRUE},
 #endif
    {OPTION_PREFER_OVERLAY, "XvPreferOverlay", OPTV_BOOLEAN, {0}, FALSE},
+   {OPTION_SYNC_FIELDS,	"SyncFields",	OPTV_BOOLEAN,	{0},	FALSE},
+   {OPTION_YSCALE_FTUNE,"YScaleFineTune",OPTV_INTEGER,	{0},	FALSE},
+   {OPTION_YRGB_VPHASE,	"YRGB_VPhase",	OPTV_INTEGER,	{0},	FALSE},
+   {OPTION_UV_VPHASE,	"UV_VPhase",	OPTV_INTEGER,	{0},	FALSE},
    {-1,			NULL,		OPTV_NONE,	{0},	FALSE}
 };
 /* *INDENT-ON* */
@@ -1793,6 +1801,43 @@ I830XvInit(ScrnInfoPtr pScrn)
     xf86DrvMsg(pScrn->scrnIndex, from, "video overlay key set to 0x%x\n",
 	       pI830->colorKey);
 #endif
+
+   if (xf86GetOptValInteger(pI830->Options, OPTION_SYNC_FIELDS,
+			    &(pI830->sync_fields))) {
+      from = X_CONFIG;
+   } else {
+      pI830->sync_fields = TRUE;
+      from = X_DEFAULT;
+   }
+   xf86DrvMsg(pScrn->scrnIndex, from, "sync fields %sactivated\n",
+	      pI830->sync_fields ? "" : "de");
+   if (xf86GetOptValInteger(pI830->Options, OPTION_YSCALE_FTUNE,
+			    &(pI830->YScale_ftune))) {
+      from = X_CONFIG;
+   } else {
+      pI830->YScale_ftune = 0;
+      from = X_DEFAULT;
+   }
+   xf86DrvMsg(pScrn->scrnIndex, from, "vertical scale fine tuning set to %d\n",
+	      pI830->YScale_ftune);
+   if (xf86GetOptValInteger(pI830->Options, OPTION_YRGB_VPHASE,
+			    &(pI830->YRGB_vphase))) {
+      from = X_CONFIG;
+   } else {
+      pI830->YRGB_vphase = 0;
+      from = X_DEFAULT;
+   }
+   xf86DrvMsg(pScrn->scrnIndex, from, "Y/RGB vertical phase set to 0x%x\n",
+	      pI830->YRGB_vphase);
+   if (xf86GetOptValInteger(pI830->Options, OPTION_UV_VPHASE,
+			    &(pI830->UV_vphase))) {
+      from = X_CONFIG;
+   } else {
+      pI830->UV_vphase = 0;
+      from = X_DEFAULT;
+   }
+   xf86DrvMsg(pScrn->scrnIndex, from, "UV vertical phase set to 0x%x\n",
+	      pI830->UV_vphase);
 }
 
 /**
@@ -1935,6 +1980,24 @@ I830PreInit(ScrnInfoPtr pScrn, int flags)
 
    /* Set display resolution */
    xf86SetDpi(pScrn, 0, 0);
+
+   if (!(pScrn->currentMode->Flags & V_INTERLACE)
+    && pI830->sync_fields) {
+      xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "Cannot support sync fields on non interlaced displays, disabled\n");
+      pI830->sync_fields = 0;
+   }
+
+   /*
+    * sync_fields only works with
+    * ModeLine  "1440x576_50i"     27.75   1440 1488 1609 1769   576  580  585  625  -hsync -vsync interlace
+    */
+   if ((pScrn->currentMode->Clock != 27750
+    ||  pScrn->currentMode->HDisplay != 1440
+    ||  pScrn->currentMode->VDisplay != 576)
+    && pI830->sync_fields) {
+      xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "Cannot support sync fields with current timing, disabled\n");
+      pI830->sync_fields = 0;
+   }
 
    /* Load the required sub modules */
    if (!xf86LoadSubModule(pScrn, "fb")) {
