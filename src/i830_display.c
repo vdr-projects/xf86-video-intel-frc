@@ -95,9 +95,9 @@ typedef struct {
 #define I8XX_P2_LVDS_FAST	      7
 #define I8XX_P2_SLOW_LIMIT	 165000
 
-#define I9XX_DOT_MIN		  20000
+#define I9XX_DOT_MIN		  12000 /* allow for PAL modes */
 #define I9XX_DOT_MAX		 400000
-#define I9XX_VCO_MIN		1400000
+#define I9XX_VCO_MIN		1000000 /* allow for PAL modes */
 #define I9XX_VCO_MAX		2800000
 
 /* Haven't found any reason to go this fast, but newer chips support it */
@@ -950,6 +950,14 @@ static Bool
 i830_crtc_mode_fixup(xf86CrtcPtr crtc, DisplayModePtr mode,
 		     DisplayModePtr adjusted_mode)
 {
+    if (mode->Flags & V_INTERLACE) {
+       mode->CrtcVDisplay = adjusted_mode->CrtcVDisplay = mode->VDisplay;
+       mode->CrtcVSyncStart = adjusted_mode->CrtcVSyncStart = mode->VSyncStart;
+       mode->CrtcVSyncEnd = adjusted_mode->CrtcVSyncEnd = mode->VSyncEnd;
+       mode->CrtcVBlankStart = adjusted_mode->CrtcVBlankStart = mode->CrtcVDisplay;
+       mode->CrtcVBlankEnd = adjusted_mode->CrtcVBlankEnd = mode->VTotal;
+       mode->CrtcVTotal = adjusted_mode->CrtcVTotal = mode->VTotal;
+    }
     return TRUE;
 }
 
@@ -1341,6 +1349,11 @@ i830_crtc_mode_set(xf86CrtcPtr crtc, DisplayModePtr mode,
     /* Wait for the clocks to stabilize. */
     usleep(150);
 
+    if (adjusted_mode->Flags & V_INTERLACE) {
+       pipeconf |= PIPECONF_INTERLACE_W_FIELD_INDICATION;
+    } else {
+       pipeconf &= ~PIPECONF_INTERLACE_W_FIELD_INDICATION;
+    }
     OUTREG(htot_reg, (adjusted_mode->CrtcHDisplay - 1) |
 	((adjusted_mode->CrtcHTotal - 1) << 16));
     OUTREG(hblank_reg, (adjusted_mode->CrtcHBlankStart - 1) |

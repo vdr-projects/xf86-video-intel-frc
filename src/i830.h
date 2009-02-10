@@ -523,6 +523,11 @@ typedef struct _I830Rec {
    Bool *overlayOn;
 #endif
 
+   Bool sync_fields;
+   int YScale_ftune;
+   int YRGB_vphase;
+   int UV_vphase;
+
    /* EXA render state */
    float scale_units[2][2];
   /** Transform pointers for src/mask, or NULL if identity */

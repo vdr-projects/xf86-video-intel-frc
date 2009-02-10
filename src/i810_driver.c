@@ -250,7 +250,11 @@ typedef enum {
    OPTION_NO_DDC,
    OPTION_SHOW_CACHE,
    OPTION_XVMC_SURFACES,
-   OPTION_PAGEFLIP
+   OPTION_PAGEFLIP,
+   OPTION_SYNC_FIELDS,
+   OPTION_YSCALE_FTUNE,
+   OPTION_YRGB_VPHASE,
+   OPTION_UV_VPHASE,
 } I810Opts;
  
 static const OptionInfoRec I810Options[] = {
@@ -264,6 +268,10 @@ static const OptionInfoRec I810Options[] = {
    {OPTION_SHOW_CACHE,		"ShowCache",	OPTV_BOOLEAN,	{0}, FALSE},
    {OPTION_XVMC_SURFACES,	"XvMCSurfaces",	OPTV_INTEGER,	{0}, FALSE},
    {OPTION_PAGEFLIP,            "PageFlip",     OPTV_BOOLEAN,	{0}, FALSE},
+   {OPTION_SYNC_FIELDS,		"SyncFields",	OPTV_BOOLEAN,	{0}, FALSE},
+   {OPTION_YSCALE_FTUNE,	"YScaleFineTune",OPTV_INTEGER,	{0}, FALSE},
+   {OPTION_YRGB_VPHASE,		"YRGB_VPhase",	OPTV_INTEGER,	{0}, FALSE},
+   {OPTION_UV_VPHASE,		"UV_VPhase",	OPTV_INTEGER,	{0}, FALSE},
    {-1,				NULL,		OPTV_NONE,	{0}, FALSE}
 };
 /* *INDENT-ON* */
@@ -2845,7 +2853,9 @@ I810ValidMode(int scrnIndex, DisplayModePtr mode, Bool verbose, int flags)
 	 xf86DrvMsg(scrnIndex, X_PROBED,
 		    "Removing interlaced mode \"%s\"\n", mode->name);
       }
+#if 0 /* allow interlaced mode */
       return MODE_BAD;
+#endif
    }
    return MODE_OK;
 }
