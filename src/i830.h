@@ -527,6 +527,8 @@ typedef struct _I830Rec {
    int YScale_ftune;
    int YRGB_vphase;
    int UV_vphase;
+   int SchedPrio;
+   Bool SYF_debug;
 
    /* EXA render state */
    float scale_units[2][2];

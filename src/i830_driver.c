@@ -200,6 +200,7 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 #if HAVE_SYS_MMAN_H && HAVE_MPROTECT
 #include <sys/mman.h>
 #endif
+#include "sys/resource.h"
 
 #ifdef INTEL_XVMC
 #define _INTEL_XVMC_SERVER_
@@ -315,6 +316,8 @@ typedef enum {
    OPTION_YSCALE_FTUNE,
    OPTION_YRGB_VPHASE,
    OPTION_UV_VPHASE,
+   OPTION_SCHED_PRIO,
+   OPTION_SYF_DEBUG,
 } I830Opts;
 
 static OptionInfoRec I830Options[] = {
@@ -344,9 +347,11 @@ static OptionInfoRec I830Options[] = {
    {OPTION_XVMC,	"XvMC",		OPTV_BOOLEAN,	{0},	TRUE},
 #endif
    {OPTION_SYNC_FIELDS,	"SyncFields",	OPTV_BOOLEAN,	{0},	FALSE},
-   {OPTION_YSCALE_FTUNE,"YScaleFineTune",OPTV_INTEGER,	{0},	FALSE},
-   {OPTION_YRGB_VPHASE,	"YRGB_VPhase",	OPTV_INTEGER,	{0},	FALSE},
-   {OPTION_UV_VPHASE,	"UV_VPhase",	OPTV_INTEGER,	{0},	FALSE},
+   {OPTION_YSCALE_FTUNE,"SF_YScaleFineTune",OPTV_INTEGER,{0},	FALSE},
+   {OPTION_YRGB_VPHASE,	"SF_YRGB_VPhase",OPTV_INTEGER,	{0},	FALSE},
+   {OPTION_UV_VPHASE,	"SF_UV_VPhase",	OPTV_INTEGER,	{0},	FALSE},
+   {OPTION_SCHED_PRIO,	"SF_SchedPrio",	OPTV_INTEGER,	{0},	FALSE},
+   {OPTION_SYF_DEBUG,	"SF_Debug",	OPTV_BOOLEAN,	{0},	FALSE},
    {-1,			NULL,		OPTV_NONE,	{0},	FALSE}
 };
 /* *INDENT-ON* */
@@ -1696,6 +1701,24 @@ I830PreInit(ScrnInfoPtr pScrn, int flags)
    }
    xf86DrvMsg(pScrn->scrnIndex, from, "UV vertical phase set to 0x%x\n",
 	      pI830->UV_vphase);
+   if (xf86GetOptValInteger(pI830->Options, OPTION_SCHED_PRIO,
+			    &(pI830->SchedPrio))) {
+      from = X_CONFIG;
+   } else {
+      pI830->SchedPrio = 0;
+      from = X_DEFAULT;
+   }
+   xf86DrvMsg(pScrn->scrnIndex, from, "scheduling priority requested %d\n",
+	      pI830->SchedPrio);
+   if (xf86GetOptValInteger(pI830->Options, OPTION_SYF_DEBUG,
+			    &(pI830->SYF_debug))) {
+      from = X_CONFIG;
+   } else {
+      pI830->SYF_debug = FALSE;
+      from = X_DEFAULT;
+   }
+   xf86DrvMsg(pScrn->scrnIndex, from, "sync fields debug %sactivated\n",
+	      pI830->SYF_debug ? "" : "de");
 
 #ifdef XF86DRI
    pI830->allowPageFlip = FALSE;
@@ -1797,6 +1820,17 @@ I830PreInit(ScrnInfoPtr pScrn, int flags)
     && pI830->sync_fields) {
       xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "Cannot support sync fields with current timing, disabled\n");
       pI830->sync_fields = 0;
+   }
+   if (pI830->sync_fields) {
+      if (pI830->SchedPrio) {
+	  if (setpriority(PRIO_PROCESS, 0, pI830->SchedPrio)) {
+	    xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
+		"failed to setpriority as requested: %s\n", strerror(errno));
+	  } else {
+	    xf86DrvMsg(pScrn->scrnIndex, X_INFO,
+		"set scheduling priority to %d\n", getpriority(PRIO_PROCESS, 0));
+	  }
+      }
    }
 
    /* Load the required sub modules */

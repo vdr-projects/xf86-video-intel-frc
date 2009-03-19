@@ -2172,6 +2172,7 @@ i830_display_video(ScrnInfoPtr pScrn, xf86CrtcPtr crtc,
 	    OCMD |= Y_SWAP;
 	break;
     }
+
     OCMD &= ~(BUFFER_SELECT | FIELD_SELECT);
     if (pPriv->currentBuf == 0)
 	OCMD |= BUFFER0;
@@ -2552,7 +2553,7 @@ I830PutImage(ScrnInfoPtr pScrn,
 
     if (!pPriv->textured) {
 	if (pI830->sync_fields) {
-	    vga_sync_fields(RecPtr);
+	    vga_sync_fields(pI830);
 	}
 	i830_display_video(pScrn, crtc, destId, width, height, dstPitch,
 			   x1, y1, x2, y2, &dstBox, src_w, src_h,
@@ -3164,8 +3165,8 @@ meter_out(val, symb)
 /* --- 8< --- */
 
 void
-vga_sync_fields(RecPtr)
-    I830Ptr RecPtr;
+vga_sync_fields(pI830)
+    I830Ptr pI830;
 {
     static syf_t syf, syf_clear;
     static drm_i945_syncf_t syncf_prev;
@@ -3268,16 +3269,19 @@ vga_sync_fields(RecPtr)
 	}
 	if (skew2vbl_prev.tv_sec != ~0 && !(syf.cnt % SYF_PLL_DIVIDER)) {
 	    syf.spoint /= SYF_PLL_DIVIDER;
-            OUT_GRAPHIC(0, '+');
-            OUT_GRAPHIC(syf.spoint, '|');
-            OUT_GRAPHIC(syf.drift, '*');
-            OUT_GRAPHIC(0, 1);
-
+	    if (pI830->SYF_debug) {
+		OUT_GRAPHIC(0, '+');
+		OUT_GRAPHIC(syf.spoint, '|');
+		OUT_GRAPHIC(syf.drift, '*');
+		OUT_GRAPHIC(0, 1);
+	    }
 	    syf.trim = (syf.drift + syf.spoint / SYF_DISP_DRIFT_FACTOR) / SYF_MIN_STEP_USEC;
 	    syf.trim = max(syf.trim, -SYF_MAX_TRIM_REL);
 	    syf.trim = min(syf.trim,  SYF_MAX_TRIM_REL);
-	    ERRORF("%7d %7d [%3d%+4d] %7d\n", syf.drift, syf.spoint, 
-	    			(char)(syncf.trim & 0xff), syf.trim, syf.tsum);
+	    if (pI830->SYF_debug) {
+		ERRORF("%7d %7d [%3d%+4d] %7d\n", syf.drift, syf.spoint, 
+				    (char)(syncf.trim & 0xff), syf.trim, syf.tsum);
+	    }
 	    syf.spoint = 0;
 	    syf.drift = 0;
 	    syf.tsum = 0;
