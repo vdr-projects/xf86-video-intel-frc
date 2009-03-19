@@ -434,12 +434,10 @@ out_release_pipe:
 
 done:
 
-#if 0 /* not yet */
     /*
-     * we also want to boot the Xserver without a CRT connected
+     * allow Xserver to run even without a CRT connected
      */
     status = XF86OutputStatusConnected;
-#endif
 
     return status;
 }
