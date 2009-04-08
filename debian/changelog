@@ -1,6 +1,7 @@
 xserver-xorg-video-intel (2:2.6.3-1) UNRELEASED; urgency=low
 
   * New upstream release.
+  * Bump build-dep on libdrm-dev to 2.4.5.
 
  -- Julien Cristau <jcristau@debian.org>  Wed, 08 Apr 2009 21:27:41 +0100
 
