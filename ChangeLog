@@ -1,3 +1,449 @@
+commit f04552cdbcb110c876816dfda577803e6c92fb6a
+Author: Eric Anholt <eric@anholt.net>
+Date:   Mon Mar 2 11:18:27 2009 -0800
+
+    Bump version to 2.6.3.
+
+commit c0d91bd3ffea329058b63e648d2eae05edd9ad8a
+Author: Eric Anholt <eric@anholt.net>
+Date:   Mon Mar 2 11:17:27 2009 -0800
+
+    Only allocate pixmaps aligned for tiling when requested by DRI2 GetBuffers.
+    
+    This saves massive quantities of memory on pre-965 since the DRI2 tiling
+    enable caused the minimum size of any pixmap to be 1MB.
+    (cherry picked from commit 5bfd73cd31ba197a62f549cdbad1a1270b571027)
+
+commit 5441be42649e4f969ac16c323de2fb5ed93b271a
+Author: Eric Anholt <eric@anholt.net>
+Date:   Tue Feb 24 20:54:05 2009 -0800
+
+    Disable fb resizing for DRI1-only server so that DRI1 can initialize.
+    (cherry picked from commit 70e0261208654c6c875ad462da2734c6aa9eeb96)
+
+commit 93ae6c7f8cadb60d479e626ddd2a67d7cb2cc4c0
+Author: Eric Anholt <eric@anholt.net>
+Date:   Tue Feb 24 13:59:17 2009 -0800
+
+    Bump version to 2.6.2 for release.
+
+commit 626a54870fd3c5038c7bdae5d9085fe98f73885b
+Author: Eric Anholt <eric@anholt.net>
+Date:   Tue Feb 24 14:05:15 2009 -0800
+
+    Fix distcheck from drmmode_display.h deletion.
+    (cherry picked from commit 9d8e5c21a1688b915bf39261d4c3b0bf2906daef)
+
+commit aa6997ecd5383ee94c8ac9cfca4a1b58820e098c
+Author: Kristian Høgsberg <krh@redhat.com>
+Date:   Tue Feb 24 13:58:20 2009 -0500
+
+    Update kms to work with drmModeModeInfo API update.
+    (cherry picked from commit a6b31f38ebf470c61de0e10b0ce2af0d7ee1684b)
+
+commit 97b3ab47c6eec98baf7566e7290c6030934ad956
+Author: Eric Anholt <eric@anholt.net>
+Date:   Sat Feb 21 20:36:58 2009 -0800
+
+    Don't do AdjustFrame in KMS mode.
+    
+    This was hit by xv86vm's SwitchMode path, and for that the CRTC offsets
+    get set at mode setting time anyway.
+    (cherry picked from commit 53108994616d9751ac3a29fd61eb269cfaeab967)
+
+commit f3f21a0e45060aa7b333e026938325af133b014c
+Author: Kristian Høgsberg <krh@redhat.com>
+Date:   Mon Feb 23 15:16:51 2009 -0500
+
+    KMS: Fix bug that prevented EDID data from getting propagated.
+    (cherry picked from commit 73bc7f113969834d00cd92be8374dbadc62f96a9)
+
+commit 3baf4cf7deedf2e0df13bf07cd0f329cfc7911f5
+Author: Helge Bahmann <helge.bahmann@secunet.com>
+Date:   Sat Feb 21 10:10:04 2009 -0800
+
+    Move disable_render_standby to EnterVT instead of startup.
+    
+    Otherwise, with a pre-2.6.28 older kernel the disable would be lost at
+    resume time and cause hangs.
+    
+    Bug #20214
+    (cherry picked from commit 81c652e9a666a7459bcc5217c8a5ec518b6e00da)
+
+commit 6314b9178a252292a79e21a64d47d740e23df28d
+Author: Eric Anholt <eric@anholt.net>
+Date:   Wed Feb 18 13:32:44 2009 -0800
+
+    uxa: Ask for BOs ready for rendering for pixmaps.
+    
+    The assumption is that we're almost always accelerating our drawing to
+    new pixmaps (fill, copy, etc.).
+    (cherry picked from commit 0621ba12a3b694720e67a49b25ca52f0e09b3802)
+
+commit 36f3136933653ea80e72fcd3ce3c6c8fe2bf150a
+Author: Kristian Høgsberg <krh@redhat.com>
+Date:   Fri Feb 20 15:34:29 2009 -0500
+
+    KMS: Hook up rotated shadow buffers.
+    (cherry picked from commit 5018d0f16cb8b44c743b5b37d194fe806d955568)
+
+commit 49093943d09a149e09639000da1ab18e2596c7c8
+Author: Kristian Høgsberg <krh@redhat.com>
+Date:   Fri Feb 20 11:08:51 2009 -0500
+
+    Access the Xv buffer through the GTT for the non-KMS case.
+    (cherry picked from commit beca598bc2848093b710bd47828d622205d273df)
+
+commit 3937756ae4cae78b6c6c72714ac8898f155844f6
+Author: Kristian Høgsberg <krh@redhat.com>
+Date:   Thu Feb 19 16:41:49 2009 -0500
+
+    Fix i915 textured video to work with the i830_memory -> bo change.
+    
+    Forgot to update i915_video.c in 872aadc7102bd5131e1582ede081e22672911ba2.
+    (cherry picked from commit e97e2571703e3d6188bf18f211b793fc50383f9c)
+
+commit 2587a3e1d07acde3199592a81198716f4eb4221d
+Author: Kristian Høgsberg <krh@redhat.com>
+Date:   Thu Feb 19 16:40:19 2009 -0500
+
+    Dont allocate overlay registers in KMS mode.
+    (cherry picked from commit 96da26b6813a8c1da8a43036c375aa0d2bb70f16)
+
+commit be56ce2c4cdeabaf655c53ca177ec35b8536bd9b
+Author: Kristian Høgsberg <krh@redhat.com>
+Date:   Wed Feb 18 17:26:06 2009 -0500
+
+    Make Xv used a buffer object instead of i830_memory.
+    
+    We still pin the buffer object in case of overlay, but for textured video
+    we're now no longer using i830_memory for Xv anymore.
+    (cherry picked from commit 872aadc7102bd5131e1582ede081e22672911ba2)
+
+commit 173270d49f218b7bcae7f887dd9e2d23343c6070
+Author: Kristian Høgsberg <krh@redhat.com>
+Date:   Tue Feb 17 13:48:04 2009 -0500
+
+    KMS: Hook up crtc::gamma_set.
+    (cherry picked from commit 723b6065093adb56a2d7204bd990ceae41bfafc9)
+
+commit cdcca959ecc605fa3f98ccbf91535dbf71dd0b8f
+Author: Ma Ling <ling.ma@intel.com>
+Date:   Fri Feb 6 09:14:15 2009 +0800
+
+    Don't disable vga centering bit.
+    
+    commit id b9f5915ce812144ffd9d2aa42e8ba856129c35e,
+    which resolved bug #17235, but generate new regression-bug #19715.
+    This patch intends to resolve bug #17235, and avoid regression as well.
+    We have successfully re-tested it for bug #17235 and #19715 respectively.
+    (cherry picked from commit 3aa8591abfbe8db0f13912910c850fdd748808df)
+
+commit 5a86b78dd09a081920564d343f27a7ef9157ffed
+Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
+Date:   Wed Feb 4 06:00:39 2009 +0800
+
+    TV quirk for HP Compaq nx6310
+    (cherry picked from commit 9fe5fca3fe761a4f11857d9766138a60f471a9e6)
+
+commit 79b00702e1f716a73e5998bbc2244871d311176d
+Author: Kristian Høgsberg <krh@redhat.com>
+Date:   Mon Feb 2 12:02:00 2009 -0500
+
+    Fix front buffer memset() for non-KMS case.
+    
+    Missed the pI830->FbBase condition when removing the KMS hook.
+    (cherry picked from commit 5c370091620b38447172ebeffbc6ed3256e86c9d)
+
+commit 133dd16356c0a6d63a62b8cf3cbb2c2ba41ee2d9
+Author: Kristian Høgsberg <krh@redhat.com>
+Date:   Mon Feb 2 11:51:47 2009 -0500
+
+    Un-revert the I915_SETPARAM_NUM_USED_FENCES commit reverted by accident.
+    
+    Oops, my bad.  Reverted 8d4bc36fae50b09a73ba2cfab920adb32141a358
+    since my kernel doesn't yet have the new param, committed
+    the revert by accident.
+    (cherry picked from commit 2013799b20599a58de48cb21a5a389e898a58af1)
+
+commit d349f368ab2e6943610224df9d003579e7e03919
+Author: Kristian Høgsberg <krh@redhat.com>
+Date:   Mon Feb 2 11:02:59 2009 -0500
+
+    Fix last-minute "cleanup" that broke the patch.
+    (cherry picked from commit 127330bfd53ac7571bdd12a551142528b972893f)
+
+commit 009085d314a1c2999e1408c9627e74201591fe68
+Author: Kristian Høgsberg <krh@redhat.com>
+Date:   Fri Jan 30 17:53:03 2009 -0500
+
+    Implement front buffer resize for KMS.
+    
+    This adds back the resize hook so we can resize the front buffer under
+    kernel mode setting as well.
+    
+    The patch also pulls the drmmode_* structs from drmmode_display.h into
+    drmmode_display.c and eliminates the header file.
+    
+    (cherry picked from commit 0cb87ccfe97b0e016e47dcf236fd5ce78dddfc4b)
+
+commit 7949b712bd996c71dd8c1c2627fe8b3e011a9a9f
+Author: Eric Anholt <eric@anholt.net>
+Date:   Tue Jan 27 15:43:58 2009 -0800
+
+    dri2: Use modesetting's master fd instead of opening our own non-master.
+    
+    This fixes failure to auth DRI2 clients under KMS.
+    (cherry picked from commit 66bc44e8f9a0505c0b11b8042243ca74079da85f)
+
+commit ae9bbf4c3b9147ea6bce17df6f2482e27d03e407
+Author: Jesse Barnes <jbarnes@virtuousgeek.org>
+Date:   Mon Jan 26 17:14:06 2009 -0800
+
+    Support tiled back/depth on 915-class hardware with DRI2.
+    
+    Set alignments, tile settings and flags correctly in the 2D driver to support
+    tiled rendering.  UXA's create pixmap function currently assumes the worst
+    about the alignment constraints; that should probably be fixed.  Some of the
+    1M alignment fixes could probably be done more cleanly as well.
+    (cherry picked from commit 8d4bc36fae50b09a73ba2cfab920adb32141a358)
+
+commit 5e810863b464a1f9570fd4f931773b4a0cc28054
+Author: Eric Anholt <eric@anholt.net>
+Date:   Wed Jan 21 15:52:02 2009 -0800
+
+    Don't forget the new state bos in check_aperture.
+    
+    They're tiny so it shouldn't have been a problem, but play it safe.  This is
+    another <5% loss on top of the previously reported value, bringing the whole
+    series to about 8%.
+    (cherry picked from commit 6c0ca1676bf60529dd331cc739abdf68fa9e918d)
+
+commit 84f48228237037737b615946699071d5b88ccb4c
+Author: Jesse Barnes <jbarnes@virtuousgeek.org>
+Date:   Mon Jan 26 14:58:28 2009 -0800
+
+    Fixup bogus VBT modes when detected
+    
+    Several VBT modes out in the wild have H or VSyncEnd values greater than
+    the H or VTotal value.  This clearly ends up creating a bad mode,
+    causing some panels to either ignore the timing or display some sort of
+    corrupt image.
+    
+    Check for these cases and fix them up by default, making things work for
+    several Dell and Sony machines.
+    
+    Fixes FDO bug #17292.
+    (cherry picked from commit 57a02b50c60c10a25ff0f3cd93af9f37fa0d1b11)
+
+commit 8cb4d68089109f6cef0ce94429ba6f944910c646
+Author: Bill Nottingham <notting@redhat.com>
+Date:   Sat Jan 24 08:36:20 2009 +0800
+
+    Quirk MSI IM-945GSE-A LVDS, TV outputs.
+    
+    The IM-945GSE-A claims to have a TV output, and always claims a connected
+    LVDS output. It has neither.
+    (cherry picked from commit e20e1cf76fb00ba4f933a1ed6d1a4896be346c91)
+
+commit e66b78d60df6b31a070aa12426e6c03373a797da
+Author: Vincent Mussard <vmussard@free.fr>
+Date:   Sat Jan 24 08:33:16 2009 +0800
+
+    quirk for AOpen MP45
+    (cherry picked from commit 05ff561234cc2b93fe1ea2a35041fa2e119a7e38)
+
+commit fe1eb04e31993034adcf48ad9e59b6430532b8e0
+Author: Eric Anholt <eric@anholt.net>
+Date:   Fri Dec 5 17:27:13 2008 -0800
+
+    Move i965 render sampler state to BOs.
+    
+    This eliminates the pinned memory allocation for 965 render state.
+    (cherry picked from commit fbf003ef2767a1a9f5e4064f04a17992030d8f5c)
+
+commit 05d349cbfbc1f47e31512386c8d9455f96600bf2
+Author: Eric Anholt <eric@anholt.net>
+Date:   Tue Jan 20 14:43:08 2009 -0800
+
+    Move i965 render kernels to BOs.
+    (cherry picked from commit befd4ad8beae39377f804e06c7cbd926ec4251db)
+
+commit a94ea095ecc18261731897bdbd0c35b7187f2c36
+Author: Eric Anholt <eric@anholt.net>
+Date:   Fri Dec 5 15:30:35 2008 -0800
+
+    Move 965 render unit state to BOs.
+    
+    This is a first step in a series of changes to avoid requiring a pinned object,
+    which gets in the way of doing non-root KMS.  This change appears to result in
+    about a 2-6% loss in x11perf -aa10text, which better algorithms in libdrm could
+    make up for (it hasn't really had to deal with code this bad before).
+    (cherry picked from commit 5d705de5d11297f4d6bd5237fb67619e703745bc)
+
+commit f6b054cf71dbd7755bf49bb0a5800557aad2904c
+Author: Eric Anholt <eric@anholt.net>
+Date:   Tue Jan 20 17:13:52 2009 -0800
+
+    Remove 965 render wm scratch space, which was just unused.
+    (cherry picked from commit 64b08ed5ad46ccd76964972e39bfed8721a920aa)
+
+commit efce94e75177b15fcd1c3e1fca973126e5911904
+Author: Eric Anholt <eric@anholt.net>
+Date:   Wed Jan 21 12:52:36 2009 -0800
+
+    Fix build with server 1.4.
+    
+    Debian "unstable" is still stuck with this ancient version.
+    (cherry picked from commit f126aabdf8952177bb15f392041da7a7094eb31b)
+
+commit 8ff94b4cf760ab4c124d55640d2818e94c374ea4
+Author: Eric Anholt <eric@anholt.net>
+Date:   Tue Jan 20 10:45:23 2009 -0800
+
+    Use drm_intel_bo_subdata to put render vb data in.
+    
+    This improves performance by avoiding repeated map/unmap cycles, which are
+    a bit expensive on my machine with lock debugging on in the kernel.  It could
+    do much better if we did more than 18 or so floats at a time.
+    (cherry picked from commit b6f3ce32e295929f461a7bc37e61f126fb51e4aa)
+
+commit ee2f802d7f5beb0b0af242412dda17b4093a3547
+Author: Eric Anholt <eric@anholt.net>
+Date:   Mon Jan 19 19:34:50 2009 -0800
+
+    Move i965 render vb setup to use time, and decouple state emit from it.
+    
+    The require_space had failed since it only checked for the space required
+    by the batch emits in the function itself, but not in the
+    i965_emit_composite_state() that it called (the state we were concerned about
+    having set up for that 12 * 4 dwords to follow!).  This is replaced by
+    intel_batch_start_atomic(), which will catch such mistakes in the future.
+    (cherry picked from commit 9a8bbb1951ad0ca0a9407a97348fc7fa03127900)
+
+commit 242fcd5fac9c18f248143a6528aadf0bacc30680
+Author: Eric Anholt <eric@anholt.net>
+Date:   Tue Jan 20 10:37:20 2009 -0800
+
+    Move i965 render transform setup from emit_composite_state to prepare_composite.
+    (cherry picked from commit 3d739597c4f5817079efd9067ad5db2f4105f765)
+
+commit b239e511277b011cd7c18f542e9b81026d958504
+Author: Eric Anholt <eric@anholt.net>
+Date:   Mon Jan 19 20:31:31 2009 -0800
+
+    i965: Pull check_aperture out to a separate function and make it dtrt.
+    
+    Previously it wouldn't count the pixmaps that were about to be used, which
+    is pretty much the only purpose of having the pain around.  This also
+    eliminates the check_twice confusion with emit_batch_header_for_composite().
+    (cherry picked from commit e20f7278f3abb44a3a151ac91f83c45cf1a2745a)
+
+commit 11a420003252c4158b16aece08bc33170f938183
+Author: Eric Anholt <eric@anholt.net>
+Date:   Mon Jan 19 20:24:20 2009 -0800
+
+    Move filter computation from emit_batch_header to prepare_composite.
+    (cherry picked from commit 013e2adfbf955cb21450b610091542ebd54392c2)
+
+commit b6c6310da1f6bb7b4011246759c559f18956acab
+Author: Eric Anholt <eric@anholt.net>
+Date:   Mon Jan 19 19:11:41 2009 -0800
+
+    Use intel_emit_reloc from video to prettify 965 render bind_bo setup.
+    (cherry picked from commit a340fe5e4227ebea5493e658eb6289624b07ab0b)
+
+commit fc378b15ff1bb7c8d761a6166a6c4c080ded9a63
+Author: Eric Anholt <eric@anholt.net>
+Date:   Mon Jan 19 18:57:01 2009 -0800
+
+    Move i965 render state bo setup back to prepare_composite.
+    
+    We want the objects to be created once per prepare/done both for efficiency and
+    so we can handle aperture checking better.
+    (cherry picked from commit aefe198ca427a5ad69717f49948eb3ede713bb28)
+
+commit 8ef4eb50193a849cb9fd0d7a85c6814e1d473101
+Author: Eric Anholt <eric@anholt.net>
+Date:   Mon Jan 19 14:43:20 2009 -0800
+
+    Do check_aperture_space and batch_start_atomic for i965 video.
+    
+    This increases the overhead for video in the presence of cliprects, but we
+    were already doing nasty things in that case and don't seem to care.  This
+    could fix potential bad rendering or hangs with video, particularly with
+    DRI2.
+    (cherry picked from commit 946c7ef8170e74ac178c83b1465242d57fa86f2e)
+
+commit c78dd68aec54e0247a9c15b8d3db222b1f9003f6
+Author: Eric Anholt <eric@anholt.net>
+Date:   Mon Jan 19 14:29:25 2009 -0800
+
+    Move 965 video setup to a separate function so we can move it around.
+    (cherry picked from commit 7be668179a12918918cad863f6936ced4ab78dbf)
+
+commit fd89de6504279fbd2a0c7ef140a6a8ec7767f4ec
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue Jan 13 20:01:49 2009 -0800
+
+    Assign rotation memory dri_bo to rotation pixmap.
+    
+    As the rotation memory and rotation pixmap are allocated separately (to make
+    rotation at startup work), the allocate dri_bo needs to be set in the pixmap
+    for acceleration to work. This restores the performance in rotated modes.
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit a4b023c17b9c3bd65fb9466ddb8a953f60244402)
+
+commit 3f2dc8381276d97a0b69d51cf3bbbeebf1301fa5
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon Dec 15 15:35:35 2008 -0800
+
+    Resize framebuffer on screen size change (requires UXA and DRI2)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 8237faf8f3ca73ecdf0ef009a7d361b318726f6f)
+
+commit f1ed73c1ef3e3daa9f695194dcc813167cbcb53d
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon Dec 15 15:19:00 2008 -0800
+
+    Make i830_allocate_memory take tiling parameters.
+    
+    This eliminates the separate i830_allocate_memory_tiled function which means
+    that all memory objects will have tiling parameters set correctly.
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 21bd4e8974e4c0e83f5f95adb0fc17290444caf5)
+
+commit 73eb24cb30d478b367ff9be855be29e3e4f74000
+Author: Eric Anholt <eric@anholt.net>
+Date:   Mon Dec 29 13:57:24 2008 -0800
+
+    warning fix.
+    (cherry picked from commit d96f774d1bb39640486c72338fe8b19ee1ceaa23)
+
+commit 12b581bb9e6dd77092cd7561b595fe37c948d894
+Author: Eric Anholt <eric@anholt.net>
+Date:   Mon Dec 29 12:44:26 2008 -0800
+
+    Fix compile failure after 45f45c73469f1bd46a1b6fb206f2e9e5e4fd66b3
+    (cherry picked from commit 750d8e105831718d4a44a145fdb87571fa9f9d8e)
+
+commit 704177b5dd0ab7a5f5bef937eac53d725bc509b5
+Author: Eric Anholt <eric@anholt.net>
+Date:   Mon Dec 29 11:26:11 2008 -0800
+
+    Remove logical context setup.
+    
+    This should be a noop.  If it wasn't a noop, it means that on pre-g33 chipsets
+    we were spamming some data into a page of system memory because we used a
+    virtual instead of a physical address.  It was also supposed to not work when
+    we submit it from a batchbuffer, as we have been doing for some time now.
+    This code has existed since about the beginning of the driver's existence,
+    with no justification.
+    (cherry picked from commit 45f45c73469f1bd46a1b6fb206f2e9e5e4fd66b3)
+
 commit 08683d1d053875bcacd7c358d66ef2bfad458a56
 Author: Eric Anholt <eric@anholt.net>
 Date:   Wed Jan 21 14:10:04 2009 -0800
@@ -783,7 +1229,7 @@ Date:   Tue Dec 2 13:01:56 2008 -0800
     Remove DRI_MM defines which are always true now.
 
 commit f7540df184a75a749cabcfa2da8974d3d0714ea6
-Merge: 5f34702... ee87f7b...
+Merge: 5f34702 ee87f7b
 Author: Keith Packard <keithp@keithp.com>
 Date:   Mon Dec 1 19:06:09 2008 -0800
 
@@ -798,7 +1244,7 @@ Date:   Sat Nov 29 02:35:59 2008 -0200
       This is a side effect of adding the visibility flags to XORG_CFLAGS.
 
 commit ec7fd3d1b477928f9bffde1a72d7f3fdea89e629
-Merge: d978cd4... baec75a...
+Merge: d978cd4 baec75a
 Author: Zou Nan hai <nanhai.zou@intel.com>
 Date:   Thu Nov 27 10:48:09 2008 +0800
 
@@ -823,7 +1269,7 @@ Date:   Thu Nov 20 00:47:25 2008 -0800
     Signed-off-by: Eric Anholt <eric@anholt.net>
 
 commit ee87f7becc2138348ec0d948829db6e86cee86da
-Merge: 3dd7f0f... a5b1e62...
+Merge: 3dd7f0f a5b1e62
 Author: Kristian Høgsberg <krh@redhat.com>
 Date:   Wed Nov 12 16:40:37 2008 -0500
 
@@ -1322,7 +1768,7 @@ Date:   Tue Oct 14 23:57:10 2008 -0400
     Implement DRI2CopyRegion and provide drm device filename to DRI2 module.
 
 commit 282f51c3f0e5bc2cedd2f60f458ca2662290d471
-Merge: 8a54e3b... 4dd0068...
+Merge: 8a54e3b 4dd0068
 Author: Kristian Høgsberg <krh@redhat.com>
 Date:   Tue Oct 14 23:13:40 2008 -0400
 
@@ -1468,7 +1914,7 @@ Date:   Wed Oct 1 16:13:09 2008 -0700
     Add support for RepeatPad and RepeatReflect to 915 and 830-class Render accel.
 
 commit 5e04b5ad1b618655e201cbf1f5b2585aa6be0c17
-Merge: 979bb10... 260cbcf...
+Merge: 979bb10 260cbcf
 Author: Jesse Barnes <jbarnes@virtuousgeek.org>
 Date:   Mon Oct 6 16:08:12 2008 -0700
 
@@ -1615,7 +2061,7 @@ Date:   Wed Oct 1 15:26:39 2008 -0700
     need to switch on the correct value.
 
 commit ffcbbb071f1cde90fe0dc4887a05dd66c0e66985
-Merge: 1eb46d0... bf8a3ff...
+Merge: 1eb46d0 bf8a3ff
 Author: Jesse Barnes <jbarnes@virtuousgeek.org>
 Date:   Tue Sep 30 16:59:35 2008 -0700
 
@@ -1631,7 +2077,7 @@ Date:   Tue Sep 30 16:59:02 2008 -0700
     isn't ready for a warning free build.
 
 commit 1eb46d055b147941fa529ac582c336a114f47892
-Merge: 8408995... 497b742...
+Merge: 8408995 497b742
 Author: Jesse Barnes <jbarnes@virtuousgeek.org>
 Date:   Tue Sep 30 12:54:27 2008 -0700
 
@@ -1759,7 +2205,7 @@ Date:   Tue Sep 23 14:57:18 2008 +0800
       [965-xvmc] optimize, pack some payload
 
 commit 8408995ffbf705aa0bc09ab72c58c2e31a4b70c3
-Merge: d18b86a... afa630b...
+Merge: d18b86a afa630b
 Author: Jesse Barnes <jbarnes@virtuousgeek.org>
 Date:   Mon Sep 22 18:38:54 2008 -0700
 
@@ -1783,7 +2229,7 @@ Date:   Mon Sep 22 18:38:03 2008 -0700
     been attributed to Bryce.
 
 commit d18b86aa7fc9270e24ed9ea861ebbbbb54558fee
-Merge: 9a7da65... 6a46022...
+Merge: 9a7da65 6a46022
 Author: Jesse Barnes <jbarnes@virtuousgeek.org>
 Date:   Mon Sep 22 18:03:39 2008 -0700
 
@@ -1808,7 +2254,7 @@ Date:   Mon Sep 22 13:11:55 2008 -0700
     even though it isn't.  Intended to fix bz #11368.
 
 commit 9a7da65e624060a37eef989963a9c79f13df30d3
-Merge: 043b6e7... 2f93cfb...
+Merge: 043b6e7 2f93cfb
 Author: Jesse Barnes <jbarnes@virtuousgeek.org>
 Date:   Mon Sep 22 09:59:52 2008 -0700
 
@@ -1898,7 +2344,7 @@ Date:   Fri Sep 12 14:22:48 2008 -0700
     We'll probably end up doing this differently, but avoid this path for now.
 
 commit 95b3e3a65a60aa264fbbfd141df980b534005264
-Merge: 94a86fa... ec17c88...
+Merge: 94a86fa ec17c88
 Author: Jesse Barnes <jbarnes@virtuousgeek.org>
 Date:   Fri Sep 12 13:42:06 2008 -0700
 
@@ -1942,7 +2388,7 @@ Date:   Thu Sep 11 15:35:27 2008 +0800
     mobile chips, so always disable it.
 
 commit 7e8eb6e20b6b1a2a3c1ef28f694fa23c68a15c48
-Merge: fba9b5a... 58a3817...
+Merge: fba9b5a 58a3817
 Author: Eric Anholt <eric@anholt.net>
 Date:   Wed Sep 10 14:10:26 2008 -0700
 
@@ -2054,7 +2500,7 @@ Date:   Fri Aug 8 15:36:35 2008 -0400
     Add DRI2 support.
 
 commit a1c802e4a0324386cf7370594a46354c89e3b646
-Merge: 3733a1b... 808b72f...
+Merge: 3733a1b 808b72f
 Author: Jesse Barnes <jbarnes@virtuousgeek.org>
 Date:   Fri Aug 29 09:23:35 2008 -0700
 
@@ -2191,7 +2637,7 @@ Date:   Thu Aug 21 09:39:33 2008 -0700
     Fix compiler warnings in VBIOS utils
 
 commit 08326827fdb8abecbff20c7b051537dbad433c40
-Merge: 5af5041... 0de8ca3...
+Merge: 5af5041 0de8ca3
 Author: Jesse Barnes <jbarnes@virtuousgeek.org>
 Date:   Thu Aug 21 09:30:38 2008 -0700
 
@@ -2225,7 +2671,7 @@ Date:   Wed Aug 20 14:39:34 2008 -0700
     Add more panel debugging info to register dump & vbios reader
 
 commit 0de8ca36306c506356e82d500134b4eeb96a6080
-Merge: f26bcb9... 5eccb5e...
+Merge: f26bcb9 5eccb5e
 Author: Jesse Barnes <jbarnes@virtuousgeek.org>
 Date:   Wed Aug 20 12:11:00 2008 -0700
 
@@ -2248,7 +2694,7 @@ Date:   Tue Aug 19 16:02:55 2008 -0700
     Add swf_dumper to .gitignore
 
 commit f26bcb9cb879e2e9ee2b26c95438cf46286c0208
-Merge: 67ab546... 7a1cc48...
+Merge: 67ab546 7a1cc48
 Author: Jesse Barnes <jbarnes@virtuousgeek.org>
 Date:   Tue Aug 19 15:53:18 2008 -0700
 
@@ -2531,7 +2977,7 @@ Date:   Thu Aug 7 11:02:19 2008 -0700
     in case they aren't on your platform.
 
 commit f9504eff31eb3c9c6c6b33dced9875866ff8307e
-Merge: f911347... 5c9a62a...
+Merge: f911347 5c9a62a
 Author: Jesse Barnes <jbarnes@virtuousgeek.org>
 Date:   Wed Aug 6 12:40:47 2008 -0700
 
@@ -2654,14 +3100,14 @@ Date:   Tue Aug 5 13:37:38 2008 -0700
     us to reorder & simplify our LFP mode detection code.
 
 commit c2f0df4dc97c87539b66525a277c7d1e2c421f61
-Merge: 4f1f308... 750bd0b...
+Merge: 4f1f308 750bd0b
 Author: Jesse Barnes <jbarnes@jbarnes-t61.(none)>
 Date:   Tue Aug 5 13:03:46 2008 -0700
 
     Merge branch 'drm-gem' of ssh://git.freedesktop.org/git/xorg/driver/xf86-video-intel into drm-gem
 
 commit 4f1f30854260e18b8b9c4103eebbad5dcf729ce6
-Merge: e9e6b47... 2aaa207...
+Merge: e9e6b47 2aaa207
 Author: Jesse Barnes <jbarnes@jbarnes-t61.(none)>
 Date:   Tue Aug 5 13:02:47 2008 -0700
 
@@ -2694,7 +3140,7 @@ Date:   Thu Jul 31 19:21:36 2008 -0700
     Add example dual head config, add info on bug reporting.
 
 commit 2aaa207db2cea03ba05c439b5074807689f2c5be
-Merge: 2049ba2... 76eb8e6...
+Merge: 2049ba2 76eb8e6
 Author: Jesse Barnes <jbarnes@hobbes.lan>
 Date:   Thu Jul 31 13:10:19 2008 -0700
 
@@ -2894,7 +3340,7 @@ Date:   Fri Jul 18 14:31:45 2008 -0700
     Add intel_statuspage to .gitignore
 
 commit c0dce28892d7a31ebcca615f87ba8d4fa6872204
-Merge: a6ad504... b8ca1c7...
+Merge: a6ad504 b8ca1c7
 Author: Keith Packard <keithp@keithp.com>
 Date:   Fri Jul 18 10:49:50 2008 -0700
 
@@ -2925,7 +3371,7 @@ Date:   Thu Jul 17 12:30:57 2008 -0700
     Fixes FDO bug #15168.
 
 commit a6ad50402cb879b08de95f94959bb1f59701c1ff
-Merge: e9916b9... c4565a9...
+Merge: e9916b9 c4565a9
 Author: Carl Worth <cworth@cworth.org>
 Date:   Thu Jul 17 00:38:54 2008 -0700
 
@@ -3456,7 +3902,7 @@ Date:   Wed Jun 4 16:31:16 2008 -0700
     the ring from userland.
 
 commit d0fda9d24c5fe4870cdbd2ba0213091165666a8e
-Merge: cc98d41... 79f94ee...
+Merge: cc98d41 79f94ee
 Author: Eric Anholt <eric@anholt.net>
 Date:   Tue Jun 10 11:32:49 2008 -0700
 
@@ -3512,7 +3958,7 @@ Date:   Fri Jun 6 10:03:23 2008 +0800
     Fix compile error in LeaveVT
 
 commit 432d07fb175b385715eb3ccf97a303d2ad7bfe11
-Merge: 3a967b8... bff180e...
+Merge: 3a967b8 bff180e
 Author: Eric Anholt <eric@anholt.net>
 Date:   Thu Jun 5 14:57:18 2008 -0700
 
@@ -3717,7 +4163,7 @@ Date:   Tue May 20 08:54:01 2008 +0800
     on G35.
 
 commit c81050c0058e32098259b5078515807038beb7d6
-Merge: 9c9a5d0... e9532f3...
+Merge: 9c9a5d0 e9532f3
 Author: Keith Packard <keithp@keithp.com>
 Date:   Sat May 17 23:26:14 2008 -0700
 
@@ -3917,7 +4363,7 @@ Date:   Mon May 5 13:35:22 2008 -0700
     Fix up ring dumping code for non-i965
 
 commit 65877d32bb2cd71ccc8d6a66244f029fc3577f69
-Merge: b9d12da... fff17b9...
+Merge: b9d12da fff17b9
 Author: Keith Packard <keithp@keithp.com>
 Date:   Mon May 5 12:05:00 2008 -0700
 
@@ -4423,7 +4869,7 @@ Date:   Mon Apr 7 17:26:49 2008 +0800
     (cherry picked from commit 24248097988775d62f6c416f2988e74d31c91cd0)
 
 commit dcbdc901d64d2fab489292ef1c9ca1490bdd1e94
-Merge: 0147c1c... 13563bd...
+Merge: 0147c1c 13563bd
 Author: Keith Packard <keithp@keithp.com>
 Date:   Fri Apr 4 19:19:35 2008 -0700
 
@@ -4648,7 +5094,7 @@ Date:   Fri Mar 28 11:29:40 2008 +0800
     It's gone, really.
 
 commit 588371ba15afffa9343629f0ea7ce530586eef0b
-Merge: 52d6ced... c13efdd...
+Merge: 52d6ced c13efdd
 Author: Jesse Barnes <jbarnes@hobbes.virtuousgeek.org>
 Date:   Wed Mar 26 14:53:15 2008 -0700
 
@@ -4760,7 +5206,7 @@ Date:   Fri Mar 21 11:41:49 2008 +0800
     Reported by Joerg. This does a little more clearn up.
 
 commit 224c36cc14a7552bc5df793ad582f0ea5349eb1e
-Merge: 4b9b7b0... 03ccffd...
+Merge: 4b9b7b0 03ccffd
 Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
 Date:   Thu Mar 20 10:31:57 2008 +0800
 
@@ -4816,7 +5262,7 @@ Date:   Tue Mar 18 12:02:25 2008 +0100
     Thanks to Bruno <bonbons67@internet.lu>.
 
 commit 03ccffd5b9b8108166ea143884a1a0a6417f3236
-Merge: ac76363... d72e18c...
+Merge: ac76363 d72e18c
 Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
 Date:   Tue Mar 18 16:54:15 2008 +0800
 
@@ -4846,7 +5292,7 @@ Date:   Mon Mar 17 10:05:57 2008 +0800
     bug 15060: Dell Latitude X300 needs pipe A quirk
 
 commit ffb5a115cc62ed63110f77815b7f04976f720065
-Merge: 05cf070... 24e6eb2...
+Merge: 05cf070 24e6eb2
 Author: Jesse Barnes <jbarnes@nietzche.virtuousgeek.org>
 Date:   Mon Mar 17 15:19:05 2008 -0700
 
@@ -4904,7 +5350,7 @@ Date:   Mon Mar 10 17:27:45 2008 -0700
     formats everywhere.
 
 commit f425181695b1b3864373e1919cf651229f19fa69
-Merge: f4cfc98... 1c0e495...
+Merge: f4cfc98 1c0e495
 Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
 Date:   Thu Mar 13 23:58:56 2008 +0800
 
@@ -5072,7 +5518,7 @@ Date:   Tue Mar 11 13:48:07 2008 -0400
     we always check the return value before using dst_format.
 
 commit 31654f52b084ebb32f69854dfb1c342c9da07928
-Merge: a03aca1... 02c0ffb...
+Merge: a03aca1 02c0ffb
 Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
 Date:   Tue Mar 11 14:37:41 2008 +0800
 
@@ -5799,7 +6245,7 @@ Date:   Thu Dec 20 12:51:06 2007 +0800
     structs.
 
 commit 73827e78357ab3f30a21f159ecdfb26dd0ea889b
-Merge: 3cf8627... f69b48f...
+Merge: 3cf8627 f69b48f
 Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
 Date:   Wed Dec 19 22:47:02 2007 +0800
 
@@ -5938,7 +6384,7 @@ Date:   Wed Nov 28 22:13:55 2007 +0800
     Replace ALLOCATE_LOCAL/DEALLOCATE_LOCAL with xalloc/xfree
 
 commit df47b7ba57f3e7dc8bac1898679186d9d48639ac
-Merge: df718a7... 7f9ceff...
+Merge: df718a7 7f9ceff
 Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
 Date:   Tue Nov 27 01:13:43 2007 +0800
 
@@ -6064,14 +6510,14 @@ Date:   Thu Nov 15 11:18:38 2007 +0800
     xvmc: oops, should first map batch buffer before init
 
 commit 0464af581b0fcfc4d1c7fec8160d812262086177
-Merge: 2256519... e56c166...
+Merge: 2256519 e56c166
 Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
 Date:   Thu Nov 15 11:05:44 2007 +0800
 
     Merge branch 'master' into xvmc
 
 commit 22565198b360826ba10e7ca05d272c419054dc08
-Merge: 619044b... e64f492...
+Merge: 619044b e64f492
 Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
 Date:   Thu Nov 15 18:53:22 2007 +0800
 
@@ -6207,7 +6653,7 @@ Date:   Wed Nov 14 00:11:20 2007 +0800
     xvmc: attempt to move batch buffer code out of i915 private
 
 commit 11c0e0dbef42f1ae77a77d534870d3e9821fb017
-Merge: c838f72... 43fbc54...
+Merge: c838f72 43fbc54
 Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
 Date:   Tue Nov 13 22:44:06 2007 +0800
 
@@ -6270,14 +6716,14 @@ Date:   Fri Nov 9 07:55:01 2007 -0800
     Update man page to reflect EXA by default
 
 commit c838f7297f675ea9d82678ed37715955cb0a8a78
-Merge: a9449ff... 6f53568...
+Merge: a9449ff 6f53568
 Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
 Date:   Fri Nov 9 19:37:07 2007 +0800
 
     Merge branch 'xvmc' of git+ssh://zhen@people.freedesktop.org/~zhen/xf86-video-intel into xvmc
 
 commit a9449fff4be8e6b3cc82914376420e3a66b960f5
-Merge: a470f6b... 177924e...
+Merge: a470f6b 177924e
 Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
 Date:   Fri Nov 9 19:36:25 2007 +0800
 
@@ -6441,7 +6887,7 @@ Date:   Mon Oct 22 17:09:15 2007 +0800
     revert xvmc memory allocation hacks
 
 commit 167c56bcf82f0a6d72151b202e6d56f6e0d627f6
-Merge: fc9368c... 78e251d...
+Merge: fc9368c 78e251d
 Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
 Date:   Tue Oct 23 00:12:22 2007 +0800
 
@@ -6520,7 +6966,7 @@ Date:   Mon Oct 15 11:31:51 2007 -0700
     offset.
 
 commit cc892d1ba1d87d08bdd04f857efc6b8f64620018
-Merge: b52ce0b... fd97edb...
+Merge: b52ce0b fd97edb
 Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
 Date:   Mon Oct 15 22:09:14 2007 +0800
 
@@ -6678,7 +7124,7 @@ Date:   Mon Oct 8 22:56:44 2007 +0800
     use field name to initialize i915 xvmc driver
 
 commit e0fb228401b10ea4281eee48497bf1d584999705
-Merge: 84d7b2b... 9e770bf...
+Merge: 84d7b2b 9e770bf
 Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
 Date:   Mon Oct 8 22:45:11 2007 +0800
 
@@ -6899,7 +7345,7 @@ Date:   Mon Sep 24 11:12:22 2007 -0700
     There can be only one.
 
 commit 130f79613bfe6a8cfa7f431c8cce06cbb93cc91a
-Merge: b73235f... 1260316...
+Merge: b73235f 1260316
 Author: Eric Anholt <eric@anholt.net>
 Date:   Fri Sep 21 17:14:44 2007 -0700
 
@@ -6913,7 +7359,7 @@ Date:   Fri Sep 21 17:14:44 2007 -0700
     unpin our buffers as needed.
 
 commit 126031655c3c1db9881ad17d712461533eb59632
-Merge: c343835... bda3c69...
+Merge: c343835 bda3c69
 Author: Eric Anholt <eric@anholt.net>
 Date:   Thu Sep 20 08:57:58 2007 -0700
 
@@ -6941,7 +7387,7 @@ Date:   Wed Sep 19 13:29:31 2007 +0800
     This adds VFE state and interface descriptor struct define.
 
 commit 36b81ba20d20e7b235cb701c5135cbf3f3eedb12
-Merge: 02ad9ce... bda3c69...
+Merge: 02ad9ce bda3c69
 Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
 Date:   Wed Sep 19 11:44:41 2007 +0800
 
@@ -7193,7 +7639,7 @@ Date:   Fri Aug 17 16:46:48 2007 -0700
     to shrink the size of the pixmap cache on XAA, which is of limited utility.
 
 commit 3655a1ecb62f6c387a16fa87cf6f00bf7835dce4
-Merge: e5c336e... 2231cdc...
+Merge: e5c336e 2231cdc
 Author: Jesse Barnes <jbarnes@nietzche.virtuousgeek.org>
 Date:   Thu Aug 16 12:04:20 2007 -0700
 
@@ -7216,7 +7662,7 @@ Date:   Thu Aug 16 11:34:02 2007 -0700
     Add tiling information to BO layout description.
 
 commit 0c9e4aeea84e20a18e3b76d8cf8e802af004df57
-Merge: 79d9a30... 2231cdc...
+Merge: 79d9a30 2231cdc
 Author: Eric Anholt <eric@anholt.net>
 Date:   Thu Aug 16 11:30:16 2007 -0700
 
@@ -7336,7 +7782,7 @@ Date:   Fri Aug 10 15:43:06 2007 -0400
     is likely another tiling related problem with the composite hook.
 
 commit 02ad9cee330fb5fb0008ad6f74e74e8d8a1fc36e
-Merge: 105f8a1... 7b143e5...
+Merge: 105f8a1 7b143e5
 Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
 Date:   Fri Aug 10 16:45:56 2007 +0800
 
@@ -7404,7 +7850,7 @@ Date:   Wed Aug 8 09:06:47 2007 +0800
     We don't have extra attributes than Xv port.
 
 commit 92af2f4bbcb395cbde097776718449d99843ad67
-Merge: da82a47... e0be352...
+Merge: da82a47 e0be352
 Author: Eric Anholt <eric@anholt.net>
 Date:   Tue Aug 7 15:18:17 2007 -0700
 
@@ -7488,7 +7934,7 @@ Date:   Fri Aug 3 21:27:52 2007 -0700
     Limit Solid & Copy offsets to 4k when rendering to tiled targets
 
 commit 019dbfda294aaafb28d8bea0fe2f5dadc2ea3e0b
-Merge: 3d3c0e8... 15f71ed...
+Merge: 3d3c0e8 15f71ed
 Author: Jesse Barnes <jesse.barnes@intel.com>
 Date:   Fri Aug 3 20:45:14 2007 -0700
 
@@ -7863,7 +8309,7 @@ Date:   Fri Jul 6 16:10:52 2007 -0700
       - update man page with new options
 
 commit 8798ef11321ee6957919279076758d47ad956cf3
-Merge: 8919b22... 3c552af...
+Merge: 8919b22 3c552af
 Author: Jesse Barnes <jbarnes@nietzche.virtuousgeek.org>
 Date:   Thu Jul 5 12:21:31 2007 -0700
 
@@ -8480,7 +8926,7 @@ Date:   Fri May 18 09:53:36 2007 +0800
     EXA: remove a flush cmd in i915 render code
 
 commit 12a9fcfe1b25cee850380d8ce11ef11cde9aaacb
-Merge: b930bb9... e89d5f2...
+Merge: b930bb9 e89d5f2
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Thu May 17 15:11:29 2007 -0700
 
@@ -8699,7 +9145,7 @@ Date:   Tue Apr 24 11:37:08 2007 -0700
     to check for this case now.
 
 commit b23eae55c8cdd73e0aba1bf7ced283d402ee6470
-Merge: 31bf269... cebdb8b...
+Merge: 31bf269 cebdb8b
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Thu Apr 19 20:38:18 2007 -0700
 
@@ -8983,7 +9429,7 @@ Date:   Fri Mar 30 17:06:43 2007 -0700
     Don't forget the warnings CFLAGS in subdirectories.
 
 commit aa6a9abb34e93780c07563ab5b21d8c064ea0a1c
-Merge: 670c852... 107ac12...
+Merge: 670c852 107ac12
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Fri Mar 30 12:10:17 2007 -0700
 
@@ -9027,14 +9473,14 @@ Date:   Tue Mar 27 15:32:53 2007 +0800
     support. Fix A8 format, i830 can support it now.
 
 commit aa78e67553ffe8ca986330f0ee49b5414c71a71f
-Merge: 768821b... 2191634...
+Merge: 768821b 2191634
 Author: Eric Anholt <eric@anholt.net>
 Date:   Mon Mar 26 22:00:36 2007 -0700
 
     Merge branch 'master' of git+ssh://git.freedesktop.org/git/xorg/driver/xf86-video-intel
 
 commit 107ac12867eda6b86212159db15c640d3490f2da
-Merge: 6548817... 2191634...
+Merge: 6548817 2191634
 Author: Nian Wu <nian.wu@intel.com>
 Date:   Tue Mar 27 12:51:45 2007 +0800
 
@@ -9077,7 +9523,7 @@ Date:   Mon Mar 26 12:45:23 2007 -0700
     While here, update a few other bits as well.
 
 commit 654881794ae1ad7214e85091b9015ae0fbdc5ddc
-Merge: 6de3edc... d572771...
+Merge: 6de3edc d572771
 Author: Nian Wu <nian.wu@intel.com>
 Date:   Mon Mar 26 17:00:11 2007 +0800
 
@@ -9093,7 +9539,7 @@ Date:   Sun Mar 25 23:44:59 2007 -0700
     data.
 
 commit 6de3edcb52e6258f1af75e4f4bef73de1698445d
-Merge: d874aa3... 1e6e675...
+Merge: d874aa3 1e6e675
 Author: Nian Wu <nian.wu@intel.com>
 Date:   Sat Mar 24 17:00:13 2007 +0800
 
@@ -9127,7 +9573,7 @@ Date:   Fri Mar 23 14:34:27 2007 -0700
     wrecks crtc positions.
 
 commit d874aa31599da4777438cc51469afe9b66601f55
-Merge: 94dbc37... 26f32ef...
+Merge: 94dbc37 26f32ef
 Author: Nian Wu <nian.wu@intel.com>
 Date:   Fri Mar 23 17:00:12 2007 +0800
 
@@ -9153,7 +9599,7 @@ Date:   Fri Mar 23 01:08:08 2007 -0700
     blank area on all four sides of the image.
 
 commit 94dbc3725358d63fe0ac8e6749489c993d24ede2
-Merge: 28af380... 20b2685...
+Merge: 28af380 20b2685
 Author: Nian Wu <nian.wu@intel.com>
 Date:   Thu Mar 22 17:00:15 2007 +0800
 
@@ -9172,14 +9618,14 @@ Date:   Thu Mar 22 10:33:15 2007 +0800
     and makes vertex buffer order looks "normal".
 
 commit 28af380ab133eb14d21dc650c77bdbab66576255
-Merge: 300e893... e06c5f7...
+Merge: 300e893 e06c5f7
 Author: Nian Wu <nian.wu@intel.com>
 Date:   Wed Mar 21 17:00:04 2007 +0800
 
     Merge branch 'crestline' of git://otc-graphics.jf.intel.com/git/xorg/driver/xf86-video-intel into crestline
 
 commit e06c5f727fb2e2de111ac9e691a877c56d2ca1b4
-Merge: 0202399... 3025fa0...
+Merge: 0202399 3025fa0
 Author: Wang Zhenyu <zhenyu.z.wang@intel.com>
 Date:   Wed Mar 21 15:04:21 2007 +0800
 
@@ -9207,7 +9653,7 @@ Date:   Wed Mar 21 14:50:45 2007 +0800
     rotated case. Also fix possible hole in VUE slot.
 
 commit a50009604152bf9237c40bd098b3b1da3d018929
-Merge: 0a612e7... 2239448...
+Merge: 0a612e7 2239448
 Author: Eric Anholt <eric@anholt.net>
 Date:   Tue Mar 20 23:32:19 2007 -0700
 
@@ -9219,7 +9665,7 @@ Date:   Tue Mar 20 23:32:19 2007 -0700
     	src/i830_display.c
 
 commit 300e893cec19dca48e00ee25014b8714dc13b278
-Merge: 96e8699... 0202399...
+Merge: 96e8699 0202399
 Author: Nian Wu <nian.wu@intel.com>
 Date:   Wed Mar 21 08:55:50 2007 +0800
 
@@ -9239,14 +9685,14 @@ Date:   Tue Mar 20 14:33:53 2007 -0700
       re-programmed.
 
 commit 96e86994f3d1b4938e99a751454ee99bebfe40d3
-Merge: f465c23... 0a612e7...
+Merge: f465c23 0a612e7
 Author: Nian Wu <nian.wu@intel.com>
 Date:   Tue Mar 20 13:11:09 2007 +0800
 
     Merge branch 'crestline' of git://otc-graphics.jf.intel.com/git/xorg/driver/xf86-video-intel into crestline
 
 commit 0a612e7115ff993bb8e9a00df13c0b0d20122fd6
-Merge: 8bb6778... 4c4faf2...
+Merge: 8bb6778 4c4faf2
 Author: Wang Zhenyu <zhenyu.z.wang@intel.com>
 Date:   Tue Mar 20 11:34:40 2007 +0800
 
@@ -9480,7 +9926,7 @@ Date:   Tue Mar 13 09:53:35 2007 -0700
     Fix uninitialized string use in SDVO non-TMDS case.
 
 commit f465c23750adf908c0ea874f95aad98ebd2f1015
-Merge: d33e8da... 1ed3843...
+Merge: d33e8da 1ed3843
 Author: Nian Wu <nian.wu@intel.com>
 Date:   Tue Mar 13 17:00:44 2007 +0800
 
@@ -9536,7 +9982,7 @@ Date:   Sat Mar 10 16:15:33 2007 +0100
     Remove unused have3DWindows from pI830.
 
 commit d33e8daa6874ced978d2a1f687c48922555f2524
-Merge: 58aeb87... 797aa6f...
+Merge: 58aeb87 797aa6f
 Author: Nian Wu <nian.wu@intel.com>
 Date:   Mon Mar 12 09:03:52 2007 +0800
 
@@ -9581,14 +10027,14 @@ Date:   Fri Mar 9 19:47:13 2007 +0100
     This allows setting the size to 0 when a pipe gets disabled.
 
 commit aef161853033907c6916337cebe88c8f111dd542
-Merge: 1b54ee4... 14ee919...
+Merge: 1b54ee4 14ee919
 Author: Michel Dänzer <michel@tungstengraphics.com>
 Date:   Fri Mar 9 15:14:48 2007 +0100
 
     Merge remote branch 'origin/master' into i830-pageflip
 
 commit 1b54ee493fb96f944aa81e56fa6f00a8067f87fc
-Merge: e972265... 81722a2...
+Merge: e972265 81722a2
 Author: Michel Dänzer <michel@tungstengraphics.com>
 Date:   Fri Mar 9 15:13:50 2007 +0100
 
@@ -9605,7 +10051,7 @@ Date:   Wed Mar 7 13:00:03 2007 -0800
     Bug #10157: Fix cursor corruption on server regen.
 
 commit 58aeb87f2e335d15eba73ce9dd1982e867c52403
-Merge: a4e7e81... 81722a2...
+Merge: a4e7e81 81722a2
 Author: Nian Wu <nian.wu@intel.com>
 Date:   Wed Mar 7 16:02:03 2007 -0500
 
@@ -9652,7 +10098,7 @@ Date:   Tue Mar 6 13:57:04 2007 -0800
     switch the depth buffer to X tiling, which appears to work fine.
 
 commit a4e7e814a24dbe30a33e6ad45baeb41d190a2724
-Merge: 862088b... 4042b27...
+Merge: 862088b 4042b27
 Author: Nian Wu <nian.wu@intel.com>
 Date:   Tue Mar 6 16:01:40 2007 -0500
 
@@ -9680,7 +10126,7 @@ Date:   Tue Mar 6 16:54:16 2007 +0100
     Not sure how I missed this before... Thanks to Todd Merrill for reporting.
 
 commit 862088ba6a91d3e7cf8d37126b1d9f4ee03a1f73
-Merge: 11e9158... d717d9d...
+Merge: 11e9158 d717d9d
 Author: Nian Wu <nian.wu@intel.com>
 Date:   Tue Mar 6 07:43:16 2007 -0500
 
@@ -9720,7 +10166,7 @@ Date:   Tue Mar 6 09:35:42 2007 +0100
     the front buffer.
 
 commit 6c299aea8e87e72c68c96c03594706c976601ede
-Merge: 3308152... 4042b27...
+Merge: 3308152 4042b27
 Author: Michel Dänzer <michel@tungstengraphics.com>
 Date:   Tue Mar 6 09:28:52 2007 +0100
 
@@ -9745,7 +10191,7 @@ Date:   Mon Mar 5 22:32:52 2007 -0800
     sure things are mapped correctly.
 
 commit 55ee46aebbf1ec1a8ce914fbd0c8894fc857db8f
-Merge: 5c72014... 50aa094...
+Merge: 5c72014 50aa094
 Author: Wang Zhenyu <zhenyu.z.wang@intel.com>
 Date:   Tue Mar 6 12:45:08 2007 +0800
 
@@ -9761,21 +10207,21 @@ Date:   Tue Mar 6 12:44:04 2007 +0800
     error.
 
 commit 11e91586169b4f4bf2b41c0e0e620a69670c2f07
-Merge: a24962a... 0150270...
+Merge: a24962a 0150270
 Author: Nian Wu <nian.wu@intel.com>
 Date:   Mon Mar 5 16:00:20 2007 -0500
 
     Merge git://proxy01.pd.intel.com:9419/git/xorg/driver/xf86-video-intel into crestline
 
 commit a24962af9ed39fabca0152cae1265a29fe6237d3
-Merge: 35e9310... 8bb6778...
+Merge: 35e9310 8bb6778
 Author: Nian Wu <nian.wu@intel.com>
 Date:   Mon Mar 5 16:00:11 2007 -0500
 
     Merge branch 'crestline' of git://otc-graphics.jf.intel.com/git/xorg/driver/xf86-video-intel into crestline
 
 commit 50aa09425f54c4eeca7f8b0fae9579209b10b9c4
-Merge: d717d9d... c2c6255...
+Merge: d717d9d c2c6255
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Mon Mar 5 11:28:46 2007 -0800
 
@@ -9792,7 +10238,7 @@ Date:   Sat Mar 3 23:12:54 2007 -0800
     in the X server now, so remove it from this driver.
 
 commit 35e9310ef59873877422dcaf9a65b38789fc8ad6
-Merge: c8e6f0b... b27fa2c...
+Merge: c8e6f0b b27fa2c
 Author: Nian Wu <nian.wu@intel.com>
 Date:   Mon Mar 5 09:01:55 2007 -0500
 
@@ -9805,7 +10251,7 @@ Date:   Mon Mar 5 05:08:51 2007 -0800
     Fix 965GM SDVO by not setting fields in SDVO[BC] which have new meanings.
 
 commit 330815251dee808754b328cd2fd60db39f2460eb
-Merge: 50ba1ff... 0150270...
+Merge: 50ba1ff 0150270
 Author: Michel Dänzer <michel@tungstengraphics.com>
 Date:   Mon Mar 5 13:05:20 2007 +0100
 
@@ -9829,7 +10275,7 @@ Date:   Mon Mar 5 12:57:21 2007 +0100
     It takes the offset and size in pages, not bytes.
 
 commit a0c83af3430b6705ab2ecae59085d1c74e890c19
-Merge: c0f99b4... bc20b54...
+Merge: c0f99b4 bc20b54
 Author: Eric Anholt <eric@anholt.net>
 Date:   Mon Mar 5 03:37:53 2007 -0800
 
@@ -9850,7 +10296,7 @@ Date:   Mon Mar 5 10:22:07 2007 +0100
     Be more verbose when page flipping can't be enabled for various reasons.
 
 commit 015027034e970f1e3bb6ab239f7e0119235e404f
-Merge: 9a51064... bc20b54...
+Merge: 9a51064 bc20b54
 Author: Eric Anholt <eric@anholt.net>
 Date:   Sun Mar 4 21:49:00 2007 -0800
 
@@ -9911,14 +10357,14 @@ Date:   Sun Mar 4 17:11:40 2007 -0800
     itself doesn't move.
 
 commit c8e6f0bac13e0e407f9771b1bbf126f023c1511b
-Merge: 0ed5a2f... c0f99b4...
+Merge: 0ed5a2f c0f99b4
 Author: Nian Wu <nian.wu@intel.com>
 Date:   Sun Mar 4 09:00:12 2007 -0500
 
     Merge branch 'crestline' of git://otc-graphics.jf.intel.com/git/xorg/driver/xf86-video-intel into crestline
 
 commit 7d08f720a95499e8d00dcd7174f06731de420017
-Merge: dd24d2a... 435d355...
+Merge: dd24d2a 435d355
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Sat Mar 3 23:13:03 2007 -0800
 
@@ -9943,14 +10389,14 @@ Date:   Sat Mar 3 22:36:46 2007 -0800
     along with dither enabling. The PFIT register has a lot fewer controls as a result.
 
 commit 0fa3d4f51b5ee0dba3882fd74b6ac4e7da708f8f
-Merge: 10655c4... fd52d63...
+Merge: 10655c4 fd52d63
 Author: Keith Packard <keithp@gamba.jf.intel.com>
 Date:   Sat Mar 3 21:02:17 2007 -0800
 
     Merge branch 'modesetting' into crestline
 
 commit 0ed5a2fdcfe9674175aa9af155c20695ef41cadc
-Merge: 7ba80cc... fd52d63...
+Merge: 7ba80cc fd52d63
 Author: Nian Wu <nian.wu@intel.com>
 Date:   Sat Mar 3 09:00:20 2007 -0500
 
@@ -9981,7 +10427,7 @@ Date:   Fri Mar 2 11:03:16 2007 -0800
     Fix a crash when an ARGB cursor allocation had failed.
 
 commit 7ba80cc3a5e0f469e3ee55c7537fdc952cd85911
-Merge: 9796cb7... d5df52b...
+Merge: 9796cb7 d5df52b
 Author: Nian Wu <nian.wu@intel.com>
 Date:   Fri Mar 2 09:01:46 2007 -0500
 
@@ -9994,7 +10440,7 @@ Date:   Thu Mar 1 08:35:13 2007 -0800
     Actually add the files for reg_dumper.
 
 commit 9796cb7ac4bd74d5336986bb194ff5875b028121
-Merge: 42deb1e... 1f5d166...
+Merge: 42deb1e 1f5d166
 Author: Nian Wu <nian.wu@intel.com>
 Date:   Thu Mar 1 09:02:22 2007 -0500
 
@@ -10031,14 +10477,14 @@ Date:   Wed Feb 28 17:50:56 2007 +0100
     I830DRIClipNotify: Fix initialization of crtcBox[1].[xy]2.
 
 commit 42deb1e10fc445d152b74e2b225daeaee2abb3d1
-Merge: 76aac38... 3e8e75e...
+Merge: 76aac38 3e8e75e
 Author: Nian Wu <nian.wu@intel.com>
 Date:   Wed Feb 28 09:00:24 2007 -0500
 
     Merge branch 'modesetting' of git://proxy01.pd.intel.com:9419/git/xorg/driver/xf86-video-intel into crestline
 
 commit 76aac382659bc1dab7dca078f703b9cf48b4ad74
-Merge: 42fc06c... 1ac83f5...
+Merge: 42fc06c 1ac83f5
 Author: Nian Wu <nian@tinderbox.sh.intel.com>
 Date:   Tue Feb 27 14:42:42 2007 -0500
 
@@ -10134,7 +10580,7 @@ Date:   Mon Feb 26 08:02:50 2007 +0800
       fix conflict with external branch
 
 commit 42fc06c85a0c487cfa26b9d4aa396402dbc4c2fe
-Merge: 10655c4... 3bce8bf...
+Merge: 10655c4 3bce8bf
 Author: Nian Wu <nian@graphics.(none)>
 Date:   Sun Feb 25 12:53:47 2007 -0800
 
@@ -10430,7 +10876,7 @@ Date:   Tue Feb 13 13:18:15 2007 -0800
     Fix double free in the case of LVDS disabled through quirks.
 
 commit 699fa88d2570de6173e2d866e11b7437f4842d74
-Merge: 681b919... 6641aec...
+Merge: 681b919 6641aec
 Author: Eric Anholt <eric@anholt.net>
 Date:   Tue Feb 13 13:10:08 2007 -0800
 
@@ -10544,7 +10990,7 @@ Date:   Thu Feb 1 22:48:44 2007 -0800
     name change and add attributions for recent work.
 
 commit 1dde7a15a3a42b881c57ece95feceffadf412cff
-Merge: 16f30b2... 1ba45a3...
+Merge: 16f30b2 1ba45a3
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Thu Feb 1 21:31:27 2007 -0800
 
@@ -10574,7 +11020,7 @@ Date:   Fri Feb 2 11:33:46 2007 +0800
     Revert original crestline pci id patch
 
 commit f7489bbec150349bf03bea8d9d55451dbc92bfc2
-Merge: f1285ec... ae6d358...
+Merge: f1285ec ae6d358
 Author: Wang Zhenyu <zhenyu.z.wang@intel.com>
 Date:   Fri Feb 2 11:26:57 2007 +0800
 
@@ -10587,7 +11033,7 @@ Date:   Fri Feb 2 11:26:57 2007 +0800
     	src/i830_xf86Crtc.c
 
 commit ae6d3585a4d96aa4dc05ca8563cebfa7796324ef
-Merge: 6d549ed... 1ba45a3...
+Merge: 6d549ed 1ba45a3
 Author: Wang Zhenyu <zhenyu.z.wang@intel.com>
 Date:   Fri Feb 2 11:21:59 2007 +0800
 
@@ -10705,7 +11151,7 @@ Date:   Tue Jan 30 14:19:05 2007 -0800
     Simplify EXA acceleration transform handling.
 
 commit c8581254cb811f76aa6eae49d74489b543b3eb05
-Merge: 9da1791... d329fa1...
+Merge: 9da1791 d329fa1
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Mon Jan 29 21:25:13 2007 -0800
 
@@ -10814,21 +11260,21 @@ Date:   Thu Jan 25 15:31:22 2007 -0800
     issues were too complicated otherwise.
 
 commit 5a67f3d3690903a181ca854d060cfa8b4c2aca26
-Merge: 3cc583e... 9811059...
+Merge: 3cc583e 9811059
 Author: Nian Wu <nian.wu@intel.com>
 Date:   Thu Jan 25 13:40:50 2007 -0800
 
     Merge branch 'crestline' of /git/xorg/driver/xf86-video-intel into crestline
 
 commit 3cc583ec8e79ec65103308220dd6047a4a7acddf
-Merge: 566e1d3... effe579...
+Merge: 566e1d3 effe579
 Author: Nian Wu <nian.wu@intel.com>
 Date:   Thu Jan 25 13:37:05 2007 -0800
 
     Merge branch 'modesetting' of git://proxy01.pd.intel.com:9419/git/xorg/driver/xf86-video-intel into crestline
 
 commit 6d549ed280d3fcf3fe611b095d9f8adc0196bfb6
-Merge: 75f4df2... effe579...
+Merge: 75f4df2 effe579
 Author: Nian Wu <nian.wu@intel.com>
 Date:   Thu Jan 25 13:36:33 2007 -0800
 
@@ -10926,7 +11372,7 @@ Date:   Thu Jan 18 11:21:58 2007 -0800
     Also, add a bit more error checking.
 
 commit cc09dc3efe7279bf67512babb0f6cdaeba654772
-Merge: 53e765d... 3094100...
+Merge: 53e765d 3094100
 Author: Eric Anholt <eric@anholt.net>
 Date:   Thu Jan 18 10:20:36 2007 -0800
 
@@ -10982,7 +11428,7 @@ Date:   Tue Jan 16 12:54:29 2007 -0800
     by the driver at mode_set time).
 
 commit a52df90ffcb19e7c0a3b8018db3cd1391a3ec343
-Merge: 37946c9... 45696aa...
+Merge: 37946c9 45696aa
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Tue Jan 16 12:20:26 2007 +1100
 
@@ -11129,7 +11575,7 @@ Date:   Mon Jan 8 16:53:07 2007 -0800
     Correct typo resulting in a crash with ivch.  = != ==.
 
 commit 566e1d397744d0b477de4da6a206919906176f49
-Merge: b13d638... da6a00f...
+Merge: b13d638 da6a00f
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Mon Jan 8 12:37:49 2007 -0800
 
@@ -11145,7 +11591,7 @@ Date:   Mon Jan 8 12:36:54 2007 -0800
     potential mismatches between declaration and definition.
 
 commit 66546d8a8006e1c828e18ccab850214fd8d56b63
-Merge: 0fd2752... 40af0ee...
+Merge: 0fd2752 40af0ee
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Mon Jan 8 10:14:24 2007 -0800
 
@@ -11160,14 +11606,14 @@ Date:   Sun Jan 7 22:56:37 2007 -0800
     RandR 1.2 requires a new rotation structure for per-CRTC rotation.
 
 commit 7473e7d5297f94164e0f35822166713fb21a11bd
-Merge: cdde9e7... a87801f...
+Merge: cdde9e7 a87801f
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Sun Jan 7 22:50:27 2007 -0800
 
     Merge branch 'crestline-otc' into crestline
 
 commit cdde9e7f4a0645ab1ee3e124de54433c1a250097
-Merge: 3110630... 0fd2752...
+Merge: 3110630 0fd2752
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Sun Jan 7 22:50:12 2007 -0800
 
@@ -11180,7 +11626,7 @@ Date:   Thu Jan 4 14:35:55 2007 +0800
     minor fix on last exa mem binding commit
 
 commit 3110630e04f37e184609c91494fa7f9f4d59b93f
-Merge: be9b635... 736d82a...
+Merge: be9b635 736d82a
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Sun Jan 7 22:44:36 2007 -0800
 
@@ -11204,7 +11650,7 @@ Date:   Sat Jan 6 18:19:34 2007 -0800
     Declare shared variables in shared header files rather than .c.
 
 commit 736d82a6b43f174cb95b425faacd4b0b889916fa
-Merge: 53b42f5... 4c790f6...
+Merge: 53b42f5 4c790f6
 Author: Wang Zhenyu <zhenyu.z.wang@intel.com>
 Date:   Mon Dec 4 15:48:04 2006 +0800
 
@@ -11493,14 +11939,14 @@ Date:   Mon Sep 25 14:35:51 2006 +0800
     Signed-off-by: Keith Packard <keithp@neko.keithp.com>
 
 commit be9b635b82c0c77ccc0555f178f94de6e5338e27
-Merge: 9e48808... 5a793b0...
+Merge: 9e48808 5a793b0
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Wed Jan 3 22:15:53 2007 -0800
 
     Merge branch 'modesetting' into crestline
 
 commit 5a793b0dcf2d5de408b55073858fcfba6d99f994
-Merge: f188525... 394124c...
+Merge: f188525 394124c
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Wed Jan 3 21:54:05 2007 -0800
 
@@ -11521,7 +11967,7 @@ Date:   Thu Jan 4 11:25:31 2007 +0800
     We should check if EXA is really enabled.
 
 commit ebd636dbd62cb69ed7defbd86f297c6bc7dac5dd
-Merge: 75f0033... 3d9ea6f...
+Merge: 75f0033 3d9ea6f
 Author: Wang Zhenyu <zhenyu.z.wang@intel.com>
 Date:   Thu Jan 4 10:13:55 2007 +0800
 
@@ -11533,7 +11979,7 @@ Date:   Thu Jan 4 10:13:55 2007 +0800
     	src/i830_randr.c
 
 commit 3d9ea6f3c8a274f930d286fc15d3665dfaa8327a
-Merge: 75f4df2... 394124c...
+Merge: 75f4df2 394124c
 Author: Wang Zhenyu <zhenyu.z.wang@intel.com>
 Date:   Thu Jan 4 10:12:50 2007 +0800
 
@@ -11554,7 +12000,7 @@ Date:   Tue Jan 2 16:57:33 2007 -0800
     being uninitialized when outputs are first brought up.
 
 commit 69f250af60220a875f4a04c6d682bffa352281e4
-Merge: 232e209... d960dea...
+Merge: 232e209 d960dea
 Author: Keith Packard <keithp@mandolin.keithp.com>
 Date:   Wed Jan 3 00:39:15 2007 -0800
 
@@ -11695,7 +12141,7 @@ Date:   Sat Dec 30 22:47:58 2006 -0800
     are too fast.
 
 commit c70e7bc701cba3092acfdd66ed4d63487ac8ff9f
-Merge: 8b6c456... 4ed79a2...
+Merge: 8b6c456 4ed79a2
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Sat Dec 30 21:58:36 2006 -0800
 
@@ -11766,7 +12212,7 @@ Date:   Fri Dec 29 10:47:52 2006 +0800
     Tested with Crestline VGA output. See bug 83.
 
 commit a1796bfb51d90fd545973909404e1a77ad27c9cc
-Merge: 84915ac... fabfccd...
+Merge: 84915ac fabfccd
 Author: Wang Zhenyu <zhenyu.z.wang@intel.com>
 Date:   Fri Dec 29 10:10:26 2006 +0800
 
@@ -11800,7 +12246,7 @@ Date:   Thu Dec 28 16:40:54 2006 -0800
     Add stolen xf86 header files to driver source
 
 commit 2b0a997e5b4b51267fa4f6725f8a965093392434
-Merge: bb238a8... 9cfbf1c...
+Merge: bb238a8 9cfbf1c
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Thu Dec 28 16:34:38 2006 -0800
 
@@ -11971,7 +12417,7 @@ Date:   Thu Dec 21 23:42:53 2006 -0800
     global data.
 
 commit 1e9105395a7900521206b28bae4bb4f85669a0cd
-Merge: df9ecf8... c237e93...
+Merge: df9ecf8 c237e93
 Author: Keith Packard <keithp@guitar.keithp.com>
 Date:   Thu Dec 21 23:34:30 2006 -0800
 
@@ -12026,7 +12472,7 @@ Date:   Thu Dec 21 21:17:03 2006 -0800
     inaccurate PLL frequencies for some modes.
 
 commit c5205595f2abacc9f736e1f53666302ec551cbc4
-Merge: b8f3ec7... 4c0c1aa...
+Merge: b8f3ec7 4c0c1aa
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Thu Dec 21 02:51:33 2006 -0800
 
@@ -12087,7 +12533,7 @@ Date:   Tue Dec 19 22:39:57 2006 -0800
     Regenerate it whenever the ddx mode list changes.
 
 commit 07d3f141712e2abf704cb68a59cd5d5c3390e2ca
-Merge: 0cd1a11... c28075e...
+Merge: 0cd1a11 c28075e
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Tue Dec 19 22:01:02 2006 -0800
 
@@ -12116,7 +12562,7 @@ Date:   Tue Dec 19 16:45:39 2006 -0800
     we reset the screen size if the -dpi option was used.
 
 commit b00951a5c87ca8c596ee9cc73d96d598eec60751
-Merge: 05cd921... c0a0ddc...
+Merge: 05cd921 c0a0ddc
 Author: Keith Packard <keithp@guitar.keithp.com>
 Date:   Tue Dec 19 16:22:04 2006 -0800
 
@@ -12280,7 +12726,7 @@ Date:   Mon Dec 18 10:37:33 2006 -0800
     alpha only, then the component alpha flag is ignored on it.
 
 commit 65cd18b97bc533b24031d6eb882fd3074779ceba
-Merge: bf43f8c... 6823ca8...
+Merge: bf43f8c 6823ca8
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Sun Dec 17 17:32:24 2006 -0800
 
@@ -12396,7 +12842,7 @@ Date:   Wed Dec 13 13:15:14 2006 -0800
     dynamic instead of fixed.
 
 commit 0f6addc8a6aeb9bd041d0f8e8e5850e76764ba51
-Merge: 001e272... 3fa5b39...
+Merge: 001e272 3fa5b39
 Author: Keith Packard <keithp@bouzouki.jf.intel.com>
 Date:   Wed Dec 13 12:10:31 2006 -0800
 
@@ -12454,7 +12900,7 @@ Date:   Tue Dec 12 23:26:00 2006 -0800
     set correctly.
 
 commit 9dd1520421dcb8c7f36a684f3d2ffb6b42a6671a
-Merge: d57a258... 63bf484...
+Merge: d57a258 63bf484
 Author: Keith Packard <keithp@guitar.keithp.com>
 Date:   Tue Dec 12 22:52:59 2006 -0800
 
@@ -12571,21 +13017,21 @@ Date:   Mon Dec 11 09:34:50 2006 -0800
     Add error messages for previous silent DRI initialization failures.
 
 commit bf43f8ce736d91659c2757fb39b13e63bc5891a4
-Merge: 684ea26... 9452321...
+Merge: 684ea26 9452321
 Author: Wang Zhenyu <zhenyu.z.wang@intel.com>
 Date:   Fri Dec 8 14:17:43 2006 +0800
 
     Merge branch 'modesetting' into crestline
 
 commit 94523215127a3458a28d0f1217224a27c8870884
-Merge: 75f4df2... fde52de...
+Merge: 75f4df2 fde52de
 Author: Wang Zhenyu <zhenyu.z.wang@intel.com>
 Date:   Fri Dec 8 14:15:06 2006 +0800
 
     Merge branch 'modesetting' of git+ssh://zhen@git.freedesktop.org/git/xorg/driver/xf86-video-intel into modesetting
 
 commit 684ea26b740d07ec8f6b0d223c1171e70c073bfa
-Merge: 64269de... 6b977f0...
+Merge: 64269de 6b977f0
 Author: Wang Zhenyu <zhenyu.z.wang@intel.com>
 Date:   Fri Dec 8 14:03:10 2006 +0800
 
@@ -12598,7 +13044,7 @@ Date:   Thu Dec 7 09:47:34 2006 +0000
     Bump to 1.7.3
 
 commit fde52de870c84821ab457e17634c334a10cf71ab
-Merge: 7dbe6c3... 85de8a0...
+Merge: 7dbe6c3 85de8a0
 Author: Keith Packard <keithp@guitar.keithp.com>
 Date:   Wed Dec 6 23:40:13 2006 -0800
 
@@ -12632,14 +13078,14 @@ Date:   Wed Dec 6 20:26:53 2006 -0800
     Include render.h to get SubPixelUnknown define.
 
 commit 64269de3c34db047e78b788dc5681abdc009f8aa
-Merge: 8ddbc26... 182d2f5...
+Merge: 8ddbc26 182d2f5
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Wed Dec 6 18:09:28 2006 -0800
 
     Merge branch 'modesetting' into crestline
 
 commit 182d2f503a7a1be90d93a4a15059585a564fd3ce
-Merge: 677c454... 6777d80...
+Merge: 677c454 6777d80
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Wed Dec 6 17:18:58 2006 -0800
 
@@ -12697,7 +13143,7 @@ Date:   Wed Dec 6 13:19:58 2006 -0800
     Clean up SDVO multiplier debug output
 
 commit 6ee63364f5fabbc5578bcc9ded38c778595f5a6d
-Merge: 56f7119... b75ecdb...
+Merge: 56f7119 b75ecdb
 Author: Keith Packard <keithp@bouzouki.jf.intel.com>
 Date:   Wed Dec 6 12:53:22 2006 -0800
 
@@ -12706,7 +13152,7 @@ Date:   Wed Dec 6 12:53:22 2006 -0800
     Also, fix buffer overflow in i830_debug.c
 
 commit b75ecdb48309a15eb7c52b279c7f8523a95bcd48
-Merge: 1cb6311... b3bb10e...
+Merge: 1cb6311 b3bb10e
 Author: Eric Anholt <eric@anholt.net>
 Date:   Wed Dec 6 11:59:33 2006 -0800
 
@@ -12801,7 +13247,7 @@ Date:   Tue Dec 5 18:19:49 2006 -0800
     Fix copy'n'paste-o of the ordering of h/v fields in DSP[AB]SIZE.
 
 commit 58c247c6de56508b00eadf77b4c145c94134270d
-Merge: 0b4c3e7... 2e8c927...
+Merge: 0b4c3e7 2e8c927
 Author: Eric Anholt <eric@anholt.net>
 Date:   Tue Dec 5 15:28:21 2006 -0800
 
@@ -12856,7 +13302,7 @@ Date:   Mon Dec 4 15:47:31 2006 +0800
     fix corrupt in some subspans
 
 commit 677c454469a6223460778033758e384e989cea47
-Merge: 16f9a56... 8fcf9a8...
+Merge: 16f9a56 8fcf9a8
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Sat Dec 2 23:28:38 2006 -0800
 
@@ -12905,7 +13351,7 @@ Date:   Fri Dec 1 12:48:57 2006 -0800
     Add the [ax]4r4g4b4 source picture formats.
 
 commit 8ddbc26b276016b922487f7b1e8997998b655a7d
-Merge: 93975a5... 16f9a56...
+Merge: 93975a5 16f9a56
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Fri Dec 1 10:57:16 2006 -0800
 
@@ -12920,7 +13366,7 @@ Date:   Fri Dec 1 10:50:27 2006 -0800
     TV output exists on all 9xx chips except for 915G
 
 commit 93975a526086432cdeb8d7ead721a862d632c1e7
-Merge: 08b6569... e603cd0...
+Merge: 08b6569 e603cd0
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Fri Dec 1 10:28:58 2006 -0800
 
@@ -12985,7 +13431,7 @@ Date:   Thu Nov 30 15:45:13 2006 -0800
     Add debug code for the bit-banging I2C implementation.
 
 commit ff64bc7397cafbec94e388e1625b3a1999f1aca7
-Merge: b94b7c4... 16e01b1...
+Merge: b94b7c4 16e01b1
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Thu Nov 30 14:09:31 2006 -0800
 
@@ -13004,7 +13450,7 @@ Date:   Thu Nov 30 11:55:29 2006 -0800
     new names instead.
 
 commit bcf206ff17c6eca8212db72dd86fcd8fdc0162da
-Merge: 27ca1c1... 2c8c310...
+Merge: 27ca1c1 2c8c310
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Thu Nov 30 11:39:56 2006 -0800
 
@@ -13020,7 +13466,7 @@ Date:   Thu Nov 30 11:39:37 2006 -0800
     to contain definitions.
 
 commit b94b7c4bcfdb7ba59ed818f72309b5060a2ab7ee
-Merge: b6fc8df... 25e6e49...
+Merge: b6fc8df 25e6e49
 Author: Eric Anholt <eric@anholt.net>
 Date:   Thu Nov 30 09:15:30 2006 -0800
 
@@ -13327,7 +13773,7 @@ Date:   Sun Nov 19 16:15:45 2006 -0800
     Enable TV output on Crestline (untested).
 
 commit 05202cabbd23f15330b811ae6b8d708ad042bc40
-Merge: ee502dd... b945a65...
+Merge: ee502dd b945a65
 Author: Eric Anholt <eric@anholt.net>
 Date:   Sun Nov 19 16:14:18 2006 -0800
 
@@ -13352,14 +13798,14 @@ Date:   Sun Nov 19 00:40:46 2006 -0800
     signal is incorrect somehow.
 
 commit ee502dd92a3dfccdc2efcfb76fc652694bc89e3b
-Merge: 15ff17c... 2fe6107...
+Merge: 15ff17c 2fe6107
 Author: Eric Anholt <eric@anholt.net>
 Date:   Fri Nov 17 14:57:41 2006 -0800
 
     Merge branch 'crestline-origin' into crestline
 
 commit 15ff17c756e42f392306820e3f7ffbdcc56b9892
-Merge: 9cc2f33... 816fc1a...
+Merge: 9cc2f33 816fc1a
 Author: Eric Anholt <eric@anholt.net>
 Date:   Fri Nov 17 11:48:53 2006 -0800
 
@@ -13372,7 +13818,7 @@ Date:   Fri Nov 17 11:48:53 2006 -0800
     	src/i830_driver.c
 
 commit 816fc1a76a5ac738e41b172ba8f43137c1521328
-Merge: 9948d83... 7a7bb33...
+Merge: 9948d83 7a7bb33
 Author: Eric Anholt <eric@anholt.net>
 Date:   Fri Nov 17 00:05:53 2006 -0800
 
@@ -13409,7 +13855,7 @@ Date:   Thu Nov 16 21:09:23 2006 -0800
     those have not been defined yet.
 
 commit 9948d8377d70e898260c12210151b952b3fb8bf1
-Merge: 45a27f8... b649f95...
+Merge: 45a27f8 b649f95
 Author: Eric Anholt <eric@anholt.net>
 Date:   Thu Nov 16 19:47:24 2006 -0800
 
@@ -13504,7 +13950,7 @@ Date:   Wed Nov 8 21:38:00 2006 -0800
     advantage of it.
 
 commit 81bace0c316c3ed80201a34eca533254d12cd193
-Merge: 713c5b0... beb8916...
+Merge: 713c5b0 beb8916
 Author: Keith Packard <keithp@mandolin.keithp.com>
 Date:   Wed Nov 8 20:23:20 2006 -0800
 
@@ -13626,7 +14072,7 @@ Date:   Sun Nov 5 18:51:28 2006 -0800
     this does, but it does get the CRT running at a wide range of sizes.
 
 commit 49a6bea7d969dbfd1dd542c0c3e02abc330d6850
-Merge: 64447c7... fbb376b...
+Merge: 64447c7 fbb376b
 Author: Wang Zhenyu <zhenyu.z.wang@intel.com>
 Date:   Mon Nov 6 10:25:23 2006 +0800
 
@@ -13692,7 +14138,7 @@ Date:   Fri Nov 3 15:55:10 2006 -0800
     Report pipe status (and status mismatches) in i830DescribeOutputConfiguration()
 
 commit ecbe73b940b2d642115de4b73c2f757eb46ff956
-Merge: 561af00... 9681602...
+Merge: 561af00 9681602
 Author: Eric Anholt <eric@anholt.net>
 Date:   Fri Nov 3 15:59:59 2006 -0800
 
@@ -14070,14 +14516,14 @@ Date:   Tue Oct 24 17:47:47 2006 -0700
     is probably due to the lack of refcounting in xf86i2c.c.
 
 commit cd9c6e29146e1debaba4b0b9ad0d241f07bdbc14
-Merge: c5cca4c... eec5580...
+Merge: c5cca4c eec5580
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Tue Oct 24 16:53:46 2006 -0700
 
     Merge branch 'modesetting-origin' into modesetting
 
 commit eec5580cefffc293bf547372ab63b2fedaef4a83
-Merge: 53c28b3... a91c0cb...
+Merge: 53c28b3 a91c0cb
 Author: Eric Anholt <eric@anholt.net>
 Date:   Mon Oct 23 14:52:55 2006 -0700
 
@@ -14102,7 +14548,7 @@ Date:   Mon Oct 23 17:29:17 2006 +0100
     Add some MergedFB checks for accelerator limitations
 
 commit 20d263805a365be548279758bc39d027d6e56d63
-Merge: 8548fa5... 5ac927d...
+Merge: 8548fa5 5ac927d
 Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
 Date:   Mon Oct 23 14:24:41 2006 +0100
 
@@ -14292,7 +14738,7 @@ Date:   Wed Oct 4 15:00:19 2006 -0700
     Move the save, restore, and DPMS per-output settings to per-output files.
 
 commit 16988b27258acfe3d56fc2415aa9ade1ae8d03a9
-Merge: cc4148e... 5a06000...
+Merge: cc4148e 5a06000
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Wed Oct 4 18:44:43 2006 -0700
 
@@ -14322,7 +14768,7 @@ Date:   Tue Oct 3 22:00:14 2006 -0700
     (cherry picked from 1bc1cedbcdf6ea4d2a3e8b07b553ac50b3c126f4 commit)
 
 commit cc4148e25dc226cb1365e090db21f01b77cb3cbe
-Merge: 1bc1ced... 3e6f81f...
+Merge: 1bc1ced 3e6f81f
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Tue Oct 3 22:00:41 2006 -0700
 
@@ -14410,7 +14856,7 @@ Date:   Thu Sep 28 10:36:00 2006 +0800
     composite program for mask picture with or without CA case later.
 
 commit 6ea16bf6b06c8b3aed4d2c98679ab28304d1b56c
-Merge: fdb6de6... b970166...
+Merge: fdb6de6 b970166
 Author: Eric Anholt <eric@anholt.net>
 Date:   Wed Sep 27 16:38:01 2006 -0700
 
@@ -14437,14 +14883,14 @@ Date:   Wed Sep 27 13:59:41 2006 -0700
     Re-disable broken load-based CRT detection.
 
 commit 1407a42c7378706644fd8be554b43b0e7b581011
-Merge: 25890ec... 4bd3b89...
+Merge: 25890ec 4bd3b89
 Author: Eric Anholt <eric@anholt.net>
 Date:   Wed Sep 27 13:33:23 2006 -0700
 
     Merge branch 'randr-1.2' into modesetting
 
 commit 25890ecda9fd00fad9bc53dea83fc58e0013fcdf
-Merge: 965609f... 117ff04...
+Merge: 965609f 117ff04
 Author: Eric Anholt <eric@anholt.net>
 Date:   Wed Sep 27 13:33:17 2006 -0700
 
@@ -14511,7 +14957,7 @@ Date:   Wed Sep 27 13:54:14 2006 +0800
     default border texel.
 
 commit 6614b4bda2e079fd1e56e0825894481b80e2df58
-Merge: d6ca9fe... b3ddcf3...
+Merge: d6ca9fe b3ddcf3
 Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
 Date:   Mon Sep 25 12:04:01 2006 +0100
 
@@ -14535,7 +14981,7 @@ Date:   Mon Sep 25 14:35:51 2006 +0800
     in g4a form.
 
 commit f272f0d811f9ee059e8f8617a516e6c8bff917a1
-Merge: ff202f8... b3ddcf3...
+Merge: ff202f8 b3ddcf3
 Author: Wang Zhenyu <zhenyu.z.wang@intel.com>
 Date:   Mon Sep 25 14:15:21 2006 +0800
 
@@ -14641,21 +15087,21 @@ Date:   Thu Sep 21 01:23:10 2006 -0700
     special cased everwhere else.
 
 commit 4a8b9515e914369e1faf1dca6b11204b233c73ee
-Merge: 18a510b... bdca869...
+Merge: 18a510b bdca869
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Wed Sep 20 22:46:55 2006 -0700
 
     Merge branch 'modesetting' into randr-1.2
 
 commit bdca8697cc6ac5a98e0548b2ce2e0032e9bcfa52
-Merge: d9db5ec... daade50...
+Merge: d9db5ec daade50
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Wed Sep 20 22:46:42 2006 -0700
 
     Merge branch 'modesetting-origin' into modesetting
 
 commit 18a510bf9af2f288c0e94359f672775d6e9c9ab2
-Merge: f6500e9... d9db5ec...
+Merge: f6500e9 d9db5ec
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Wed Sep 20 22:45:48 2006 -0700
 
@@ -14695,7 +15141,7 @@ Date:   Wed Sep 20 09:36:02 2006 +0800
     give us transparent in RepeatNone case.
 
 commit d9db5ec6866555ec13ba3ddabb1516eb45637afa
-Merge: cbaf3cf... e3f4caf...
+Merge: cbaf3cf e3f4caf
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Tue Sep 19 16:03:04 2006 -0700
 
@@ -14766,7 +15212,7 @@ Date:   Thu Sep 14 09:54:19 2006 -0700
     The I830Sync version has additional code for the 965.
 
 commit 564c830a91afda76706a8c4c2f3287d0b8d514e9
-Merge: bf49084... b970166...
+Merge: bf49084 b970166
 Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
 Date:   Wed Sep 13 16:34:10 2006 +0100
 
@@ -14802,7 +15248,7 @@ Date:   Fri Sep 8 11:09:19 2006 -0700
     Fix a compile failure from the last commit.
 
 commit 2b7602847aa7ae9b4e88fbea070710695d2cb8a4
-Merge: e4cdc42... b45f4b5...
+Merge: e4cdc42 b45f4b5
 Author: Eric Anholt <eric@anholt.net>
 Date:   Fri Sep 8 11:02:41 2006 -0700
 
@@ -14831,7 +15277,7 @@ Date:   Thu Sep 7 10:24:23 2006 -0700
     Remove the UTS/DFS implementations that just match the fallback versions.
 
 commit 8b9d7a5f8560ee55ca5cb5376517a4246cd79fb9
-Merge: 6500a3a... 1e6e288...
+Merge: 6500a3a 1e6e288
 Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
 Date:   Thu Sep 7 17:45:57 2006 +0100
 
@@ -14903,7 +15349,7 @@ Date:   Thu Aug 24 10:28:59 2006 +0800
     Current 915 render operations for 915G/945G only
 
 commit 078af29fa65653c5322b006404f7ad29aec24cce
-Merge: 7458a6a... ea63e82...
+Merge: 7458a6a ea63e82
 Author: Wang Zhenyu <zhenyu.z.wang@intel.com>
 Date:   Thu Aug 24 10:23:22 2006 +0800
 
@@ -14939,7 +15385,7 @@ Date:   Mon Aug 21 12:13:42 2006 +0100
     remove GL* usage
 
 commit dad0e7fc09fa7794f20278d9d99abd96a21b691e
-Merge: 361c49a... 43daaec...
+Merge: 361c49a 43daaec
 Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
 Date:   Mon Aug 21 12:08:01 2006 +0100
 
@@ -15024,7 +15470,7 @@ Date:   Wed Aug 9 15:47:09 2006 -0700
     Clean up warnings.
 
 commit 24e59a0daa20b7c3e5028c9ca7972052801d02a1
-Merge: bb60807... 32f1199...
+Merge: bb60807 32f1199
 Author: Eric Anholt <eric@anholt.net>
 Date:   Wed Aug 9 14:19:06 2006 -0700
 
@@ -15072,7 +15518,7 @@ Date:   Tue Aug 8 16:19:51 2006 -0700
     (cherry picked from 7833d0733bc146cf1ae7f588516c49797886b396 commit)
 
 commit d150b53d102c511f3c9245ef1f6fd36c12b01ca3
-Merge: bb65a4d... bc5f565...
+Merge: bb65a4d bc5f565
 Author: Eric Anholt <eric@anholt.net>
 Date:   Tue Aug 8 15:51:58 2006 -0700
 
@@ -15145,7 +15591,7 @@ Date:   Tue Aug 8 11:28:42 2006 +0100
     Fix a build problem.
 
 commit e4f63eaf5efb654121db148f2f8e32cc3b23b6b5
-Merge: 633a683... e26f3e3...
+Merge: 633a683 e26f3e3
 Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
 Date:   Tue Aug 8 11:07:56 2006 +0100
 
@@ -15190,7 +15636,7 @@ Date:   Thu Aug 3 19:12:15 2006 -0700
     Turn off video debugging now that it appears to work fine.
 
 commit d15f87110807111ab7d71f1254ebe3dfef1fee80
-Merge: a79aa0d... d56ffa5...
+Merge: a79aa0d d56ffa5
 Author: Eric Anholt <anholt@FreeBSD.org>
 Date:   Thu Aug 3 19:08:34 2006 -0700
 
@@ -15200,7 +15646,7 @@ Date:   Thu Aug 3 19:08:34 2006 -0700
     changes.
 
 commit a79aa0d7b27b0b9b032472776d7dda410fd66a98
-Merge: 760021e... f9e94c1...
+Merge: 760021e f9e94c1
 Author: Eric Anholt <anholt@FreeBSD.org>
 Date:   Thu Aug 3 17:58:56 2006 -0700
 
@@ -15637,7 +16083,7 @@ Date:   Wed Jul 19 13:02:24 2006 -0400
     Replace hand register setting with new i915 fragmet program API.
 
 commit 76a316d0cec92a04c8735926a76e76c21f960d7e
-Merge: 433cb6b... 8480516...
+Merge: 433cb6b 8480516
 Author: Eric Anholt <anholt@FreeBSD.org>
 Date:   Wed Jul 19 12:31:36 2006 -0400
 
@@ -15657,7 +16103,7 @@ Date:   Tue Jul 18 19:42:37 2006 -0400
     for real.
 
 commit bb81e8d6c777a5e16b8193c07667fbee8e21203e
-Merge: 2a1b3cf... 8480516...
+Merge: 2a1b3cf 8480516
 Author: Eric Anholt <anholt@FreeBSD.org>
 Date:   Tue Jul 18 19:23:21 2006 -0400
 
@@ -15826,7 +16272,7 @@ Date:   Tue Jul 11 08:13:30 2006 +0100
     whoops, revert some unnecessary changes
 
 commit 8a44a7acfcadbba2410dca750afc9d32bc83706e
-Merge: 584b544... e7723a4...
+Merge: 584b544 e7723a4
 Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
 Date:   Tue Jul 11 07:41:27 2006 +0100
 
@@ -15884,7 +16330,7 @@ Date:   Mon Jul 10 15:01:51 2006 -0700
     Fix validation when the first mode is thrown out, and print hsync in modelines.
 
 commit 3924ffb7d7b71cb9c6ab9eeb12d0f1b2c26244c0
-Merge: 5a8f6a4... f76f94a...
+Merge: 5a8f6a4 f76f94a
 Author: Eric Anholt <anholt@FreeBSD.org>
 Date:   Mon Jul 10 12:12:38 2006 -0700
 
@@ -15995,7 +16441,7 @@ Date:   Mon Jun 26 16:26:58 2006 +0200
     Fix remaining warning.
 
 commit 6a3f89f4b6035534c7b93a4c05fd704305349785
-Merge: 3cdc537... e7723a4...
+Merge: 3cdc537 e7723a4
 Author: Eric Anholt <anholt@FreeBSD.org>
 Date:   Mon Jun 26 16:25:58 2006 +0200
 
@@ -16012,7 +16458,7 @@ Date:   Mon Jun 26 16:23:55 2006 +0200
     Fix build with new EXA headers.
 
 commit e7723a4e5725147d3bd9ba22c5a3314b0556e440
-Merge: 5111b88... dae9cb7...
+Merge: 5111b88 dae9cb7
 Author: Eric Anholt <anholt@FreeBSD.org>
 Date:   Mon Jun 26 16:04:33 2006 +0200
 
@@ -16025,7 +16471,7 @@ Date:   Mon Jun 26 15:11:13 2006 +0200
     Clean up warnings.
 
 commit 21dc3edfc41987bb8cf0f8d265fba9775cbe8cdb
-Merge: f113e90... 5111b88...
+Merge: f113e90 5111b88
 Author: Eric Anholt <anholt@FreeBSD.org>
 Date:   Mon Jun 26 15:06:42 2006 +0200
 
@@ -16161,7 +16607,7 @@ Date:   Wed Jun 21 00:12:27 2006 +0200
     Fix build without DRI
 
 commit 896ffe78fe96469cdd3ade77c8e68e1503967223
-Merge: 89c2c4b... 52243d4...
+Merge: 89c2c4b 52243d4
 Author: Eric Anholt <anholt@FreeBSD.org>
 Date:   Tue Jun 20 15:10:35 2006 -0700
 
@@ -16223,7 +16669,7 @@ Date:   Mon Jun 19 13:47:28 2006 -0700
     (cherry picked from 2fb375b665f4802819b89f2277fd6154006c11ee commit)
 
 commit 52243d407cad93283956660de4771097ac0b4b2d
-Merge: 2fb375b... 34f6a82...
+Merge: 2fb375b 34f6a82
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Mon Jun 19 13:28:09 2006 -0700
 
@@ -16249,7 +16695,7 @@ Date:   Mon Jun 19 13:22:17 2006 -0700
     Turn backlight on and off in response to DPMS state changes.
 
 commit d7e5d996aa123e52857362fa8a1e69f709bfe218
-Merge: 89a5a00... a73ab7f...
+Merge: 89a5a00 a73ab7f
 Author: Wang Zhenyu <zhenyu.z.wang@intel.com>
 Date:   Tue Jun 20 01:22:53 2006 +0800
 
@@ -16411,7 +16857,7 @@ Date:   Thu May 25 16:10:31 2006 -0700
     Scale video source vertices. Allocate space for kernels
 
 commit c1c46f882f9a11c383c8d1d1ce393be8fda55ed0
-Merge: 1e2da24... f2967a2...
+Merge: 1e2da24 f2967a2
 Author: Eric Anholt <anholt@FreeBSD.org>
 Date:   Mon May 22 10:42:24 2006 -0700
 
@@ -16536,7 +16982,7 @@ Date:   Wed May 17 11:16:00 2006 +0800
     Fix memorySize to enable offscreen mem manage.
 
 commit b0ac5303f33f75dc607cf0c705c23db1da836983
-Merge: 4c72725... c2cd10e...
+Merge: 4c72725 c2cd10e
 Author: Eric Anholt <anholt@FreeBSD.org>
 Date:   Tue May 16 15:21:17 2006 -0700
 
@@ -16889,7 +17335,7 @@ Date:   Mon Apr 24 10:54:45 2006 -0700
     reimplementing it.
 
 commit 47bd9059431eadfd8824e496eb91bb50efa0e282
-Merge: 729c373... 32a0ad5...
+Merge: 729c373 32a0ad5
 Author: Eric Anholt <anholt@FreeBSD.org>
 Date:   Mon Apr 24 10:36:24 2006 -0700
 
@@ -17065,14 +17511,14 @@ Date:   Mon Apr 10 20:09:37 2006 -0700
     Save/restore PFIT_CONTROL. Eliminate compiler warnings
 
 commit 498abf474b90b04bc4085397a209cc493d98d15c
-Merge: c26f073... 3de82ff...
+Merge: c26f073 3de82ff
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Mon Apr 10 19:41:50 2006 -0700
 
     Merge branch 'modesetting-origin' into modesetting
 
 commit c26f0737e2c0f000f67f21ef6007b351160036a4
-Merge: 11ad8a5... 692a4a4...
+Merge: 11ad8a5 692a4a4
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Mon Apr 10 19:41:41 2006 -0700
 
