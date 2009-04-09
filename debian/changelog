@@ -1,10 +1,12 @@
-xserver-xorg-video-intel (2:2.6.3-1) UNRELEASED; urgency=low
+xserver-xorg-video-intel (2:2.6.3-1) unstable; urgency=low
 
   * New upstream release.
-    + doesn't FTBFS with the new libdrm (closes: #523125)
   * Bump build-dep on libdrm-dev to 2.4.5.
+  * Upload to unstable.
+  * Cherry-pick some patches from upstream git, so this doesn't FTBFS with the
+    new libdrm (closes: #523125)
 
- -- Julien Cristau <jcristau@debian.org>  Wed, 08 Apr 2009 21:27:41 +0100
+ -- Julien Cristau <jcristau@debian.org>  Thu, 09 Apr 2009 10:25:22 +0100
 
 xserver-xorg-video-intel (2:2.6.1-1) experimental; urgency=low
 
