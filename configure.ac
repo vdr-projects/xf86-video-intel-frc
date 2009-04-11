@@ -22,7 +22,7 @@
 
 AC_PREREQ(2.57)
 AC_INIT([xf86-video-intel],
-        2.6.3,
+        2.6.99.903,
         [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg],
         xf86-video-intel)
 
@@ -84,7 +84,13 @@ XORG_DRIVER_CHECK_EXT(DPMSExtension, xextproto)
 
 # Checks for pkg-config packages
 PKG_CHECK_MODULES(XORG, [xorg-server xproto fontsproto $REQUIRED_MODULES])
-PKG_CHECK_MODULES(UXA, [xorg-server >= 1.5], [BUILD_UXA=yes], [BUILD_UXA=no])
+
+PKG_CHECK_MODULES(SERVER_1_5, [xorg-server >= 1.5],
+			      [SERVER_1_5=yes], [SERVER_1_5=no])
+
+if test "$SERVER_1_5" = yes; then
+   AC_DEFINE(SERVER_1_5, 1, [Building against server 1.5])
+fi
 
 sdkdir=$(pkg-config --variable=sdkdir xorg-server)
 drm_cflags=$(pkg-config --cflags libdrm)
@@ -117,11 +123,6 @@ if test x$DRI = xauto; then
         fi
 fi
 AC_MSG_RESULT([$DRI])
-
-AM_CONDITIONAL(BUILD_UXA, test $BUILD_UXA = yes)
-if test "$BUILD_UXA" = yes; then
-	AC_DEFINE(I830_USE_UXA, 1, [UMA Acceleration Architecture support])
-fi
 
 AC_CHECK_HEADER(xf86Modes.h,[XMODES=yes],[XMODES=no],[#include "xorg-server.h"])
 AC_CHECK_DECL(XSERVER_LIBPCIACCESS,
@@ -182,8 +183,6 @@ else
 fi
 
 AC_SUBST([XMODES_CFLAGS])
-UXA_CFLAGS='-I$(top_srcdir)/uxa'
-AC_SUBST([UXA_CFLAGS])
 
 SAVE_CPPFLAGS="$CPPFLAGS"
 CPPFLAGS="$CPPFLAGS $XORG_CFLAGS"
@@ -207,7 +206,7 @@ if test "x$GCC" = "xyes"; then
 	-Wnested-externs -fno-strict-aliasing"
 fi
 
-PKG_CHECK_MODULES(DRM, [libdrm >= 2.4.5])
+PKG_CHECK_MODULES(DRM, [libdrm >= 2.4.6])
 AM_CONDITIONAL(DRI, test x$DRI = xyes)
 if test "$DRI" = yes; then
         PKG_CHECK_MODULES(DRI, [xf86driproto glproto])
@@ -215,9 +214,9 @@ if test "$DRI" = yes; then
         AC_DEFINE(XF86DRI_DEVEL,1,[Enable developmental DRI driver support])
 fi
 
-dnl exaGetPixmapDriverPrivate required for DRM_MODE.
+dnl Server 1.5's set_mode_major required for DRM_MODE.
 PKG_CHECK_MODULES(DRM_MODE, [xorg-server >= 1.5],
-		  [DRM_MODE=yes], [DRM_MODE=no])
+		 [DRM_MODE=yes], [DRM_MODE=no])
 if test "x$DRM_MODE" = xyes; then
 	AC_DEFINE(XF86DRM_MODE,1,[DRM kernel modesetting])
 fi

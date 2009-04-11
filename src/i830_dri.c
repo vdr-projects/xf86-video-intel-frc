@@ -66,6 +66,7 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <string.h>
 #include <assert.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <sys/ioctl.h>
 #include <errno.h>
 #include <unistd.h>
@@ -145,7 +146,7 @@ static Bool
 I830InitDma(ScrnInfoPtr pScrn)
 {
    I830Ptr pI830 = I830PTR(pScrn);
-   I830RingBuffer *ring = pI830->LpRing;
+   I830RingBuffer *ring = &pI830->ring;
    I830DRIPtr pI830DRI = (I830DRIPtr) pI830->pDRIInfo->devPrivate;
    drmI830Init info;
 
@@ -772,9 +773,9 @@ I830DRIMapHW(ScreenPtr pScreen)
 
    if (!pI830->memory_manager) {
        if (drmAddMap(pI830->drmSubFD,
-		     (drm_handle_t)pI830->LpRing->mem->offset +
+		     (drm_handle_t)pI830->ring.mem->offset +
 		     pI830->LinearAddr,
-		     pI830->LpRing->mem->size, DRM_AGP, 0,
+		     pI830->ring.mem->size, DRM_AGP, 0,
 		     (drmAddress) &pI830->ring_map) < 0) {
 	   xf86DrvMsg(pScreen->myNum, X_ERROR,
 		      "[drm] drmAddMap(ring_map) failed. Disabling DRI\n");
@@ -1003,7 +1004,7 @@ I830DRISwapContext(ScreenPtr pScreen, DRISyncType syncType,
       if (I810_DEBUG & DEBUG_VERBOSE_DRI)
 	 ErrorF("i830DRISwapContext (in)\n");
 
-      *pI830->last_3d = LAST_3D_OTHER;
+      pI830->last_3d = LAST_3D_OTHER;
 
       if (!pScrn->vtSema)
      	 return;
@@ -1079,7 +1080,6 @@ I830DRIMoveBuffers(WindowPtr pParent, DDXPointRec ptOldOrg,
 {
    ScreenPtr pScreen = pParent->drawable.pScreen;
    ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
-   I830Ptr pI830 = I830PTR(pScrn);
    BoxPtr pboxTmp, pboxNext, pboxBase;
    DDXPointPtr pptTmp, pptNew2 = NULL;
    int xdir, ydir;
@@ -1252,7 +1252,6 @@ I830DRITransitionTo2d(ScreenPtr pScreen)
 {
    ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
    I830Ptr pI830 = I830PTR(pScrn);
-   drmI830Sarea *sPriv = (drmI830Sarea *) DRIGetSAREAPrivate(pScreen);
 
    pI830->want_vblank_interrupts = FALSE;
    I830DRISetVBlankInterrupt(pScrn, FALSE);
@@ -1388,9 +1387,6 @@ i830_update_dri_mappings(ScrnInfoPtr pScrn, drmI830Sarea *sarea)
 {
    I830Ptr pI830 = I830PTR(pScrn);
 
-   if (pI830->directRenderingType == DRI_DRI2)
-       return TRUE;
-
    if (!i830_do_addmap(pScrn, pI830->front_buffer, &sarea->front_handle,
 		       &sarea->front_size, &sarea->front_offset)) {
        xf86DrvMsg(pScrn->scrnIndex, X_INFO, "Disabling DRI.\n");
@@ -1448,8 +1444,14 @@ Bool
 i830_update_dri_buffers(ScrnInfoPtr pScrn)
 {
    ScreenPtr pScreen = pScrn->pScreen;
-   drmI830Sarea *sarea = (drmI830Sarea *) DRIGetSAREAPrivate(pScreen);
+   I830Ptr pI830 = I830PTR(pScrn);
+   drmI830Sarea *sarea;
    Bool success;
+
+   if (pI830->directRenderingType != DRI_XF86DRI)
+       return TRUE;
+
+   sarea = (drmI830Sarea *) DRIGetSAREAPrivate(pScreen);
 
    success = i830_update_dri_mappings(pScrn, sarea);
    if (!success)
@@ -1674,8 +1676,10 @@ Bool I830DRI2ScreenInit(ScreenPtr pScreen)
     ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
     I830Ptr pI830 = I830PTR(pScrn);
     DRI2InfoRec info;
-    char *p, *busId, buf[64];
-    int fd, i, cmp;
+    char *p, buf[64];
+    int i;
+    struct stat sbuf;
+    dev_t d;
 
     if (pI830->accel != ACCEL_UXA) {
 	xf86DrvMsg(pScrn->scrnIndex, X_WARNING, "DRI2 requires UXA\n");
@@ -1709,21 +1713,13 @@ Bool I830DRI2ScreenInit(ScreenPtr pScreen)
      * things worse with even more ad hoc directory walking code to
      * discover the device file name. */
 
+    fstat(info.fd, &sbuf);
+    d = sbuf.st_rdev;
+
     p = pI830->deviceName;
     for (i = 0; i < DRM_MAX_MINOR; i++) {
 	sprintf(p, DRM_DEV_NAME, DRM_DIR_NAME, i);
-	fd = open(p, O_RDWR);
-	if (fd < 0)
-	    continue;
-
-	busId = drmGetBusid(fd);
-	close(fd);
-	if (busId == NULL)
-	    continue;
-
-	cmp = strcmp(busId, buf);
-	drmFree(busId);
-	if (cmp == 0)
+	if (stat(p, &sbuf) == 0 && sbuf.st_rdev == d)
 	    break;
     }
     if (i == DRM_MAX_MINOR) {
