@@ -1,3 +1,116 @@
+commit cff6cf9adc4235af5cc73a47bb272c81635fc8b2
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Apr 15 16:20:16 2009 -0700
+
+    Update version to 2.7.0
+    
+    In preparation for new major release.
+
+commit 5fc57441b68a85ca3aaa306c336b242616a99f12
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Apr 15 16:14:44 2009 -0700
+
+    Add AUTHORS and NEWS to EXTRA_DIST
+    
+    These new files don't do us much good if we don't distribute them in
+    our releases.
+    (cherry picked from commit 9ffd1951d1f2fd2f53273d04ea29de050f07af55)
+
+commit f3d63d9e4956e64f632fbcf5da76fb7278072cb7
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Apr 15 16:14:03 2009 -0700
+
+    Add a NEWS files with release-notes for 2.7.0
+    
+    It will be nice to have release-notes under revision control, as well
+    being able to document issues in an obviously time-sensitive file,
+    (as opposed to README where we were documenting some of this previously).
+    (cherry picked from commit e4cd9de2933ada3e2a4b43552729ae3a370128bf)
+
+commit 3fafb28a4323c6897bfe36882857bf89e5d88de8
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Apr 15 16:10:52 2009 -0700
+
+    Clarify that the default acceleration is UXA if KMS is available.
+    
+    Stale documentation considered harmful of course.
+    (cherry picked from commit 506c810f8f3db89048dda9777902f142ffeb86aa)
+
+commit 0f0569b5658fbaf3b84232f13a28f6633a89e9b9
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Apr 15 15:39:06 2009 -0700
+
+    Add a new AUTHORS file
+    
+    This is a sorted list of everyone with more than 2 commits in the git
+    revision history. We also list some historical authors mentioned in the
+    man page, (with code presumably pre-dating the beginning of revision
+    history).
+    (cherry picked from commit b9716b836cb2b4569c90b81f344932ac668dc5bf)
+
+commit d94986bcd313486f8018a10729439af0f7e7052d
+Author: Carl Worth <cworth@cworth.org>
+Date:   Wed Apr 15 15:38:11 2009 -0700
+
+    README: Remove almost all time-sensitive information
+    
+    This was all very stale, and is better convered in intel.man. We replace
+    this with a list of pointers to where to get current information, (man
+    page, web site, and mailing list).
+    (cherry picked from commit 8deb3a3709a9aaa549be404566715a01246354d9)
+
+commit 6f48379fb8e5997b4b2098b7df5bed399bc559f6
+Author: Li Peng <peng.li@intel.com>
+Date:   Fri Apr 10 14:39:35 2009 +0800
+
+    Turn on front buffer tiling in KMS.
+    
+    This code disabled front buffer tiling in KMS. Turn it on since kernel
+    handles all tiling now, this improves performance of x11perf -aa10text
+    from 97k to 286k on my 945GME.
+    
+    Should help with #20761, if not totally fix it.
+    
+    Acked-by: Jesse Barnes <jbarnes@virtuousgeek.org>
+    Signed-off-by: Li Peng <peng.li@intel.com>
+    (cherry picked from commit 9b615a52671aacf34666f90ecfff98651ce6afe2)
+
+commit c8633c82278085917bd6b0d0ea6e8a74eaa6deb4
+Author: Ma Ling <ling.ma@intel.com>
+Date:   Mon Apr 13 14:27:35 2009 +0800
+
+    update manpage for BROADCAST_RGB property
+    (cherry picked from commit 053432991c812146f6e7c6f13c6ace55385c825f)
+
+commit 02c8a1a6e821a7c70c19329bd9ead4f9fcdcfe8a
+Author: Ma Ling <ling.ma@intel.com>
+Date:   Mon Apr 13 14:24:57 2009 +0800
+
+    set broadcast RGB mode for integrated HDMI output.
+    (cherry picked from commit 62ba7211fe9b6aada125ebfe34cf7161e817ad6b)
+
+commit 87dcf09b137a26919d36bf0cb659ff95bdb97c9b
+Author: Ma Ling <ling.ma@intel.com>
+Date:   Mon Apr 13 14:23:06 2009 +0800
+
+    set broadcast RGB mode for HDMI and TMDS from SDVOX output
+    
+    Almost all digital TVs accept broadcast RGB values from 16 to 235 for each channel,
+    otherwise for those uncompensated videos, when RGB values are set from 0 to 255,
+    they will shows black and whiter clamping, which seriously degrades picture quality.
+    The patch will enable the broadcast RGB mode for hdtv according to user's setting.
+    It fixed bug #14486
+    (cherry picked from commit 69388953ce889080d5f014123d89bf3eb45f3d8d)
+
+commit 387b5be8e7efdb9aa2cfb8bb64b92fae69241f1b
+Author: Carl Worth <cworth@cworth.org>
+Date:   Fri Apr 10 14:07:14 2009 -0700
+
+    Add a RELEASING file documenting the release process
+    
+    Thanks to Jesse Barnes for the original recipe.
+    (cherry picked from commit 6d345c49f693cc5cffaa00b94559d2afcb3a0864)
+
 commit 121bd7ff7cfd9a43fbb61fa56f06ba2d2b55035e
 Author: Carl Worth <cworth@cworth.org>
 Date:   Fri Apr 10 14:08:00 2009 -0700
