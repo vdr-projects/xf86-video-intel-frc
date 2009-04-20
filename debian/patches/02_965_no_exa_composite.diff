@@ -26,7 +26,7 @@ Index: xserver-xorg-video-intel/src/i830_driver.c
     OPTION_XVMC,
  #endif
 +   OPTION_RENDERACCEL,
- } I830Opts;
+    OPTION_SYNC_FIELDS,
  
  static OptionInfoRec I830Options[] = {
 @@ -345,6 +346,7 @@
