@@ -5,7 +5,6 @@ Maintainer: Debian X Strike Force <debian-x@lists.debian.org>
 Uploaders: David Nusinow <dnusinow@debian.org>, Drew Parsons <dparsons@debian.org>, Julien Cristau <jcristau@debian.org>, Brice Goglin <bgoglin@debian.org>
 Build-Depends:
  debhelper (>= 5),
- quilt,
  pkg-config,
  xserver-xorg-dev (>= 2:1.5.99.901),
  x11proto-gl-dev,
