@@ -795,7 +795,6 @@ i965_emit_video_setup(ScrnInfoPtr pScrn, drm_intel_bo *bind_bo, int n_src_surf)
     OUT_BATCH(0); /* sf */
     /* Only the PS uses the binding table */
     OUT_RELOC(bind_bo, I915_GEM_DOMAIN_INSTRUCTION, 0, 0);
-    drm_intel_bo_unreference(bind_bo);
 
     /* Blend constant color (magenta is fun) */
     OUT_BATCH(BRW_3DSTATE_CONSTANT_COLOR | 3);
@@ -1161,6 +1160,10 @@ I965DisplayVideoTextured(ScrnInfoPtr pScrn, I830PortPrivPtr pPriv, int id,
     }
 
     i830MarkSync(pScrn);
+
+    /* release reference once we're finished */
+    drm_intel_bo_unreference(bind_bo);
+
 #if WATCH_STATS
     i830_dump_error_state(pScrn);
 #endif
