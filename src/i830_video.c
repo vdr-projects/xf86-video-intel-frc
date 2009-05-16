@@ -3097,6 +3097,8 @@ typedef struct _drm_i945_syncf {
     struct timeval tv_now;
     struct timeval tv_vbl;
     unsigned trim;
+    unsigned htotal_a;
+    unsigned hsync_a;
 } drm_i945_syncf_t;
 
 #define VSF_SUB(a, b, c) \
@@ -3110,16 +3112,6 @@ typedef struct _drm_i945_syncf {
 
 #define VSF_TV2USEC(a, b) \
     (b) = (a).tv_sec * 1000000 + (a).tv_usec;
-
-/*
- * following values are hardcoded at the moment. they only work with 
- * the modeline given below. though they appear to comply with 
- * various i945 based motherboard designs.
- *
- * ModeLine "1440x576_50i"  27.75  1440 1488 1609 1769  576 580 585 625  -hsync -vsync interlace
- */
-#define HTOTAL_A_OPT  0x06e8059f
-#define HSYNC_A_OPT   0x064805cf
 
 void
 meter_out(val, symb)
@@ -3155,7 +3147,11 @@ vga_sync_fields(pI830)
     int dovsta, pipea_dsl;
 
 /* --- 8< --- */
-        syncf.trim = (INREG(HTOTAL_A) >> 16) - (HTOTAL_A_OPT >> 16);
+	if (!syncf_prev.htotal_a) {
+            syncf_prev.htotal_a = INREG(HTOTAL_A);
+            syncf_prev.hsync_a = INREG(HSYNC_A);
+	}
+        syncf.trim = (INREG(HTOTAL_A) >> 16) - (syncf_prev.htotal_a >> 16);
         gettimeofday(&syncf.tv_now, 0);
 
         /*
@@ -3194,7 +3190,7 @@ vga_sync_fields(pI830)
 	    usleepv += SYF_FRAME_CYCLE - usecs;
 	}
 #endif
-	syncf_prev = syncf;
+	syncf_prev.tv_now = syncf.tv_now;
 	if (abs(usecs - SYF_FRAME_CYCLE) > SYF_CATCH_RANGE) {
 
 	    /*
@@ -3274,9 +3270,9 @@ vga_sync_fields(pI830)
             }
 	    if (syncf.trim != t) {
 		t <<= 16;
-                OUTREG(HTOTAL_A,  HTOTAL_A_OPT + t);
-                OUTREG(HBLANK_A,  HTOTAL_A_OPT + t);
-                OUTREG(HSYNC_A,   HSYNC_A_OPT  + (t << 1));
+                OUTREG(HTOTAL_A,  syncf_prev.htotal_a + t);
+                OUTREG(HBLANK_A,  syncf_prev.htotal_a + t);
+                OUTREG(HSYNC_A,   syncf_prev.hsync_a  + (t << 1));
                 OUTREG(PIPEACONF, INREG(PIPEACONF));
 	    }
 	}
