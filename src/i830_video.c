@@ -3012,17 +3012,17 @@ i830_crtc_dpms_video(xf86CrtcPtr crtc, Bool on)
  */
 #define SYF_INPUT_DOUBLE_RATE 0
 
-/*
+/* NOT CURRENTLY USED
  * prefilter to prevent stray updates.
  * our software PLL will not try to lock for these.
  */
-#define SYF_CATCH_RANGE (18000 >> SYF_INPUT_DOUBLE_RATE)
+#define SYF_CATCH_RANGE (SYF_PAL_FRAME_CYCLE - 500 >> SYF_INPUT_DOUBLE_RATE)
 
 /*
  * updates outside time window defined by this
  * value spawn warnings when in debug mode
  */
-#define SYF_WARN_RANGE (15000 >> SYF_INPUT_DOUBLE_RATE)
+#define SYF_WARN_RANGE (5000 >> SYF_INPUT_DOUBLE_RATE)
 
 /*
  * we average 25 (50) frames to yield a cycle time of
@@ -3036,12 +3036,18 @@ i830_crtc_dpms_video(xf86CrtcPtr crtc, Bool on)
  */
 #define SYF_FRAME_CYCLE (SYF_PAL_FRAME_CYCLE >> SYF_INPUT_DOUBLE_RATE)
 
+/* NOT CURRENTLY USED
+ * we slightly displace sync point from center position. this makes the
+ * system less susceptible to temporary field delivery irregularities.
+ */
+#define SYF_SYNC_POINT_OFFSET 0
+
 /*
- * offset in usecs from double buffer switch where we try to place double
+ * offset in usecs from double buffer switch where we preferredly try to place double
  * buffer updates. 
  * this minimizes sensivity to jitter of our software PLL phase comparator.
  */
-#define SYF_SYNC_POINT (SYF_FRAME_CYCLE >> 1)
+#define SYF_SYNC_POINT (SYF_PAL_FIELD_CYCLE - SYF_SYNC_POINT_OFFSET)
 
 /*
  * one trim increment compensates drift speed for about 29usec/sec.
@@ -3070,21 +3076,6 @@ i830_crtc_dpms_video(xf86CrtcPtr crtc, Bool on)
  */
 #define SYF_MAX_TRIM_ABS 2
 
-#define DEBUG
-#ifdef DEBUG
-#define ERRORF ErrorF
-#else
-#define ERRORF(...)
-#endif
-
-#define USE_METER
-#ifdef USE_METER
-#define OUT_GRAPHIC meter_out
-extern void meter_out(int, int);
-#else
-#define OUT_GRAPHIC(...)
-#endif
-
 #ifdef STANDALONE
 
 #define DOVSTA          0x30008
@@ -3101,29 +3092,6 @@ extern void meter_out(int, int);
 #define min(a, b) ((a) <= (b) ? (a) : (b))
 #define max(a, b) ((a) >= (b) ? (a) : (b))
 #define abs(a) ((a) >= 0 ? (a) : -(a))
-#else
-#define B(a) (a)
-#endif
-#define OC_FIELD (1 << 19)
-
-#include <sys/time.h>
-#include <unistd.h>
-
-typedef struct _syf {
-    int cnt; 
-    int tsum; 
-    int trim; 
-    int drift; 
-    int spoint;
-} syf_t;
-
-typedef struct _drm_i945_syncf {
-    struct timeval tv_now;
-    struct timeval tv_vbl;
-    unsigned trim;
-    unsigned htotal_a;
-    unsigned hsync_a;
-} drm_i945_syncf_t;
 
 #define VSF_SUB(a, b, c) \
     if ((a).tv_usec < (b).tv_usec) { \
@@ -3137,22 +3105,55 @@ typedef struct _drm_i945_syncf {
 #define VSF_TV2USEC(a, b) \
     (b) = (a).tv_sec * 1000000 + (a).tv_usec;
 
+struct _I830_s {
+    int SYF_debug;
+} I830 = {
+    1,
+}, *pI830 = &I830;
+
+#else
+
+#define B(a) (a)
+
+#endif
+
+#include <unistd.h>
+
+#define OC_FIELD (1 << 19)
+
+typedef struct _syf {
+    int cnt; 
+    int trim; 
+    int drift; 
+    int spoint;
+} syf_t;
+
+extern void log_graph(int, int);
+
 void
-meter_out(val, symb)
+log_graph(val, symb)
 {
-    static char meter[81];
-    static char headr[81] = "|<- -20ms                               0                              +20ms ->|";
+    static char headr[] = "|<- -20ms                               0                              +20ms ->|";
+    static char meter[sizeof(headr)];
 
     if (!symb || symb == 1) {
 	if (!symb) ErrorF("%s", headr);
         if (symb == 1) ErrorF("%s", meter);
-        memset(meter, '-', 80);
+        memset(meter, '-', sizeof(headr) - 1);
         return;
     }
-    val /= 500;
-    val = min(val,  39);
-    val = max(val, -40);
-    meter[40 + val] = symb;
+    val = (SYF_SYNC_POINT + val) / 500;
+    val = min(val, (int)sizeof(headr) - 2);
+    val = max(val, 0);
+    if (symb == ':') {
+	meter[val] = meter[val] == '%' ? '#' : symb;
+    } else if (symb == '*') {
+	meter[val] = meter[val] == '%' ? '1' :
+		     meter[val] == ':' ? '2' :
+		     meter[val] == '#' ? '3' : symb;
+    } else {
+	meter[val] = symb;
+    }
 }
 /* --- 8< --- */
 
@@ -3160,79 +3161,84 @@ void
 vga_sync_fields(pI830)
     I830Ptr pI830;
 {
-    static syf_t syf, syf_clear;
-    static drm_i945_syncf_t syncf_prev;
-    static struct timeval skew2vbl_prev;
-
-    drm_i945_syncf_t syncf;
-    struct timeval skew2vbl;
-    struct timeval tv_usecs;
-    int usecs;
-    int dovsta, pipea_dsl;
+    static int vbl_usec_prev = ~0;
+    static int htotal_a, hsync_a;
+    static syf_t syf;
+    int dovsta, dovsta_1, pipea_dsl, pipea_dsl_1, trim, vbl_usec;
 
 /* --- 8< --- */
-	if (!syncf_prev.htotal_a) {
-            syncf_prev.htotal_a = INREG(HTOTAL_A);
-            syncf_prev.hsync_a = INREG(HSYNC_A);
+	if (!htotal_a) {
+            htotal_a = INREG(HTOTAL_A);
+            hsync_a = INREG(HSYNC_A);
 	}
-        syncf.trim = (INREG(HTOTAL_A) >> 16) - (syncf_prev.htotal_a >> 16);
-        gettimeofday(&syncf.tv_now, 0);
+        trim = (INREG(HTOTAL_A) >> 16) - (htotal_a >> 16);
 
         /*
-         *  DOVSTA 0x00104000 => PIPEA_DSL 0x0000011e
-         *  DOVSTA 0x80085000 => PIPEA_DSL 0x0000011f
-         *  [...]
-         *  DOVSTA 0x80104000 => PIPEA_DSL 0x00000138
-         *  DOVSTA 0x80104000 => PIPEA_DSL 0x00000000
-         *
          *  the chip does not provide current field status directly.
          *  but we can derive that from xor'ed dovsta and pipea_dsl contents.
-         *      _______________                 ________
-         * ____|               |_______________|         dovsta
-         *      ___             ___             ___
-         * ____|   |___________|   |___________|   |____ pipea_dsl
-         *          _______________                 ____
-         * ________|               |_______________|     field status
+	 *
+         *  DOVSTA 0x80104000 PIPEA_DSL 0x00000000   0   0     0
+         *  [...]
+         *  DOVSTA 0x00104000 PIPEA_DSL 0x0000011e 286 286 18304
+         *  DOVSTA 0x80085000 PIPEA_DSL 0x0000011f 287 287 18368
+         *  [...]
+         *  DOVSTA 0x80184000 PIPEA_DSL 0x00000138 312 312 19968
+         *  DOVSTA 0x80184000 PIPEA_DSL 0x00000000   0 313 20032
+         *  [...]
+         *  DOVSTA 0x80184000 PIPEA_DSL 0x0000011e 286 599 38336
+         *  DOVSTA 0x80105000 PIPEA_DSL 0x0000011f 287 600 38400
+         *  [...]
+         *  DOVSTA 0x80104000 PIPEA_DSL 0x00000138 312 625 40000
+         *  DOVSTA 0x80104000 PIPEA_DSL 0x00000000   0   0     0
+         *      _______________                 ________            
+         * ____|               |_______________|         !(dovsta & OC_FIELD)
+         * ____     ___________     ___________     ____
+         *     |___|           |___|           |___|     pipea_dsl < DEADLN
+         * ________                 _______________     
+         *         |_______________|               |____ field status
          *
-         *         0          286 312
+         *         0          287 313
          */
 
-#define FIELD_SWITCH_THRESHOLD 287
+#define LFIELD 313
+#define DEADLN 287
+#define SHIFTV (LFIELD - DEADLN)
+#define LFRAME (LFIELD << 1)
 
-        /* field * 20000 + line * 64 == 39968 max. for field==1, line==312 */
+	/*
+	 * the next few lines implement a simple glitch detection/correction
+	 */
 	dovsta = INREG(DOVSTA);
 	pipea_dsl = INREG(PIPEA_DSL);
-        skew2vbl.tv_usec =
-		  (pipea_dsl < FIELD_SWITCH_THRESHOLD ^ !(dovsta & OC_FIELD))
-		  * SYF_PAL_FIELD_CYCLE + (pipea_dsl << 6);
-	skew2vbl.tv_sec = 0;
-	VSF_SUB(syncf.tv_now, skew2vbl, syncf.tv_vbl);
-	VSF_SUB(syncf.tv_now, syncf_prev.tv_now, tv_usecs);
-	VSF_TV2USEC(tv_usecs, usecs);
-#ifdef STANDALONE
-	if (syncf_prev.tv_now.tv_sec) {
-	    usleepv += SYF_FRAME_CYCLE - usecs;
-	}
-#endif
-	syncf_prev.tv_now = syncf.tv_now;
-	if (abs(usecs - SYF_FRAME_CYCLE) > SYF_CATCH_RANGE) {
+	dovsta_1 = INREG(DOVSTA);
+	pipea_dsl_1 = INREG(PIPEA_DSL);
 
-	    /*
-	     * toss stray intervals and reset
-	     */
-	    syf = syf_clear;
-	    skew2vbl_prev.tv_sec = ~0;
-            OUT_GRAPHIC(0, 0);
-	    ErrorF("      R               %11d\n", usecs);
-#ifdef STANDALONE
-	    goto main_loop_end;
-#else
-	    return;
-#endif
+	if ((dovsta ^ dovsta_1) & OC_FIELD && pipea_dsl == pipea_dsl_1) {
+  	    dovsta = ~dovsta;
 	}
-	if (abs(usecs - SYF_FRAME_CYCLE) > SYF_WARN_RANGE) {
-            OUT_GRAPHIC(0, 0);
-	    ErrorF("      W               %11d\n", usecs);
+	dovsta &= OC_FIELD;
+
+	/* 287 + 26 (+ 313) == 313 (626) */
+        vbl_usec = (pipea_dsl < DEADLN ^ !dovsta) * LFIELD + pipea_dsl;
+	vbl_usec = (vbl_usec + SHIFTV) % LFRAME << 6;
+
+        if (vbl_usec_prev == ~0) {
+            vbl_usec_prev = vbl_usec;
+            log_graph(0, 0);
+            ErrorF("      R\n");
+#ifdef STANDALONE
+            goto main_loop_end;
+#else
+            return;
+#endif
+        }
+	if (pI830->SYF_debug) {
+	    if (abs(vbl_usec - vbl_usec_prev) > SYF_WARN_RANGE) {
+		log_graph(vbl_usec - vbl_usec_prev, '%');
+	    }
+	    if (abs(vbl_usec - SYF_PAL_FIELD_CYCLE) > SYF_WARN_RANGE) {
+		log_graph(vbl_usec - SYF_SYNC_POINT, ':');
+	    }
 	}
 
 #ifndef STANDALONE
@@ -3240,7 +3246,7 @@ vga_sync_fields(pI830)
         /*
          * we must delay the next double buffer update
          * until even field has been processed. this occurs
-         * after scan line FIELD_SWITCH_THRESHOLD has been passed.
+         * after scan line 286 has been passed.
          * on a sufficiently synchronized system running at a
          * sync point of about 20000 usecs this imposes
          * no additional sleep time.
@@ -3250,40 +3256,31 @@ vga_sync_fields(pI830)
          *    ...---sleep--->|
          *                 18368
          */
-        if (skew2vbl.tv_usec < FIELD_SWITCH_THRESHOLD << 6) {
-            usleep((FIELD_SWITCH_THRESHOLD << 6) - skew2vbl.tv_usec);
+        if (vbl_usec < SYF_PAL_FIELD_CYCLE) {
+            usleep(SYF_PAL_FIELD_CYCLE - vbl_usec);
         }
 #endif
-	VSF_SUB(syncf.tv_now, syncf.tv_vbl, skew2vbl)
-	if (skew2vbl_prev.tv_sec != ~0) {
-	    syf.tsum += usecs;
-	    syf.spoint += skew2vbl.tv_usec - SYF_SYNC_POINT;
-	    VSF_SUB(skew2vbl, skew2vbl_prev, tv_usecs);
-	    VSF_TV2USEC(tv_usecs, usecs);
-	    syf.drift += usecs;
-	    ++syf.cnt;
-	}
-	if (skew2vbl_prev.tv_sec != ~0 && !(syf.cnt % SYF_PLL_DIVIDER)) {
+	syf.spoint += vbl_usec - SYF_SYNC_POINT;
+	syf.drift += vbl_usec - vbl_usec_prev;
+	vbl_usec_prev = vbl_usec;
+	++syf.cnt;
+	if (!(syf.cnt % SYF_PLL_DIVIDER)) {
 	    syf.spoint /= SYF_PLL_DIVIDER;
-	    if (pI830->SYF_debug) {
-		OUT_GRAPHIC(0, '+');
-		OUT_GRAPHIC(syf.spoint, '|');
-		OUT_GRAPHIC(syf.drift, '*');
-		OUT_GRAPHIC(0, 1);
-	    }
 	    syf.trim = (syf.drift + syf.spoint / SYF_DISP_DRIFT_FACTOR) / SYF_MIN_STEP_USEC;
 	    syf.trim = max(syf.trim, -SYF_MAX_TRIM_REL);
 	    syf.trim = min(syf.trim,  SYF_MAX_TRIM_REL);
 	    if (pI830->SYF_debug) {
-		ERRORF("%7d %7d [%3d%+4d] %7d\n", syf.drift, syf.spoint, 
-				    (char)(syncf.trim & 0xff), syf.trim, syf.tsum);
+		log_graph(0, '+');
+		log_graph(syf.spoint, '|');
+		log_graph(syf.drift, '*');
+		log_graph(0, 1);
+		ErrorF("%7d %7d [%3d%+4d]\n", syf.drift, syf.spoint, (char)(trim & 0xff), syf.trim);
 	    }
 	    syf.spoint = 0;
 	    syf.drift = 0;
-	    syf.tsum = 0;
 	}
         if (B(1) && syf.trim) {
-            int t = (char)(syncf.trim & 0xff);
+            int t = (char)(trim & 0xff);
 
             if (syf.trim > 0) {
                 t = min(t + 1,  SYF_MAX_TRIM_ABS);
@@ -3292,15 +3289,14 @@ vga_sync_fields(pI830)
                 t = max(t - 1, -SYF_MAX_TRIM_ABS);
                 ++syf.trim;
             }
-	    if (syncf.trim != t) {
+	    if (trim != t) {
 		t <<= 16;
-                OUTREG(HTOTAL_A,  syncf_prev.htotal_a + t);
-                OUTREG(HBLANK_A,  syncf_prev.htotal_a + t);
-                OUTREG(HSYNC_A,   syncf_prev.hsync_a  + (t << 1));
+                OUTREG(HTOTAL_A,  htotal_a + t);
+                OUTREG(HBLANK_A,  htotal_a + t);
+                OUTREG(HSYNC_A,   hsync_a  + (t << 1));
                 OUTREG(PIPEACONF, INREG(PIPEACONF));
 	    }
 	}
-        skew2vbl_prev = skew2vbl;
 /* --- 8< --- */
 
 }
