@@ -3192,11 +3192,9 @@ vga_sync_fields(pI830)
 	if ((dovsta ^ dovsta_1) & OC_FIELD && pipea_dsl == pipea_dsl_1) {
   	    dovsta = ~dovsta;
 	}
-	dovsta &= OC_FIELD;
 
 	/* 287 + 26 (+ 313) == 313 (626) */
-        vbl_usec = (pipea_dsl < DEADLN ^ !dovsta) * LFIELD + pipea_dsl;
-	vbl_usec = (vbl_usec + SHIFTV) % LFRAME << 6;
+	vbl_usec = ((pipea_dsl < DEADLN ^ !(dovsta & OC_FIELD)) * LFIELD + pipea_dsl + SHIFTV) % LFRAME << 6;
 
         if (vbl_usec_prev == ~0) {
             vbl_usec_prev = vbl_usec;
@@ -3232,8 +3230,8 @@ vga_sync_fields(pI830)
          *    ...---sleep--->|
          *                 18368
          */
-        if (vbl_usec < SYF_PAL_FIELD_CYCLE) {
-            usleep(SYF_PAL_FIELD_CYCLE - vbl_usec);
+        if (vbl_usec - SHIFTV < SYF_PAL_FIELD_CYCLE) {
+            usleep(SYF_PAL_FIELD_CYCLE - (vbl_usec - SHIFTV));
         }
 #endif
 	syf.spoint += vbl_usec - SYF_SYNC_POINT;
