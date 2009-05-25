@@ -3071,11 +3071,11 @@ i830_crtc_dpms_video(xf86CrtcPtr crtc, Bool on)
 
 #define VSF_SUB(a, b, c) \
     if ((a).tv_usec < (b).tv_usec) { \
-	(c).tv_sec = (a).tv_sec - (b).tv_sec - 1; \
-	(c).tv_usec = (a).tv_usec - (b).tv_usec + 1000000; \
+        (c).tv_sec = (a).tv_sec - (b).tv_sec - 1; \
+        (c).tv_usec = (a).tv_usec - (b).tv_usec + 1000000; \
     } else { \
-	(c).tv_sec = (a).tv_sec - (b).tv_sec; \
-	(c).tv_usec = (a).tv_usec - (b).tv_usec; \
+        (c).tv_sec = (a).tv_sec - (b).tv_sec; \
+        (c).tv_usec = (a).tv_usec - (b).tv_usec; \
     }
 
 #define VSF_TV2USEC(a, b) \
@@ -3113,7 +3113,7 @@ log_graph(val, symb)
     static char meter[sizeof(headr)];
 
     if (!symb || symb == 1) {
-	if (!symb) ErrorF("%s", headr);
+        if (!symb) ErrorF("%s", headr);
         if (symb == 1) ErrorF("%s", meter);
         memset(meter, '-', sizeof(headr) - 1);
         return;
@@ -3122,13 +3122,13 @@ log_graph(val, symb)
     val = min(val, (int)sizeof(headr) - 2);
     val = max(val, 0);
     if (symb == ':') {
-	meter[val] = meter[val] == '%' ? '#' : symb;
+        meter[val] = meter[val] == '%' ? '#' : symb;
     } else if (symb == '*') {
-	meter[val] = meter[val] == '%' ? '1' :
-		     meter[val] == ':' ? '2' :
-		     meter[val] == '#' ? '3' : symb;
+        meter[val] = meter[val] == '%' ? '1' :
+                     meter[val] == ':' ? '2' :
+                     meter[val] == '#' ? '3' : symb;
     } else {
-	meter[val] = symb;
+        meter[val] = symb;
     }
 }
 /* --- 8< --- */
@@ -3143,16 +3143,16 @@ vga_sync_fields(pI830)
     int dovsta, dovsta_1, pipea_dsl, pipea_dsl_1, trim, vbl_usec;
 
 /* --- 8< --- */
-	if (!htotal_a) {
+        if (!htotal_a) {
             htotal_a = INREG(HTOTAL_A);
             hsync_a = INREG(HSYNC_A);
-	}
+        }
         trim = (INREG(HTOTAL_A) >> 16) - (htotal_a >> 16);
 
         /*
          *  the chip does not provide current field status directly.
          *  but we can derive that from xor'ed dovsta and pipea_dsl contents.
-	 *
+         *
          *  DOVSTA 0x80104000 PIPEA_DSL 0x00000000   0   0     0
          *  [...]
          *  DOVSTA 0x00104000 PIPEA_DSL 0x0000011e 286 286 18304
@@ -3178,23 +3178,24 @@ vga_sync_fields(pI830)
 
 #define LFIELD 313
 #define DEADLN 287
+#define DYZONE 32
 #define SHIFTV (LFIELD - DEADLN)
 #define LFRAME (LFIELD << 1)
 
-	/*
-	 * the next few lines implement a simple glitch detection/correction
-	 */
-	dovsta = INREG(DOVSTA);
-	pipea_dsl = INREG(PIPEA_DSL);
-	dovsta_1 = INREG(DOVSTA);
-	pipea_dsl_1 = INREG(PIPEA_DSL);
+        /*
+         * the next few lines implement a simple glitch detection/correction
+         */
+        dovsta = INREG(DOVSTA);
+        pipea_dsl = INREG(PIPEA_DSL);
+        dovsta_1 = INREG(DOVSTA);
+        pipea_dsl_1 = INREG(PIPEA_DSL);
 
-	if ((dovsta ^ dovsta_1) & OC_FIELD && pipea_dsl == pipea_dsl_1) {
-  	    dovsta = ~dovsta;
-	}
+        if ((dovsta ^ dovsta_1) & OC_FIELD && pipea_dsl == pipea_dsl_1) {
+            dovsta = ~dovsta;
+        }
 
-	/* 287 + 26 (+ 313) == 313 (626) */
-	vbl_usec = ((pipea_dsl < DEADLN ^ !(dovsta & OC_FIELD)) * LFIELD + pipea_dsl + SHIFTV) % LFRAME << 6;
+        /* 287 + 26 (+ 313) == 313 (626) */
+        vbl_usec = ((pipea_dsl < DEADLN ^ !(dovsta & OC_FIELD)) * LFIELD + pipea_dsl + SHIFTV) % LFRAME << 6;
 
         if (vbl_usec_prev == ~0) {
             vbl_usec_prev = vbl_usec;
@@ -3206,14 +3207,14 @@ vga_sync_fields(pI830)
             return;
 #endif
         }
-	if (pI830->SYF_debug) {
-	    if (abs(vbl_usec - vbl_usec_prev) > SYF_WARN_RANGE) {
-		log_graph(vbl_usec - vbl_usec_prev, '%');
-	    }
-	    if (abs(vbl_usec - SYF_PAL_FIELD_CYCLE) > SYF_WARN_RANGE) {
-		log_graph(vbl_usec - SYF_SYNC_POINT, ':');
-	    }
-	}
+        if (pI830->SYF_debug) {
+            if (abs(vbl_usec - vbl_usec_prev) > SYF_WARN_RANGE) {
+                log_graph(vbl_usec - vbl_usec_prev, '%');
+            }
+            if (abs(vbl_usec - SYF_PAL_FIELD_CYCLE) > SYF_WARN_RANGE) {
+                log_graph(vbl_usec - SYF_SYNC_POINT, ':');
+            }
+        }
 
 #ifndef STANDALONE
 
@@ -3230,29 +3231,29 @@ vga_sync_fields(pI830)
          *    ...---sleep--->|
          *                 18368
          */
-        if (vbl_usec - SHIFTV < SYF_PAL_FIELD_CYCLE) {
-            usleep(SYF_PAL_FIELD_CYCLE - (vbl_usec - SHIFTV));
+        if (SYF_PAL_FIELD_CYCLE - vbl_usec > 0) {
+            usleep(SYF_PAL_FIELD_CYCLE - vbl_usec + DYZONE);
         }
 #endif
-	syf.spoint += vbl_usec - SYF_SYNC_POINT;
-	syf.drift += vbl_usec - vbl_usec_prev;
-	vbl_usec_prev = vbl_usec;
-	++syf.cnt;
-	if (!(syf.cnt % SYF_PLL_DIVIDER)) {
-	    syf.spoint /= SYF_PLL_DIVIDER;
-	    syf.trim = (syf.drift + syf.spoint / SYF_DISP_DRIFT_FACTOR) / SYF_MIN_STEP_USEC;
-	    syf.trim = max(syf.trim, -SYF_MAX_TRIM_REL);
-	    syf.trim = min(syf.trim,  SYF_MAX_TRIM_REL);
-	    if (pI830->SYF_debug) {
-		log_graph(0, '+');
-		log_graph(syf.spoint, '|');
-		log_graph(syf.drift, '*');
-		log_graph(0, 1);
-		ErrorF("%7d %7d [%3d%+4d]\n", syf.drift, syf.spoint, (char)(trim & 0xff), syf.trim);
-	    }
-	    syf.spoint = 0;
-	    syf.drift = 0;
-	}
+        syf.spoint += vbl_usec - SYF_SYNC_POINT;
+        syf.drift += vbl_usec - vbl_usec_prev;
+        vbl_usec_prev = vbl_usec;
+        ++syf.cnt;
+        if (!(syf.cnt % SYF_PLL_DIVIDER)) {
+            syf.spoint /= SYF_PLL_DIVIDER;
+            syf.trim = (syf.drift + syf.spoint / SYF_DISP_DRIFT_FACTOR) / SYF_MIN_STEP_USEC;
+            syf.trim = max(syf.trim, -SYF_MAX_TRIM_REL);
+            syf.trim = min(syf.trim,  SYF_MAX_TRIM_REL);
+            if (pI830->SYF_debug) {
+                log_graph(0, '+');
+                log_graph(syf.spoint, '|');
+                log_graph(syf.drift, '*');
+                log_graph(0, 1);
+                ErrorF("%7d %7d [%3d%+4d]\n", syf.drift, syf.spoint, (char)(trim & 0xff), syf.trim);
+            }
+            syf.spoint = 0;
+            syf.drift = 0;
+        }
         if (B(1) && syf.trim) {
             int t = (char)(trim & 0xff);
 
@@ -3263,14 +3264,14 @@ vga_sync_fields(pI830)
                 t = max(t - 1, -SYF_MAX_TRIM_ABS);
                 ++syf.trim;
             }
-	    if (trim != t) {
-		t <<= 16;
+            if (trim != t) {
+                t <<= 16;
                 OUTREG(HTOTAL_A,  htotal_a + t);
                 OUTREG(HBLANK_A,  htotal_a + t);
                 OUTREG(HSYNC_A,   hsync_a  + (t << 1));
                 OUTREG(PIPEACONF, INREG(PIPEACONF));
-	    }
-	}
+            }
+        }
 /* --- 8< --- */
 
 }
