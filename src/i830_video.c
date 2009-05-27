@@ -3211,7 +3211,7 @@ vga_sync_fields(pI830)
             if (abs(vbl_usec - vbl_usec_prev) > SYF_WARN_RANGE) {
                 log_graph(vbl_usec - vbl_usec_prev, '%');
             }
-            if (abs(vbl_usec - SYF_PAL_FIELD_CYCLE) > SYF_WARN_RANGE) {
+            if (abs(vbl_usec - SYF_SYNC_POINT) > SYF_WARN_RANGE) {
                 log_graph(vbl_usec - SYF_SYNC_POINT, ':');
             }
         }
