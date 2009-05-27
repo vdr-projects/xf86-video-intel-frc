@@ -201,6 +201,7 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <sys/mman.h>
 #endif
 #include "sys/resource.h"
+#include <sched.h>
 
 #ifdef INTEL_XVMC
 #define _INTEL_XVMC_SERVER_
@@ -1832,7 +1833,20 @@ I830PreInit(ScrnInfoPtr pScrn, int flags)
    }
    if (pI830->sync_fields) {
       if (pI830->SchedPrio != ~0) {
-	  if (pI830->SchedPrio) {
+	  if (pI830->SchedPrio < -20) {
+	      struct sched_param sched;
+
+	      sched.sched_priority = -pI830->SchedPrio;
+	      if (sched_setscheduler(0, SCHED_FIFO, &sched)) {
+		xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
+		    "failed to set SCHED_FIFO priority as requested: %s\n", strerror(errno));
+	      } else {
+		xf86DrvMsg(pScrn->scrnIndex, X_INFO,
+		    "set SCHED_FIFO priority to (policy %d/ priority %d) as requested\n",
+		    	sched_getscheduler(0),
+			sched_getparam(0, &sched) ? ~0 : sched.sched_priority);
+	      }
+	  } else if (pI830->SchedPrio) {
 	      if (setpriority(PRIO_PROCESS, 0, pI830->SchedPrio)) {
 		xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
 		    "failed to set scheduling priority as requested: %s\n", strerror(errno));
