@@ -275,7 +275,7 @@ static const OptionInfoRec I810Options[] = {
    {OPTION_YRGB_VPHASE,		"SF_YRGB_VPhase",OPTV_INTEGER,	{0}, FALSE},
    {OPTION_UV_VPHASE,		"SF_UV_VPhase",	OPTV_INTEGER,	{0}, FALSE},
    {OPTION_SCHED_PRIO,		"SF_SchedPrio",	OPTV_INTEGER,	{0}, FALSE},
-   {OPTION_SYF_DEBUG,		"SF_Debug",	OPTV_BOOLEAN,	{0}, FALSE},
+   {OPTION_SYF_DEBUG,		"SF_Debug",	OPTV_INTEGER,	{0}, FALSE},
    {-1,				NULL,		OPTV_NONE,	{0}, FALSE}
 };
 /* *INDENT-ON* */

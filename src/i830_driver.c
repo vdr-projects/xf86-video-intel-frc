@@ -352,7 +352,7 @@ static OptionInfoRec I830Options[] = {
    {OPTION_YRGB_VPHASE,	"SF_YRGB_VPhase",OPTV_INTEGER,	{0},	FALSE},
    {OPTION_UV_VPHASE,	"SF_UV_VPhase",	OPTV_INTEGER,	{0},	FALSE},
    {OPTION_SCHED_PRIO,	"SF_SchedPrio",	OPTV_INTEGER,	{0},	FALSE},
-   {OPTION_SYF_DEBUG,	"SF_Debug",	OPTV_BOOLEAN,	{0},	FALSE},
+   {OPTION_SYF_DEBUG,	"SF_Debug",	OPTV_INTEGER,	{0},	FALSE},
    {-1,			NULL,		OPTV_NONE,	{0},	FALSE}
 };
 /* *INDENT-ON* */
@@ -1721,11 +1721,11 @@ I830PreInit(ScrnInfoPtr pScrn, int flags)
 				&(pI830->SYF_debug))) {
 	  from = X_CONFIG;
        } else {
-	  pI830->SYF_debug = FALSE;
+	  pI830->SYF_debug = 0;
 	  from = X_DEFAULT;
        }
-       xf86DrvMsg(pScrn->scrnIndex, from, "sync fields debug %sactivated\n",
-		  pI830->SYF_debug ? "" : "de");
+       xf86DrvMsg(pScrn->scrnIndex, from, "sync fields debug %sactivated: %d\n",
+		  pI830->SYF_debug ? "" : "de", pI830->SYF_debug);
    }
 /* --- SYNC FIELDS setup --- */
 
@@ -1831,9 +1831,12 @@ I830PreInit(ScrnInfoPtr pScrn, int flags)
       xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "Cannot support sync fields with current timing, disabled\n");
       pI830->sync_fields = 0;
    }
+
+#define MAX_SCHEDPRIO_1CORE -20
+
    if (pI830->sync_fields) {
       if (pI830->SchedPrio != ~0) {
-	  if (pI830->SchedPrio < -20) {
+	  if (pI830->SchedPrio < MAX_SCHEDPRIO_1CORE) {
 	      struct sched_param sched;
 
 	      sched.sched_priority = -pI830->SchedPrio;
@@ -1865,15 +1868,14 @@ I830PreInit(ScrnInfoPtr pScrn, int flags)
 	  if (f = fopen("/proc/cpuinfo", "r")) {
 	      char buf[256];
 	      while (fgets(buf, 255, f)) {
+#if 0 /* do not change the default priority at the moment */
 	          sscanf(buf, "processor : %d", &cores);
+#endif
 	      }
 	      fclose(f);
 	  }
-
-#define DFLT_SCHEDPRIO_1CORE -20
-
 	  if (!cores) {
-	      if (setpriority(PRIO_PROCESS, 0, DFLT_SCHEDPRIO_1CORE)) {
+	      if (setpriority(PRIO_PROCESS, 0, MAX_SCHEDPRIO_1CORE)) {
 		xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
 		    "failed to set scheduling priority (single core system): %s\n", strerror(errno));
 	      } else {
