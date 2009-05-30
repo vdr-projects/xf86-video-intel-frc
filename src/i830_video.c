@@ -3093,6 +3093,7 @@ struct _I830_s {
 
 #endif
 
+#include <time.h>
 #include <unistd.h>
 
 #define OC_FIELD (1 << 19)
@@ -3100,6 +3101,7 @@ struct _I830_s {
 typedef struct _syf {
     int cnt; 
     int trim; 
+    int warn;
     int drift; 
     int spoint;
 } syf_t;
@@ -3209,10 +3211,10 @@ vga_sync_fields(pI830)
         }
         if (pI830->SYF_debug) {
             if (abs(vbl_usec - vbl_usec_prev) > SYF_WARN_RANGE) {
-                log_graph(vbl_usec - vbl_usec_prev, '%');
+                log_graph(vbl_usec - vbl_usec_prev, '%'); ++syf.warn;
             }
             if (abs(vbl_usec - SYF_SYNC_POINT) > SYF_WARN_RANGE) {
-                log_graph(vbl_usec - SYF_SYNC_POINT, ':');
+                log_graph(vbl_usec - SYF_SYNC_POINT, ':'); ++syf.warn;
             }
         }
 
@@ -3245,14 +3247,25 @@ vga_sync_fields(pI830)
             syf.trim = max(syf.trim, -SYF_MAX_TRIM_REL);
             syf.trim = min(syf.trim,  SYF_MAX_TRIM_REL);
             if (pI830->SYF_debug) {
-                log_graph(0, '+');
-                log_graph(syf.spoint, '|');
-                log_graph(syf.drift, '*');
-                log_graph(0, 1);
-                ErrorF("%7d %7d [%3d%+4d]\n", syf.drift, syf.spoint, (char)(trim & 0xff), syf.trim);
+                if (pI830->SYF_debug < 5 && syf.warn) {
+                    time_t t;
+                    struct tm *tm;
+
+                    time(&t);
+                    tm = localtime(&t);
+                    ErrorF("%02d:%02d:%02d ", tm->tm_hour, tm->tm_min, tm->tm_sec);
+                }
+                if (pI830->SYF_debug < 5 && syf.warn || pI830->SYF_debug >= 5) {
+                    log_graph(0, '+');
+                    log_graph(syf.spoint, '|');
+                    log_graph(syf.drift, '*');
+                    log_graph(0, 1);
+                    ErrorF("%7d %7d [%3d%+4d]\n", syf.drift, syf.spoint, (char)(trim & 0xff), syf.trim);
+                }
             }
             syf.spoint = 0;
             syf.drift = 0;
+            syf.warn = 0;
         }
         if (B(1) && syf.trim) {
             int t = (char)(trim & 0xff);
