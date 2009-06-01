@@ -2995,12 +2995,6 @@ i830_crtc_dpms_video(xf86CrtcPtr crtc, Bool on)
 #define SYF_CATCH_RANGE (SYF_PAL_FRAME_CYCLE - 500 >> SYF_INPUT_DOUBLE_RATE)
 
 /*
- * updates outside time window defined by this
- * value spawn warnings when in debug mode
- */
-#define SYF_WARN_RANGE (5000 >> SYF_INPUT_DOUBLE_RATE)
-
-/*
  * we average 25 (50) frames to yield a cycle time of
  * about one second for analysis of frame rate data.
  * this serves as frequency divider for our software PLL.
@@ -3099,9 +3093,9 @@ struct _I830_s {
 #define OC_FIELD (1 << 19)
 
 typedef struct _syf {
+    int log;
     int cnt; 
     int trim; 
-    int warn;
     int drift; 
     int spoint;
 } syf_t;
@@ -3115,8 +3109,10 @@ log_graph(val, symb)
     static char meter[sizeof(headr)];
 
     if (!symb || symb == 1) {
-        if (!symb) ErrorF("%s", headr);
-        if (symb == 1) ErrorF("%s", meter);
+	time_t t; struct tm *tm;
+
+	time(&t); tm = localtime(&t); 
+	ErrorF("%02d:%02d:%02d %s", tm->tm_hour, tm->tm_min, tm->tm_sec, symb ? meter : headr);
         memset(meter, '-', sizeof(headr) - 1);
         return;
     }
@@ -3209,14 +3205,14 @@ vga_sync_fields(pI830)
             return;
 #endif
         }
-        if (pI830->SYF_debug) {
-            if (abs(vbl_usec - vbl_usec_prev) > SYF_WARN_RANGE) {
-                log_graph(vbl_usec - vbl_usec_prev, '%'); ++syf.warn;
-            }
-            if (abs(vbl_usec - SYF_SYNC_POINT) > SYF_WARN_RANGE) {
-                log_graph(vbl_usec - SYF_SYNC_POINT, ':'); ++syf.warn;
-            }
-        }
+	if (pI830->SYF_debug) {
+	    if (abs(vbl_usec - vbl_usec_prev) > pI830->SYF_debug) {
+		log_graph(vbl_usec - vbl_usec_prev, '%'); ++syf.log;
+	    }
+	    if (abs(vbl_usec - SYF_SYNC_POINT) > pI830->SYF_debug) {
+		log_graph(vbl_usec - SYF_SYNC_POINT, ':'); ++syf.log;
+	    }
+	}
 
 #ifndef STANDALONE
 
@@ -3246,26 +3242,18 @@ vga_sync_fields(pI830)
             syf.trim = (syf.drift + syf.spoint / SYF_DISP_DRIFT_FACTOR) / SYF_MIN_STEP_USEC;
             syf.trim = max(syf.trim, -SYF_MAX_TRIM_REL);
             syf.trim = min(syf.trim,  SYF_MAX_TRIM_REL);
-            if (pI830->SYF_debug) {
-                if (pI830->SYF_debug < 5 && syf.warn) {
-                    time_t t;
-                    struct tm *tm;
 
-                    time(&t);
-                    tm = localtime(&t);
-                    ErrorF("%02d:%02d:%02d ", tm->tm_hour, tm->tm_min, tm->tm_sec);
-                }
-                if (pI830->SYF_debug < 5 && syf.warn || pI830->SYF_debug >= 5) {
-                    log_graph(0, '+');
-                    log_graph(syf.spoint, '|');
-                    log_graph(syf.drift, '*');
-                    log_graph(0, 1);
-                    ErrorF("%7d %7d [%3d%+4d]\n", syf.drift, syf.spoint, (char)(trim & 0xff), syf.trim);
-                }
-            }
+            if (pI830->SYF_debug & 1 || syf.log) {
+		log_graph(0, '+');
+		log_graph(syf.spoint, '|');
+		log_graph(syf.drift, '*');
+		log_graph(0, 1);
+		ErrorF("%7d %7d [%3d%+4d]\n",
+		    syf.drift, syf.spoint, (char)(trim & 0xff), syf.trim);
+	    }
             syf.spoint = 0;
             syf.drift = 0;
-            syf.warn = 0;
+            syf.log = 0;
         }
         if (B(1) && syf.trim) {
             int t = (char)(trim & 0xff);
