@@ -1701,7 +1701,14 @@ i830_sdvo_detect(xf86OutputPtr output)
 	return XF86OutputStatusUnknown;
 
     if (response == 0)
+	/*
+	 * allow Xserver to run even without a CRT connected
+	 */
+#if 0
 	return XF86OutputStatusDisconnected;
+#else
+	return XF86OutputStatusConnected;
+#endif
 
     if (i830_sdvo_multifunc_encoder(output)) {
 	if (dev_priv->attached_output != response) {

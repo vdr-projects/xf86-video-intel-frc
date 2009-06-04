@@ -2021,13 +2021,14 @@ I830PreInit(ScrnInfoPtr pScrn, int flags)
    }
 
    /*
-    * sync_fields only works with
-    * ModeLine  "1440x576_50i"     27.75   1440 1488 1609 1769   576  580  585  625  -hsync -vsync interlace
+    * sync_fields currently only works with these modelines
+    * ModeLine     "1440x576_50i"     27.75   1440 1488 1609 1769   576  580  585  625  -hsync -vsync interlace
+    * Modeline     "1600x1200_50i"    65.92   1600 1696 1864 2131  1200 1203 1207 1238  -hsync +vsync interlace
     */
-   if ((pScrn->currentMode->Clock != 27750
-    ||  pScrn->currentMode->HDisplay != 1440
-    ||  pScrn->currentMode->VDisplay != 576)
-    && pI830->sync_fields) {
+   if (pI830->sync_fields && 
+	((pScrn->currentMode->Clock != 27750 || pScrn->currentMode->HDisplay != 1440 || pScrn->currentMode->VDisplay !=  576) &&
+	 (pScrn->currentMode->Clock != 65920 || pScrn->currentMode->HDisplay != 1600 || pScrn->currentMode->VDisplay != 1200)
+	 ) ) {
       xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "Cannot support sync fields with current timing, disabled\n");
       pI830->sync_fields = 0;
    }
