@@ -29,14 +29,14 @@ Index: xserver-xorg-video-intel/src/i830_driver.c
     OPTION_SYNC_FIELDS,
  
  static OptionInfoRec I830Options[] = {
-@@ -345,6 +346,7 @@
+@@ -355,6 +355,7 @@
  #ifdef INTEL_XVMC
     {OPTION_XVMC,	"XvMC",		OPTV_BOOLEAN,	{0},	TRUE},
  #endif
-+   {OPTION_RENDERACCEL, "RenderAccel",	OPTV_BOOLEAN,	{0},	TRUE},
-    {-1,			NULL,		OPTV_NONE,	{0},	FALSE}
- };
- /* *INDENT-ON* */
++   {OPTION_RENDERACCEL,	"RenderAccel",	OPTV_BOOLEAN,	{0},	TRUE},
+    {OPTION_SYNC_FIELDS,	"SyncFields",	OPTV_BOOLEAN,	{0},	FALSE},
+    {OPTION_YSCALE_FTUNE,"SF_YScaleFineTune",OPTV_INTEGER,{0},	FALSE},
+    {OPTION_YRGB_VPHASE,	"SF_YRGB_VPhase",OPTV_INTEGER,	{0},	FALSE},
 @@ -1583,6 +1585,17 @@
  		  pI830->useEXA ? "EXA" : "XAA");
     }
