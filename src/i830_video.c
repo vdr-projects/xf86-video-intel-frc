@@ -94,6 +94,7 @@
 
 #define TIMER_MASK      (OFF_TIMER | FREE_TIMER)
 
+static void vga_sync_fields(I830Ptr);
 static void I830InitOffscreenImages(ScreenPtr);
 
 static XF86VideoAdaptorPtr I830SetupImageVideoOverlay(ScreenPtr);
@@ -603,19 +604,35 @@ I830InitVideo(ScreenPtr pScreen)
     xvBrightness = MAKE_ATOM("XV_BRIGHTNESS");
     xvContrast = MAKE_ATOM("XV_CONTRAST");
 
-    /* Set up textured video if we can do it at this depth and we are on
-     * supported hardware.
-     */
-    if (pScrn->bitsPerPixel >= 16 && (IS_I9XX(pI830) || IS_I965G(pI830)) &&
-	!(!IS_I965G(pI830) && pScrn->displayWidth > 2048))
-    {
-	texturedAdaptor = I830SetupImageVideoTextured(pScreen);
-	if (texturedAdaptor != NULL) {
-	    adaptors[num_adaptors++] = texturedAdaptor;
-	    xf86DrvMsg(pScrn->scrnIndex, X_INFO, "Set up textured video\n");
-	} else {
-	    xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
-		       "Failed to set up textured video\n");
+#if 0 /* always use overlay */
+    if (pI830->sync_fields) {
+#else
+    if (1) {
+#endif
+	/*
+	 * we deactivate textured XV method for compatibility with older xine-lib
+	 * versions not providing a configuration parameter for this.
+	 * for further information see:
+	 * 'video.device.xv_preferred_method' in file 'config_xineliboutput'
+	 */
+	xf86DrvMsg(pScrn->scrnIndex, X_INFO, "VGA_SYNC_FIELDS disabled textured video mode\n");
+    } else {
+
+	/*
+	 * Set up textured video if we can do it at this depth and we are on
+	 * supported hardware.
+	 */
+	if (pScrn->bitsPerPixel >= 16 && (IS_I9XX(pI830) || IS_I965G(pI830)) &&
+	    !(!IS_I965G(pI830) && pScrn->displayWidth > 2048))
+	{
+	    texturedAdaptor = I830SetupImageVideoTextured(pScreen);
+	    if (texturedAdaptor != NULL) {
+		adaptors[num_adaptors++] = texturedAdaptor;
+		xf86DrvMsg(pScrn->scrnIndex, X_INFO, "Set up textured video\n");
+	    } else {
+		xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
+			   "Failed to set up textured video\n");
+	    }
 	}
     }
 
@@ -2013,7 +2030,11 @@ i830_display_video(ScrnInfoPtr pScrn, xf86CrtcPtr crtc,
 	 * Y down-scale factor as a multiple of 4096.
 	 */
 	xscaleFract = ((src_w - 1) << 12) / drw_w;
-	yscaleFract = ((src_h - 1) << 12) / drw_h;
+	if (pI830->sync_fields) {
+	    yscaleFract = (((src_h >> 1) - 1 + pI830->YScale_ftune) << 12) / drw_h;
+	} else {
+	    yscaleFract = ((src_h - 1) << 12) / drw_h;
+	}
 
 	/* Calculate the UV scaling factor. */
 	xscaleFractUV = xscaleFract / uvratio;
@@ -2113,9 +2134,15 @@ i830_display_video(ScrnInfoPtr pScrn, xf86CrtcPtr crtc,
 	    }
 	}
     }
-
-    OCMD = OVERLAY_ENABLE;
-    
+    if (pI830->sync_fields) {
+	OCMD = OVERLAY_ENABLE | BUF_TYPE_FIELD | TVSYNC_FLIP_ENABLE;
+	overlay->YRGB_VPH = pI830->YRGB_vphase;
+	overlay->UV_VPH   = pI830->UV_vphase;
+	overlay->HORZ_PH  = 0;
+	overlay->INIT_PHS = 0;
+    } else {
+	OCMD = OVERLAY_ENABLE;
+    }
     switch (id) {
     case FOURCC_YV12:
     case FOURCC_I420:
@@ -2525,6 +2552,9 @@ I830PutImage(ScrnInfoPtr pScrn,
     }
 
     if (!pPriv->textured) {
+	if (pI830->sync_fields) {
+	    vga_sync_fields(pI830);
+	}
 	i830_display_video(pScrn, crtc, destId, width, height, dstPitch,
 			   x1, y1, x2, y2, &dstBox, src_w, src_h,
 			   drw_w, drw_h);
@@ -2964,3 +2994,344 @@ i830_crtc_dpms_video(xf86CrtcPtr crtc, Bool on)
 	pPriv->oneLineMode = FALSE;
     }
 }
+
+/* --- 8< --- */
+/*
+ * field cycle duration in usecs for PAL
+ */
+#define SYF_PAL_FIELD_CYCLE 20000
+
+/*
+ * frame cycle duration in usecs for PAL
+ */
+#define SYF_PAL_FRAME_CYCLE (SYF_PAL_FIELD_CYCLE << 1)
+
+/*
+ * dependent on interlaced (progressive) input frame rate 25 (50) fps
+ * we set this to 0 (1). other params should adjust accordingly.
+ */
+#define SYF_INPUT_DOUBLE_RATE 0
+
+/* NOT CURRENTLY USED
+ * prefilter to prevent stray updates.
+ * our software PLL will not try to lock for these.
+ */
+#define SYF_CATCH_RANGE (SYF_PAL_FRAME_CYCLE - 500 >> SYF_INPUT_DOUBLE_RATE)
+
+/*
+ * we average 25 (50) frames to yield a cycle time of
+ * about one second for analysis of frame rate data.
+ * this serves as frequency divider for our software PLL.
+ */
+#define SYF_PLL_DIVIDER (25 << SYF_INPUT_DOUBLE_RATE)
+
+/*
+ * input frame cycle duration in usecs for 25 (50) fps
+ */
+#define SYF_FRAME_CYCLE (SYF_PAL_FRAME_CYCLE >> SYF_INPUT_DOUBLE_RATE)
+
+/* NOT CURRENTLY USED
+ * we slightly displace sync point from center position. this makes the
+ * system less susceptible to temporary field delivery irregularities.
+ */
+#define SYF_SYNC_POINT_OFFSET 0
+
+/*
+ * offset in usecs from double buffer switch where we preferredly try to place double
+ * buffer updates. 
+ * this minimizes sensivity to jitter of our software PLL phase comparator.
+ */
+#define SYF_SYNC_POINT (SYF_PAL_FIELD_CYCLE - SYF_SYNC_POINT_OFFSET)
+
+/*
+ * one trim increment compensates drift speed for about 29usec/sec.
+ * this represents resolution of our VCO input. 
+ */
+#define SYF_MIN_STEP_USEC 700
+
+/* NOT CURRENTLY USED
+ * factor weighting drift against sync point displacement
+ * when calculating overall compensation 
+ */
+#define SYF_DISP_DRIFT_FACTOR 1
+
+/*
+ * to allow for smooth adaption also on slower devices we delimit maximum
+ * trim change per step size.
+ * this implements some kind of low pass filter for our VCO input.
+ */
+#define SYF_MAX_TRIM_REL 1
+
+/*
+ * maximum absolute trim values allowed due to current
+ * hardware/driver contraints.
+ * this delimits 'maximum voltage' controlling our VCO.
+ * currently allowed range is defined symmetrically around the center voltage.
+ */
+#define SYF_MAX_TRIM_ABS 2
+
+#ifdef STANDALONE
+
+#define DOVSTA          0x30008
+#define HTOTAL_A        0x60000
+#define HBLANK_A        0x60004
+#define HSYNC_A         0x60008
+#define PIPEA_DSL       0x70000
+#define PIPEACONF       0x70008
+
+#define ErrorF printf
+#define B(a) (*(argv + (a)) ? *(argv + (a)) : 0)
+#define INREG(reg) *(volatile unsigned *)(vptr + (reg))
+#define OUTREG(reg, val) INREG(reg) = (val)
+#define min(a, b) ((a) <= (b) ? (a) : (b))
+#define max(a, b) ((a) >= (b) ? (a) : (b))
+#define abs(a) ((a) >= 0 ? (a) : -(a))
+
+#define VSF_SUB(a, b, c) \
+    if ((a).tv_usec < (b).tv_usec) { \
+        (c).tv_sec = (a).tv_sec - (b).tv_sec - 1; \
+        (c).tv_usec = (a).tv_usec - (b).tv_usec + 1000000; \
+    } else { \
+        (c).tv_sec = (a).tv_sec - (b).tv_sec; \
+        (c).tv_usec = (a).tv_usec - (b).tv_usec; \
+    }
+
+#define VSF_TV2USEC(a, b) \
+    (b) = (a).tv_sec * 1000000 + (a).tv_usec;
+
+struct _I830_s {
+    int SYF_debug;
+} I830 = {
+    801,
+}, *pI830 = &I830;
+
+#else
+
+#define B(a) (a)
+
+#endif
+
+#include <time.h>
+#include <unistd.h>
+
+#define OC_FIELD (1 << 19)
+
+typedef struct _syf_t {
+    int log;
+    int cnt; 
+    int trim; 
+    int drift; 
+    int spoint;
+
+    /* HW specific */
+    int lfield;
+    int deadln;
+    int dyzone;
+    int tshift;
+    int hsync_a;
+    int htotal_a;
+} syf_t;
+
+extern void log_graph(int, int);
+
+void
+log_graph(val, symb)
+{
+    static char headr[] = "|<- -20ms                               0                              +20ms ->|";
+    static char meter[sizeof(headr)];
+
+    if (!symb || symb == 1) {
+        time_t t; struct tm *tm;
+
+        time(&t); tm = localtime(&t); 
+        ErrorF("%02d:%02d:%02d %s", tm->tm_hour, tm->tm_min, tm->tm_sec, symb ? meter : headr);
+        memset(meter, '-', sizeof(headr) - 1);
+        return;
+    }
+    val = (SYF_SYNC_POINT + val) / 500;
+    val = min(val, (int)sizeof(headr) - 2);
+    val = max(val, 0);
+    if (symb == ':') {
+        meter[val] = meter[val] == '%' ? '#' : symb;
+    } else if (symb == '*') {
+        meter[val] = meter[val] == '%' ? '1' :
+                     meter[val] == ':' ? '2' :
+                     meter[val] == '#' ? '3' : symb;
+    } else {
+        meter[val] = symb;
+    }
+}
+/* --- 8< --- */
+
+void
+vga_sync_fields(pI830)
+    I830Ptr pI830;
+{
+    static syf_t syf;
+    static int vbl_usec_prev = ~0;
+    int dovsta, dovsta_1, pipea_dsl, pipea_dsl_1, trim, vbl_usec;
+
+/* --- 8< --- */
+        if (!syf.htotal_a) {
+            syf.htotal_a = INREG(HTOTAL_A);
+            syf.hsync_a = INREG(HSYNC_A);
+            switch (syf.htotal_a & 0x0000ffff) {
+              case 1439:
+                syf.lfield = 313;
+                syf.deadln = 287;
+                syf.dyzone = 32;
+                syf.tshift = 6;
+                break;
+              case 1599:
+                syf.lfield = 619;
+                syf.deadln = 599;
+                syf.dyzone = 0;
+                syf.tshift = 5;
+                break;
+            }
+        }
+        trim = (INREG(HTOTAL_A) >> 16) - (syf.htotal_a >> 16);
+
+        /*
+         *  the chip does not provide current field status directly.
+         *  but we can derive that from xor'ed dovsta and pipea_dsl contents.
+         *      _______________                 ________            
+         * ____|               |_______________|         !(dovsta & OC_FIELD)
+         * ____     ___________     ___________     ____
+         *     |___|           |___|           |___|     pipea_dsl < DEADLN
+         * ________           287   _______________     
+         *         |_______________|               |____ field status
+         *         0              313
+         *
+         *  "1440x576_50i"     27.75   1440 1488 1609 1769   576  580  585  625  -hsync -vsync interlace
+         *
+         *  DOVSTA 0x80104000 PIPEA_DSL 0x00000000   0   0     0
+         *  [...]
+         *  DOVSTA 0x00104000 PIPEA_DSL 0x0000011e 286 286 18304
+         *  DOVSTA 0x80085000 PIPEA_DSL 0x0000011f 287 287 18368
+         *  [...]
+         *  DOVSTA 0x80184000 PIPEA_DSL 0x00000138 312 312 19968
+         *  DOVSTA 0x80184000 PIPEA_DSL 0x00000000   0 313 20032
+         *  [...]
+         *  DOVSTA 0x80184000 PIPEA_DSL 0x0000011e 286 599 38336
+         *  DOVSTA 0x80105000 PIPEA_DSL 0x0000011f 287 600 38400
+         *  [...]
+         *  DOVSTA 0x80104000 PIPEA_DSL 0x00000138 312 625 40000
+         *  DOVSTA 0x80104000 PIPEA_DSL 0x00000000   0   0     0
+         *
+         *  "1600x1200_50i"    65.92   1600 1696 1864 2131  1200 1203 1207 1238  -hsync +vsync interlace
+         *
+         *  DOVSTA 0x80104000 PIPEA_DSL 0x00000000   0    0     0
+         *  [...]
+         *  DOVSTA 0x80100000 PIPEA_DSL 0x00000256 598  598 19136
+         *  DOVSTA 0x80185000 PIPEA_DSL 0x00000257 599  599 19168
+         *  [...]
+         *  DOVSTA 0x80184000 PIPEA_DSL 0x0000026a 618  618 19776
+         *  DOVSTA 0x80180000 PIPEA_DSL 0x00000000   0  619 19808
+         *  [...]
+         *  DOVSTA 0x80184000 PIPEA_DSL 0x00000256 598 1217 38944
+         *  DOVSTA 0x80105000 PIPEA_DSL 0x00000257 599 1218 38976
+         *  [...]
+         *  DOVSTA 0x80100000 PIPEA_DSL 0x0000026a 618 1237 39584
+         *  DOVSTA 0x80104000 PIPEA_DSL 0x00000000   0    0     0
+         */
+
+#define SHIFTV (syf.lfield - syf.deadln)
+#define LFRAME (syf.lfield << 1)
+
+        /*
+         * the next few lines implement a simple glitch detection/correction
+         */
+        dovsta = INREG(DOVSTA);
+        pipea_dsl = INREG(PIPEA_DSL);
+        dovsta_1 = INREG(DOVSTA);
+        pipea_dsl_1 = INREG(PIPEA_DSL);
+        if ((dovsta ^ dovsta_1) & OC_FIELD && pipea_dsl == pipea_dsl_1) {
+            dovsta = ~dovsta;
+        }
+
+        /* 287 + 26 (+ 313) == 313 (626) */
+        vbl_usec = ((pipea_dsl < syf.deadln ^ !(dovsta & OC_FIELD)) * syf.lfield + pipea_dsl + SHIFTV) % LFRAME << syf.tshift;
+
+        if (vbl_usec_prev == ~0) {
+            vbl_usec_prev = vbl_usec;
+            log_graph(0, 0);
+            ErrorF("      R\n");
+#ifdef STANDALONE
+            goto main_loop_end;
+#else
+            return;
+#endif
+        }
+        if (pI830->SYF_debug) {
+            if (abs(vbl_usec - vbl_usec_prev) > pI830->SYF_debug) {
+                log_graph(vbl_usec - vbl_usec_prev, '%'); ++syf.log;
+            }
+            if (abs(vbl_usec - SYF_SYNC_POINT) > pI830->SYF_debug) {
+                log_graph(vbl_usec - SYF_SYNC_POINT, ':'); ++syf.log;
+            }
+        }
+
+#ifndef STANDALONE
+
+        /*
+         * we must delay the next double buffer update
+         * until even field has been processed. this occurs
+         * after scan line 286 has been passed.
+         * on a sufficiently synchronized system running at a
+         * sync point of about 20000 usecs this imposes
+         * no additional sleep time.
+         *
+         *  0      even       20000      odd      40000
+         *  |-------------------|-------------------|
+         *    ...---sleep--->|
+         *                 18368
+         */
+        if (SYF_PAL_FIELD_CYCLE - vbl_usec > 0) {
+            usleep(SYF_PAL_FIELD_CYCLE - vbl_usec + syf.dyzone);
+        }
+#endif
+        syf.spoint += vbl_usec - SYF_SYNC_POINT;
+        syf.drift += vbl_usec - vbl_usec_prev;
+        vbl_usec_prev = vbl_usec;
+        ++syf.cnt;
+        if (!(syf.cnt % SYF_PLL_DIVIDER)) {
+            syf.spoint /= SYF_PLL_DIVIDER;
+            syf.trim = (syf.drift + syf.spoint / SYF_DISP_DRIFT_FACTOR) / SYF_MIN_STEP_USEC;
+            syf.trim = max(syf.trim, -SYF_MAX_TRIM_REL);
+            syf.trim = min(syf.trim,  SYF_MAX_TRIM_REL);
+
+            if (pI830->SYF_debug & 1 || syf.log) {
+                log_graph(0, '+');
+                log_graph(syf.spoint, '|');
+                log_graph(syf.drift, '*');
+                log_graph(0, 1);
+                ErrorF("%7d %7d [%3d%+4d]\n",
+                    syf.drift, syf.spoint, (char)(trim & 0xff), syf.trim);
+            }
+            syf.spoint = 0;
+            syf.drift = 0;
+            syf.log = 0;
+        }
+        if (B(1) && syf.trim) {
+            int t = (char)(trim & 0xff);
+
+            if (syf.trim > 0) {
+                t = min(t + 1,  SYF_MAX_TRIM_ABS);
+                --syf.trim;
+            } else {
+                t = max(t - 1, -SYF_MAX_TRIM_ABS);
+                ++syf.trim;
+            }
+            if (trim != t) {
+                t <<= 16;
+                OUTREG(HTOTAL_A,  syf.htotal_a + t);
+                OUTREG(HBLANK_A,  syf.htotal_a + t);
+                OUTREG(HSYNC_A,   syf.hsync_a  + (t << 1));
+                OUTREG(PIPEACONF, INREG(PIPEACONF));
+            }
+        }
+/* --- 8< --- */
+
+}
+
