@@ -91,7 +91,7 @@ i830_crt_mode_valid(xf86OutputPtr output, DisplayModePtr pMode)
     if (pMode->Flags & V_DBLSCAN)
 	return MODE_NO_DBLESCAN;
 
-    if (pMode->Clock < 25000)
+    if (pMode->Clock < 12000)
 	return MODE_CLOCK_LOW;
 
     if (!IS_I9XX(pI830))
@@ -433,6 +433,12 @@ out_release_pipe:
     i830ReleaseLoadDetectPipe (output, dpms_mode);
 
 done:
+
+    /*
+     * allow Xserver to run even without a CRT connected
+     */
+    status = XF86OutputStatusConnected;
+
     return status;
 }
 
