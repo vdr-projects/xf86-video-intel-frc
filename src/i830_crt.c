@@ -382,7 +382,7 @@ out:
     i830ReleaseLoadDetectPipe (output, dpms_mode);
 
     /*
-     * allow Xserver to run even without a CRT connected
+     * allow Xserver to run even without a CRT connected to VGA-output
      */
     status = XF86OutputStatusConnected;
     return status;

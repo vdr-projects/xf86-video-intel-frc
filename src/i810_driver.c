@@ -2857,9 +2857,8 @@ I810ValidMode(int scrnIndex, DisplayModePtr mode, Bool verbose, int flags)
 	 xf86DrvMsg(scrnIndex, X_PROBED,
 		    "Removing interlaced mode \"%s\"\n", mode->name);
       }
-#if 0 /* allow interlaced mode */
-      return MODE_BAD;
-#endif
+      /* allow interlaced modes too */
+      return MODE_OK;
    }
    return MODE_OK;
 }

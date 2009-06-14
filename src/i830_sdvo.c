@@ -1098,13 +1098,9 @@ i830_sdvo_detect(xf86OutputPtr output)
     else
 
         /*
-         * allow Xserver to run even without a CRT connected
+         * allow Xserver to run even without a CRT connected to TMDS-output
          */
-#if 0
-	return XF86OutputStatusDisconnected;
-#else
 	return XF86OutputStatusConnected;
-#endif
 }
 
 static DisplayModePtr
