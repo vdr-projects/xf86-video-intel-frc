@@ -3080,6 +3080,7 @@ i830_crtc_dpms_video(xf86CrtcPtr crtc, Bool on)
 #define PIPEACONF       0x70008
 
 #define ErrorF printf
+#define FatalError ErrorF
 #define B(a) (*(argv + (a)) ? *(argv + (a)) : 0)
 #define INREG(reg) *(volatile unsigned *)(vptr + (reg))
 #define OUTREG(reg, val) INREG(reg) = (val)
@@ -3099,22 +3100,28 @@ i830_crtc_dpms_video(xf86CrtcPtr crtc, Bool on)
 #define VSF_TV2USEC(a, b) \
     (b) = (a).tv_sec * 1000000 + (a).tv_usec;
 
-struct _I830_s {
+struct _info_s {
     int SYF_debug;
-} I830 = {
+} info = {
     801,
-}, *pI830 = &I830;
+}, *pinfo = &info;
 
 #else
 
 #define B(a) (a)
+#define pI830 pinfo
 
 #endif
 
 #include <time.h>
+#include <errno.h>
 #include <unistd.h>
+#include <sys/shm.h>
 
+#define SHMKEY 0x0815
 #define OC_FIELD (1 << 19)
+#define LFRAME (syf.lfield << 1)
+#define SHIFTV (syf.lfield - syf.deadln)
 
 typedef struct _syf_t {
     int log;
@@ -3122,8 +3129,10 @@ typedef struct _syf_t {
     int trim; 
     int drift; 
     int spoint;
+    int *shm;
 
     /* HW specific */
+    int triml;
     int lfield;
     int deadln;
     int dyzone;
@@ -3164,173 +3173,178 @@ log_graph(val, symb)
 /* --- 8< --- */
 
 void
-vga_sync_fields(pI830)
-    I830Ptr pI830;
+vga_sync_fields(pinfo)
+    I830Ptr pinfo;
 {
     static syf_t syf;
     static int vbl_usec_prev = ~0;
-    int dovsta, dovsta_1, pipea_dsl, pipea_dsl_1, trim, vbl_usec;
+    int dovsta, dovsta_1, pipea_dsl, pipea_dsl_1, vbl_usec;
 
 /* --- 8< --- */
-        if (!syf.htotal_a) {
-            syf.htotal_a = INREG(HTOTAL_A);
-            syf.hsync_a = INREG(HSYNC_A);
-            switch (syf.htotal_a & 0x0000ffff) {
-              case 1439:
-                syf.lfield = 313;
-                syf.deadln = 287;
-                syf.dyzone = 32;
-                syf.tshift = 6;
-                break;
-              case 1599:
-                syf.lfield = 619;
-                syf.deadln = 599;
-                syf.dyzone = 0;
-                syf.tshift = 5;
-                break;
-            }
+    if (vbl_usec_prev == ~0) {
+        int shmid;
+
+        syf.htotal_a = INREG(HTOTAL_A);
+        syf.hsync_a = INREG(HSYNC_A);
+        switch (syf.htotal_a & 0x0000ffff) {
+          case 1439:
+            syf.lfield = 313;
+            syf.deadln = 287;
+            syf.dyzone = 32;
+            syf.tshift = 6;
+            break;
+          case 1599:
+            syf.lfield = 619;
+            syf.deadln = 599;
+            syf.dyzone = 0;
+            syf.tshift = 5;
+            break;
+          default:
+            FatalError("vga_sync_fields: can't handle this timing\n");
         }
-        trim = (INREG(HTOTAL_A) >> 16) - (syf.htotal_a >> 16);
-
-        /*
-         *  the chip does not provide current field status directly.
-         *  but we can derive that from xor'ed dovsta and pipea_dsl contents.
-         *      _______________                 ________            
-         * ____|               |_______________|         !(dovsta & OC_FIELD)
-         * ____     ___________     ___________     ____
-         *     |___|           |___|           |___|     pipea_dsl < DEADLN
-         * ________           287   _______________     
-         *         |_______________|               |____ field status
-         *         0              313
-         *
-         *  "1440x576_50i"     27.75   1440 1488 1609 1769   576  580  585  625  -hsync -vsync interlace
-         *
-         *  DOVSTA 0x80104000 PIPEA_DSL 0x00000000   0   0     0
-         *  [...]
-         *  DOVSTA 0x00104000 PIPEA_DSL 0x0000011e 286 286 18304
-         *  DOVSTA 0x80085000 PIPEA_DSL 0x0000011f 287 287 18368
-         *  [...]
-         *  DOVSTA 0x80184000 PIPEA_DSL 0x00000138 312 312 19968
-         *  DOVSTA 0x80184000 PIPEA_DSL 0x00000000   0 313 20032
-         *  [...]
-         *  DOVSTA 0x80184000 PIPEA_DSL 0x0000011e 286 599 38336
-         *  DOVSTA 0x80105000 PIPEA_DSL 0x0000011f 287 600 38400
-         *  [...]
-         *  DOVSTA 0x80104000 PIPEA_DSL 0x00000138 312 625 40000
-         *  DOVSTA 0x80104000 PIPEA_DSL 0x00000000   0   0     0
-         *
-         *  "1600x1200_50i"    65.92   1600 1696 1864 2131  1200 1203 1207 1238  -hsync +vsync interlace
-         *
-         *  DOVSTA 0x80104000 PIPEA_DSL 0x00000000   0    0     0
-         *  [...]
-         *  DOVSTA 0x80100000 PIPEA_DSL 0x00000256 598  598 19136
-         *  DOVSTA 0x80185000 PIPEA_DSL 0x00000257 599  599 19168
-         *  [...]
-         *  DOVSTA 0x80184000 PIPEA_DSL 0x0000026a 618  618 19776
-         *  DOVSTA 0x80180000 PIPEA_DSL 0x00000000   0  619 19808
-         *  [...]
-         *  DOVSTA 0x80184000 PIPEA_DSL 0x00000256 598 1217 38944
-         *  DOVSTA 0x80105000 PIPEA_DSL 0x00000257 599 1218 38976
-         *  [...]
-         *  DOVSTA 0x80100000 PIPEA_DSL 0x0000026a 618 1237 39584
-         *  DOVSTA 0x80104000 PIPEA_DSL 0x00000000   0    0     0
-         */
-
-#define SHIFTV (syf.lfield - syf.deadln)
-#define LFRAME (syf.lfield << 1)
-
-        /*
-         * the next few lines implement a simple glitch detection/correction
-         */
-        dovsta = INREG(DOVSTA);
-        pipea_dsl = INREG(PIPEA_DSL);
-        dovsta_1 = INREG(DOVSTA);
-        pipea_dsl_1 = INREG(PIPEA_DSL);
-        if ((dovsta ^ dovsta_1) & OC_FIELD && pipea_dsl == pipea_dsl_1) {
-            dovsta = ~dovsta;
+        if ((shmid = shmget(SHMKEY, sizeof(*syf.shm), IPC_CREAT | 0666)) < 0) {
+            FatalError("shmget: %s\n", strerror(errno));
         }
+        if ((int)(syf.shm = shmat(shmid, 0, 0)) == -1) {
+            FatalError("shmat: %s\n", strerror(errno));
+        }
+    }
 
-        /* 287 + 26 (+ 313) == 313 (626) */
-        vbl_usec = ((pipea_dsl < syf.deadln ^ !(dovsta & OC_FIELD)) * syf.lfield + pipea_dsl + SHIFTV) % LFRAME << syf.tshift;
+    /*
+     * the next few lines implement a simple glitch detection/correction
+     */
+    dovsta = INREG(DOVSTA);
+    pipea_dsl = INREG(PIPEA_DSL);
+    dovsta_1 = INREG(DOVSTA);
+    pipea_dsl_1 = INREG(PIPEA_DSL);
+    if ((dovsta ^ dovsta_1) & OC_FIELD && pipea_dsl == pipea_dsl_1) {
+        dovsta ^= ~0;
+    }
 
-        if (vbl_usec_prev == ~0) {
-            vbl_usec_prev = vbl_usec;
-            log_graph(0, 0);
-            ErrorF("      R\n");
+    /*
+     *  the chip does not provide current field status directly.
+     *  but we can derive that from xor'ed dovsta and pipea_dsl contents.
+     *      _______________                 ________
+     * ____|               |_______________|         !(dovsta & OC_FIELD)
+     * ____     ___________     ___________     ____
+     *     |___|           |___|           |___|     pipea_dsl < DEADLN
+     * ________           287   _______________
+     *         |_______________|               |____ field status
+     *         0              313
+     *
+     *  "1440x576_50i"     27.75   1440 1488 1609 1769   576  580  585  625  -hsync -vsync interlace
+     *
+     *  DOVSTA 0x80104000 PIPEA_DSL 0x00000000   0   0     0
+     *  [...]
+     *  DOVSTA 0x00104000 PIPEA_DSL 0x0000011e 286 286 18304
+     *  DOVSTA 0x80085000 PIPEA_DSL 0x0000011f 287 287 18368
+     *  [...]
+     *  DOVSTA 0x80184000 PIPEA_DSL 0x00000138 312 312 19968
+     *  DOVSTA 0x80184000 PIPEA_DSL 0x00000000   0 313 20032
+     *  [...]
+     *  DOVSTA 0x80184000 PIPEA_DSL 0x0000011e 286 599 38336
+     *  DOVSTA 0x80105000 PIPEA_DSL 0x0000011f 287 600 38400
+     *  [...]
+     *  DOVSTA 0x80104000 PIPEA_DSL 0x00000138 312 625 40000
+     *  DOVSTA 0x80104000 PIPEA_DSL 0x00000000   0   0     0
+     *
+     *  "1600x1200_50i"    65.92   1600 1696 1864 2131  1200 1203 1207 1238  -hsync +vsync interlace
+     *
+     *  DOVSTA 0x80104000 PIPEA_DSL 0x00000000   0    0     0
+     *  [...]
+     *  DOVSTA 0x80100000 PIPEA_DSL 0x00000256 598  598 19136
+     *  DOVSTA 0x80185000 PIPEA_DSL 0x00000257 599  599 19168
+     *  [...]
+     *  DOVSTA 0x80184000 PIPEA_DSL 0x0000026a 618  618 19776
+     *  DOVSTA 0x80180000 PIPEA_DSL 0x00000000   0  619 19808
+     *  [...]
+     *  DOVSTA 0x80184000 PIPEA_DSL 0x00000256 598 1217 38944
+     *  DOVSTA 0x80105000 PIPEA_DSL 0x00000257 599 1218 38976
+     *  [...]
+     *  DOVSTA 0x80100000 PIPEA_DSL 0x0000026a 618 1237 39584
+     *  DOVSTA 0x80104000 PIPEA_DSL 0x00000000   0    0     0
+     */
+    vbl_usec = ((pipea_dsl < syf.deadln ^ !(dovsta & OC_FIELD)) * syf.lfield + pipea_dsl + SHIFTV) % LFRAME << syf.tshift;
+
+    if (vbl_usec_prev == ~0) {
+        vbl_usec_prev = vbl_usec;
+        log_graph(0, 0);
+        ErrorF("      R\n");
 #ifdef STANDALONE
-            goto main_loop_end;
+        goto main_loop_end;
 #else
-            return;
+        return;
 #endif
+    }
+    if (pinfo->SYF_debug) {
+        if (abs(vbl_usec - vbl_usec_prev) > pinfo->SYF_debug) {
+            log_graph(vbl_usec - vbl_usec_prev, '%'); ++syf.log;
         }
-        if (pI830->SYF_debug) {
-            if (abs(vbl_usec - vbl_usec_prev) > pI830->SYF_debug) {
-                log_graph(vbl_usec - vbl_usec_prev, '%'); ++syf.log;
-            }
-            if (abs(vbl_usec - SYF_SYNC_POINT) > pI830->SYF_debug) {
-                log_graph(vbl_usec - SYF_SYNC_POINT, ':'); ++syf.log;
-            }
+        if (abs(vbl_usec - SYF_SYNC_POINT) > pinfo->SYF_debug) {
+            log_graph(vbl_usec - SYF_SYNC_POINT, ':'); ++syf.log;
         }
+    }
 
 #ifndef STANDALONE
 
-        /*
-         * we must delay the next double buffer update
-         * until even field has been processed. this occurs
-         * after scan line 286 has been passed.
-         * on a sufficiently synchronized system running at a
-         * sync point of about 20000 usecs this imposes
-         * no additional sleep time.
-         *
-         *  0      even       20000      odd      40000
-         *  |-------------------|-------------------|
-         *    ...---sleep--->|
-         *                 18368
-         */
-        if (SYF_PAL_FIELD_CYCLE - vbl_usec > 0) {
-            usleep(SYF_PAL_FIELD_CYCLE - vbl_usec + syf.dyzone);
-        }
+    /*
+     * we must delay the next double buffer update
+     * until even field has been processed. this occurs
+     * after scan line 286 has been passed.
+     * on a sufficiently synchronized system running at a
+     * sync point of about 20000 usecs this imposes
+     * no additional sleep time.
+     *
+     *  0      even       20000      odd      40000
+     *  |-------------------|-------------------|
+     *    ...---sleep--->|
+     *                 18368
+     */
+    if (SYF_PAL_FIELD_CYCLE - vbl_usec > 0) {
+        usleep(SYF_PAL_FIELD_CYCLE - vbl_usec + syf.dyzone);
+    }
 #endif
-        syf.spoint += vbl_usec - SYF_SYNC_POINT;
-        syf.drift += vbl_usec - vbl_usec_prev;
-        vbl_usec_prev = vbl_usec;
-        ++syf.cnt;
-        if (!(syf.cnt % SYF_PLL_DIVIDER)) {
-            syf.spoint /= SYF_PLL_DIVIDER;
-            syf.trim = (syf.drift + syf.spoint / SYF_DISP_DRIFT_FACTOR) / SYF_MIN_STEP_USEC;
-            syf.trim = max(syf.trim, -SYF_MAX_TRIM_REL);
-            syf.trim = min(syf.trim,  SYF_MAX_TRIM_REL);
+    syf.spoint += vbl_usec - SYF_SYNC_POINT;
+    syf.drift += vbl_usec - vbl_usec_prev;
+    vbl_usec_prev = vbl_usec;
+    ++syf.cnt;
+    if (!(syf.cnt % SYF_PLL_DIVIDER)) {
+        syf.spoint /= SYF_PLL_DIVIDER;
+        syf.trim = (syf.drift + syf.spoint / SYF_DISP_DRIFT_FACTOR) / SYF_MIN_STEP_USEC;
+        syf.trim = max(syf.trim, -SYF_MAX_TRIM_REL);
+        syf.trim = min(syf.trim,  SYF_MAX_TRIM_REL);
 
-            if (pI830->SYF_debug & 1 || syf.log) {
-                log_graph(0, '+');
-                log_graph(syf.spoint, '|');
-                log_graph(syf.drift, '*');
-                log_graph(0, 1);
-                ErrorF("%7d %7d [%3d%+4d]\n",
-                    syf.drift, syf.spoint, (char)(trim & 0xff), syf.trim);
-            }
-            syf.spoint = 0;
-            syf.drift = 0;
-            syf.log = 0;
+        if (pinfo->SYF_debug & 1 || syf.log) {
+            log_graph(0, '+');
+            log_graph(syf.spoint, '|');
+            log_graph(syf.drift, '*');
+            log_graph(0, 1);
+            ErrorF("%7d %7d [%3d%+4d]\n",
+                syf.drift, syf.spoint, syf.triml, syf.trim);
         }
-        if (B(1) && syf.trim) {
-            int t = (char)(trim & 0xff);
+        *syf.shm = syf.spoint;
+        syf.spoint = 0;
+        syf.drift = 0;
+        syf.log = 0;
+    }
+    if (B(1) && syf.trim) {
+        int t = syf.triml;
 
-            if (syf.trim > 0) {
-                t = min(t + 1,  SYF_MAX_TRIM_ABS);
-                --syf.trim;
-            } else {
-                t = max(t - 1, -SYF_MAX_TRIM_ABS);
-                ++syf.trim;
-            }
-            if (trim != t) {
-                t <<= 16;
-                OUTREG(HTOTAL_A,  syf.htotal_a + t);
-                OUTREG(HBLANK_A,  syf.htotal_a + t);
-                OUTREG(HSYNC_A,   syf.hsync_a  + (t << 1));
-                OUTREG(PIPEACONF, INREG(PIPEACONF));
-            }
+        if (syf.trim > 0) {
+            t = min(t + 1,  SYF_MAX_TRIM_ABS);
+            --syf.trim;
+        } else {
+            t = max(t - 1, -SYF_MAX_TRIM_ABS);
+            ++syf.trim;
         }
+        if (syf.triml != t) {
+            syf.triml = t;
+            OUTREG(HTOTAL_A,  syf.htotal_a + (t << 16 + 0));
+            OUTREG(HBLANK_A,  syf.htotal_a + (t << 16 + 0));
+            OUTREG(HSYNC_A,   syf.hsync_a  + (t << 16 + 1));
+            OUTREG(PIPEACONF, INREG(PIPEACONF));
+        }
+    }
 /* --- 8< --- */
 
 }
